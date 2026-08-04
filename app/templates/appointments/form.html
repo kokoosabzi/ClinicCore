@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>رزرو نوبت</h1>
+<form method="post" action="/ui/appointments" class="form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>شناسه بیمار<input name="patient_id" type="number" min="1" required></label>
+  <label>زمان شروع<input name="starts_at" type="datetime-local" required></label>
+  <label>علت مراجعه<input name="reason" maxlength="200"></label>
+  <label>یادداشت<textarea name="notes"></textarea></label>
+  <button type="submit">ثبت نوبت</button>
+</form>
+{% endblock %}

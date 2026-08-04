@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>داشبورد</h1>
+<div class="grid stats">
+  <div class="card"><span>بیماران</span><strong>{{ summary.patients if summary else 0 }}</strong></div>
+  <div class="card"><span>نوبت‌ها</span><strong>{{ summary.appointments if summary else 0 }}</strong></div>
+  <div class="card"><span>درآمد</span><strong>{{ summary.income if summary else 0 }} ریال</strong></div>
+  <div class="card"><span>هزینه</span><strong>{{ summary.expenses if summary else 0 }} ریال</strong></div>
+</div>
+<div class="grid">
+  <a class="card" href="/patients/new">ثبت بیمار جدید</a>
+  <a class="card" href="/appointments/new">رزرو نوبت</a>
+  <a class="card" href="/financial/payments/new">ثبت پرداخت</a>
+  <a class="card" href="/messages/new">صف پیام‌ها</a>
+</div>
+{% endblock %}

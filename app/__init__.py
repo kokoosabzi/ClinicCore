@@ -1,0 +1,1 @@
+"""ClinicCore application package."""

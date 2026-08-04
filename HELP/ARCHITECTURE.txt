@@ -1,1 +1,31 @@
 # Architecture Documentation
+
+ClinicCore uses a simple Clean Architecture-inspired layout without unnecessary abstraction.
+
+## Layers
+- `app/routers`: FastAPI HTTP endpoints.
+- `app/schemas`: Pydantic request and response contracts.
+- `app/services`: Business use cases.
+- `app/repositories`: Database access.
+- `app/models`: SQLAlchemy 2 ORM models.
+- `app/core`: Configuration and infrastructure.
+- `app/plugins`: Specialty plugin namespace.
+- `app/templates` and `app/static`: Persian-first web UI assets.
+
+## Principles
+- Core modules remain generic.
+- Specialty-specific workflows belong in plugins.
+- Services depend on repositories, not directly on HTTP details.
+- Routers stay thin.
+
+## Operational modules
+The generated MVP shell includes users, patient intake, appointment booking, simple finance, provider-neutral messaging, and audit logging.
+
+## Security flow
+- Session middleware stores the authenticated username and role.
+- HTML and JSON workflows use RBAC dependencies.
+- UI write forms validate CSRF tokens.
+- System requests are logged through the audit middleware.
+
+## Messaging providers
+Messaging uses a provider interface. The current provider is a console provider for local development; production providers must implement the same interface.

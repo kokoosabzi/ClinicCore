@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>ارسال پیام</h1>
+<form method="post" action="/ui/messages" class="form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>گیرنده<input name="recipient" required maxlength="120"></label>
+  <label>ارائه‌دهنده<select name="provider"><option value="sms">پیامک</option><option value="email">ایمیل</option><option value="telegram">تلگرام</option><option value="whatsapp">واتساپ</option><option value="iranian_messenger">پیام‌رسان ایرانی</option></select></label>
+  <label>متن<textarea name="body" required></textarea></label>
+  <button type="submit">افزودن به صف</button>
+</form>
+{% endblock %}

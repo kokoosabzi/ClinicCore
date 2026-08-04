@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="print-sheet">
+  <h1>رسید پرداخت</h1>
+  <div class="print-grid">
+    <span>شناسه پرداخت:</span><strong>{{ payment.id if payment else "" }}</strong>
+    <span>شناسه بیمار:</span><strong>{{ payment.patient_id if payment else "" }}</strong>
+    <span>مبلغ:</span><strong>{{ payment.amount if payment else "" }} ریال</strong>
+    <span>تاریخ:</span><strong>{{ payment.paid_at if payment else "" }}</strong>
+  </div>
+  <button class="no-print" onclick="window.print()">چاپ</button>
+</section>
+{% endblock %}

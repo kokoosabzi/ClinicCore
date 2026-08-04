@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>ثبت هزینه</h1>
+<form method="post" action="/ui/financial/expenses" class="form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>عنوان<input name="title" maxlength="120" required></label>
+  <label>مبلغ ریال<input name="amount" type="number" min="1" required></label>
+  <label>تاریخ هزینه<input name="spent_at" type="date" required></label>
+  <label>دسته‌بندی<select name="category"><option value="rent">اجاره</option><option value="salary">حقوق</option><option value="supplies">ملزومات</option><option value="utilities">خدمات</option><option value="other">سایر</option></select></label>
+  <label>توضیحات<textarea name="description"></textarea></label>
+  <button type="submit">ثبت هزینه</button>
+</form>
+{% endblock %}

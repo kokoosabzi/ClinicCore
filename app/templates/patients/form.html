@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post" action="{{ action }}" class="form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>نام<input name="first_name" required maxlength="80" value="{{ patient.first_name if patient else '' }}"></label>
+  <label>نام خانوادگی<input name="last_name" required maxlength="80" value="{{ patient.last_name if patient else '' }}"></label>
+  <label>کد ملی<input name="national_code" maxlength="10" inputmode="numeric" value="{{ patient.national_code if patient else '' }}"></label>
+  <label>تلفن<input name="phone" maxlength="20" inputmode="tel" value="{{ patient.phone if patient else '' }}"></label>
+  <label>یادداشت<textarea name="notes">{{ patient.notes if patient else '' }}</textarea></label>
+  <button type="submit">ذخیره</button>
+</form>
+{% endblock %}

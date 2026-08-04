@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>ثبت پرداخت</h1>
+<form method="post" action="/ui/financial/payments" class="form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>شناسه بیمار<input name="patient_id" type="number" min="1" required></label>
+  <label>مبلغ ریال<input name="amount" type="number" min="1" required></label>
+  <label>تاریخ پرداخت<input name="paid_at" type="date" required></label>
+  <label>توضیحات<textarea name="description"></textarea></label>
+  <button type="submit">ثبت پرداخت</button>
+</form>
+{% endblock %}

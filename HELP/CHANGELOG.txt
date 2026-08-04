@@ -1,0 +1,18 @@
+# Changelog
+
+## 2026-08-04
+- Created Sprint 1 project foundation.
+- Added FastAPI application factory and health endpoint.
+- Added SQLAlchemy models for patients and appointments.
+- Added repositories and services for patient and appointment workflows.
+- Added Alembic configuration and initial migration.
+- Added Persian RTL home page and base static CSS.
+- Added initial pytest coverage.
+- Added operational modules for users, finance, messaging, pages, and forms.
+- Added second Alembic migration for users, payments, expenses, messages, and audit logs.
+- Added login/logout, session middleware, and initial admin seed script.
+- Added system HTTP audit logging middleware.
+- Added printable patient card, appointment receipt, and payment receipt templates.
+- Added implementation, authentication, printing, and table-structure runbooks.
+- Added Sprint 4 priority completion: developer environment files, CSRF helpers, RBAC-protected UI/API workflows, patient management pages, list pages, and console messaging provider.
+- Added mandatory first-login password change support for seeded admin users.

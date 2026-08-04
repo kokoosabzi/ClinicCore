@@ -1,0 +1,62 @@
+# Implementation and Run Instructions
+
+## 1. Install
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev]'
+```
+
+## 2. Configure PostgreSQL
+Create `.env`:
+
+```env
+DATABASE_URL=postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore
+SECRET_KEY=replace-me
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+```
+
+## 3. Migrate database
+```bash
+alembic upgrade head
+```
+
+## 4. Create initial manager
+```bash
+python scripts/seed_admin.py
+```
+
+## 5. Run
+```bash
+uvicorn app.main:app --reload
+```
+
+## 6. Validate
+```bash
+python -m pytest
+```
+
+## Main pages
+- `/login`
+- `/dashboard`
+- `/patients/new`
+- `/appointments/new`
+- `/financial/payments/new`
+- `/financial/expenses/new`
+- `/messages/new`
+
+## Developer shortcuts
+```bash
+make install
+make compile
+make test
+make migrate
+make seed
+make run
+```
+
+## Local PostgreSQL with Docker
+```bash
+docker compose up -d postgres
+```

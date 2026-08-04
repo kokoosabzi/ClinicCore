@@ -1,0 +1,25 @@
+# Database Tables Structure
+
+## users
+System staff and manager accounts. Important fields: `full_name`, `username`, `password_hash`, `role`, `must_change_password`, timestamps, soft delete.
+
+## patients
+Patient profile. Important fields: name, national code, phone, notes, timestamps, soft delete.
+
+## appointments
+Appointment lifecycle. Important fields: `patient_id`, `starts_at`, `reason`, `status`, notes, timestamps, soft delete.
+
+## payments
+Simple income records. Important fields: `patient_id`, `amount`, `paid_at`, `status`, description, timestamps, soft delete.
+
+## expenses
+Simple clinic expense records. Important fields: `title`, `amount`, `spent_at`, `category`, description, timestamps, soft delete.
+
+## messages
+Provider-neutral outbound message queue. Important fields: `recipient`, `provider`, `body`, `status`, `error`, timestamps.
+
+## audit_logs
+System log table. Important fields: `actor`, `action`, `entity`, `entity_id`, `details`, timestamps.
+
+## Current workflow coverage
+The existing tables now support patient search/detail/edit, appointment listing and booking, finance listing, queued messages, and request audit logs without additional migrations.

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="print-sheet">
+  <h1>پرونده بیمار</h1>
+  <div class="print-grid">
+    <span>نام:</span><strong>{{ patient.first_name if patient else "" }}</strong>
+    <span>نام خانوادگی:</span><strong>{{ patient.last_name if patient else "" }}</strong>
+    <span>کد ملی:</span><strong>{{ patient.national_code if patient else "" }}</strong>
+    <span>تلفن:</span><strong>{{ patient.phone if patient else "" }}</strong>
+  </div>
+  <h2>یادداشت‌ها</h2>
+  <div class="print-box">{{ patient.notes if patient else "" }}</div>
+  <button class="no-print" onclick="window.print()">چاپ</button>
+</section>
+{% endblock %}

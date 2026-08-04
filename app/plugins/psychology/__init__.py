@@ -1,0 +1,1 @@
+"""Psychology specialty plugin placeholder."""
