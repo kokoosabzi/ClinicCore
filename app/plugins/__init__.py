@@ -1,0 +1,1 @@
+"""Specialty plugin namespace."""

@@ -1,1 +1,26 @@
 # Installation Guide
+
+## Requirements
+- Python 3.12+
+- PostgreSQL
+
+## Setup
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev]'
+```
+
+## Environment
+Create `.env` if defaults are not suitable:
+
+```env
+DATABASE_URL=postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore
+SECRET_KEY=change-me
+```
+
+## Required first-run documents
+- `HELP/IMPLEMENTATION.txt`
+- `HELP/AUTHENTICATION.txt`
+- `HELP/DB_TABLES.txt`
+- `HELP/PRINTING.txt`

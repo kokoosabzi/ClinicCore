@@ -1,0 +1,9 @@
+# Printable Forms
+
+Printable pages are available for common clinic workflows:
+
+- Patient card: `/print/patients/{patient_id}`
+- Appointment receipt: `/print/appointments/{appointment_id}`
+- Payment receipt: `/print/payments/{payment_id}`
+
+Browser printing uses the `@media print` CSS rules in `app/static/css/app.css`.

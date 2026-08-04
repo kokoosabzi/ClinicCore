@@ -1,1 +1,10 @@
 # Architecture Decisions
+
+## ADR-001: Keep initial architecture modular but simple
+Use routers, schemas, services, repositories, models, and plugins folders to support long-term maintenance without over-engineering.
+
+## ADR-002: Persian-first UI
+All web templates start with `lang="fa"` and `dir="rtl"`; Jalali calendar support is planned for the appointment calendar sprint.
+
+## ADR-003: Alembic-only database changes
+Schema changes must be represented as migrations.

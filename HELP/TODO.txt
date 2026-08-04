@@ -1,0 +1,17 @@
+# TODO
+
+## High priority
+- Add Jalali calendar conversion and Persian date picker integration.
+- Add appointment reschedule, cancel, no-show, completed, and waiting-list actions.
+- Add financial reports: patient balance, cash box, doctor share, and clinic share.
+
+## Medium priority
+- Add UI pages for users and roles.
+- Add audit log viewer and business-event audit entries.
+- Add real SMS/email provider implementations behind the messaging provider interface.
+- Add specialty plugin contracts and first psychology plugin screens.
+
+## Quality
+- Add database-backed integration tests after PostgreSQL is available in CI.
+- Add browser smoke tests for form workflows.
+- Add backup/restore and production deployment runbooks.

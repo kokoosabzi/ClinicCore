@@ -1,1 +1,21 @@
 # Run Guide
+
+## Apply migrations
+```bash
+alembic upgrade head
+```
+
+## Start app
+```bash
+uvicorn app.main:app --reload
+```
+
+## Health check
+Open `http://127.0.0.1:8000/health`.
+
+## Seed first admin
+```bash
+python scripts/seed_admin.py
+```
+
+Default local credentials: `admin` / `admin`.

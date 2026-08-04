@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>پیام‌ها</h1><a class="button" href="/messages/new">پیام جدید</a></div>
+<table><thead><tr><th>گیرنده</th><th>ارائه‌دهنده</th><th>وضعیت</th><th>متن</th></tr></thead><tbody>{% for item in messages %}<tr><td>{{ item.recipient }}</td><td>{{ item.provider }}</td><td>{{ item.status }}</td><td>{{ item.body }}</td></tr>{% else %}<tr><td colspan="4">پیامی ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

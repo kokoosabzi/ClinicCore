@@ -1,1 +1,44 @@
 # Database Design
+
+Database changes are managed with Alembic migrations only.
+
+## Initial tables
+
+### patients
+Stores basic patient demographics and contact data.
+
+Fields include:
+- `id`
+- `first_name`
+- `last_name`
+- `national_code`
+- `phone`
+- `notes`
+- `created_at`
+- `updated_at`
+- `is_deleted`
+
+### appointments
+Stores booking records and lifecycle status.
+
+Statuses:
+- `booked`
+- `rescheduled`
+- `cancelled`
+- `waiting`
+- `no_show`
+- `completed`
+
+## Migrations
+Initial revision: `20260804_0001_initial_core.py`.
+
+## Operational tables
+- `users`: staff accounts and roles.
+- `payments`: patient payments and status.
+- `expenses`: simple clinic expenses.
+- `messages`: provider-neutral message queue.
+- `audit_logs`: append-only operational audit records.
+
+See `HELP/DB_TABLES.txt` for the generated table-by-table structure summary.
+
+Migration `20260804_0003_user_password_policy.py` adds `users.must_change_password` for first-login password rotation.

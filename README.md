@@ -1,17 +1,21 @@
 # ClinicCore
 
-Lightweight modular Persian-first Clinic Management Platform.
+ClinicCore is a lightweight, modular, Persian-first clinic management platform for small medical offices and healthcare centers.
 
-## Technology
+## Stack
 
 - FastAPI
 - SQLAlchemy 2
 - PostgreSQL
+- Alembic
 - Jinja2
-- HTMX
-- Alpine.js
-- Bootstrap RTL
+- HTMX / Alpine.js ready
+- Bootstrap RTL ready
 
-## Status
+## Current status
 
-Under Development
+Sprint 1 created the base application structure, API shell, SQLAlchemy models, Alembic migration setup, Persian RTL home page, and initial tests.
+
+## Quick start
+
+See `HELP/INSTALL.txt` and `HELP/RUN.txt`.

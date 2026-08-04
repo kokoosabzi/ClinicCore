@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>مالی</h1><div><a class="button" href="/financial/payments/new">پرداخت</a> <a class="button secondary" href="/financial/expenses/new">هزینه</a></div></div>
+<h2>پرداخت‌ها</h2>
+<table><thead><tr><th>شناسه</th><th>بیمار</th><th>تاریخ</th><th>مبلغ</th><th>چاپ</th></tr></thead><tbody>{% for item in payments %}<tr><td>{{ item.id }}</td><td>{{ item.patient_id }}</td><td>{{ item.paid_at }}</td><td>{{ item.amount }}</td><td><a href="/print/payments/{{ item.id }}">رسید</a></td></tr>{% else %}<tr><td colspan="5">پرداختی ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
+<h2>هزینه‌ها</h2>
+<table><thead><tr><th>عنوان</th><th>تاریخ</th><th>مبلغ</th><th>دسته</th></tr></thead><tbody>{% for item in expenses %}<tr><td>{{ item.title }}</td><td>{{ item.spent_at }}</td><td>{{ item.amount }}</td><td>{{ item.category }}</td></tr>{% else %}<tr><td colspan="4">هزینه‌ای ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

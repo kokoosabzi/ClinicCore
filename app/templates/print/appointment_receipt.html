@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="print-sheet">
+  <h1>رسید نوبت</h1>
+  <div class="print-grid">
+    <span>شناسه نوبت:</span><strong>{{ appointment.id if appointment else "" }}</strong>
+    <span>شناسه بیمار:</span><strong>{{ appointment.patient_id if appointment else "" }}</strong>
+    <span>زمان:</span><strong>{{ appointment.starts_at if appointment else "" }}</strong>
+    <span>وضعیت:</span><strong>{{ appointment.status if appointment else "" }}</strong>
+  </div>
+  <button class="no-print" onclick="window.print()">چاپ</button>
+</section>
+{% endblock %}

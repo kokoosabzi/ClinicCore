@@ -1,9 +1,3 @@
-from fastapi import FastAPI
+from app.main import app
 
-app = FastAPI(
-    title="ClinicCore"
-)
-
-@app.get("/")
-def home():
-    return {"status": "ClinicCore running"}
+__all__ = ["app"]
