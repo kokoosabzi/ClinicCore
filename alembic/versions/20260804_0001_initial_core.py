@@ -16,7 +16,7 @@ appointment_status = sa.Enum("booked", "rescheduled", "cancelled", "waiting", "n
 
 
 def upgrade() -> None:
-    appointment_status.create(op.get_bind(), checkfirst=True)
+    #appointment_status.create(op.get_bind(), checkfirst=True)
     op.create_table(
         "patients",
         sa.Column("id", sa.Integer(), nullable=False),

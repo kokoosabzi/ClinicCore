@@ -20,9 +20,9 @@ message_status = sa.Enum("queued", "sent", "failed", name="messagestatus")
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
-    for enum in [user_role, payment_status, expense_category, message_provider, message_status]:
-        enum.create(bind, checkfirst=True)
+   # bind = op.get_bind()
+   # for enum in [user_role, payment_status, expense_category, message_provider, message_status]:
+       # enum.create(bind, checkfirst=True)
 
     op.create_table(
         "users",

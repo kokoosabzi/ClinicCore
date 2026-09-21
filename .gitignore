@@ -20,3 +20,5 @@ env/
 
 # Logs
 *.log
+
+cliniccore.egg-info/

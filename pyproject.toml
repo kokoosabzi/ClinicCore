@@ -15,6 +15,7 @@ dependencies = [
     "pydantic-settings>=2.3",
     "sqlalchemy>=2.0",
     "uvicorn[standard]>=0.30",
+    "itsdangerous>=2.2",
 ]
 
 [project.optional-dependencies]
@@ -26,3 +27,6 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["HELP*", "alembic*", "tests*"]
