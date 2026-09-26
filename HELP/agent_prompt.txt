@@ -1,0 +1,47 @@
+Read and follow:
+- AGENTS.md
+- HELP/DEVELOPMENT/MASTER_PLAN.md
+- HELP/DEVELOPMENT/REQUIREMENTS.md
+- HELP/DEVELOPMENT/SETTINGS_SPEC.md
+- HELP/DEVELOPMENT/UX_UI_SPEC.md
+- HELP/DEVELOPMENT/AGENT_WORKFLOW.md
+- HELP/DEVELOPMENT/ACCEPTANCE_TESTS.md
+
+Inspect the entire current ClinicCore repository and compare the
+implemented system against the development specifications.
+
+Do NOT start broad implementation yet.
+
+Produce a Gap Analysis containing:
+
+1. Already implemented
+2. Partially implemented
+3. Missing
+4. Existing code that conflicts with the specifications
+5. Database/migration implications
+6. UI/UX implications
+7. Security risks
+8. Dependencies that may be required
+9. Recommended implementation order
+10. Risks and open decisions
+
+Also inspect the untracked "cliniccore/" directory if it is visible
+in the workspace, and determine whether it appears to be:
+- a duplicate repository,
+- an incomplete package,
+- generated/copied files,
+- or a legitimate part of the project.
+
+Do not add, delete, move, or modify the "cliniccore/" directory.
+Only report your findings about it.
+
+Then produce a phased implementation plan with small,
+independently testable tasks.
+
+Do not modify or delete existing functionality merely to match the
+specification. Preserve working behavior unless a documented
+requirement explicitly requires a change.
+
+Do not create a large implementation commit at this stage.
+The output of this task should be the Gap Analysis and proposed
+implementation plan only.
