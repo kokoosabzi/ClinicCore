@@ -1,0 +1,186 @@
+CLINICCORE — HOW TO CONTINUE DEVELOPMENT (for any AI agent, any session)
+==========================================================================
+
+Paste/give this file to any AI agent (Codex, Claude, or otherwise) at the
+start of a new session to resume ClinicCore development safely, with no
+dependency on prior conversation memory.
+
+------------------------------------------------------------------------
+STEP 0 — Orientation
+------------------------------------------------------------------------
+This repository uses a Git-based development continuity system. All
+state you need lives in files, not in chat history. Read them in this
+order before doing anything else:
+
+1. AGENTS.md
+2. HELP/DEVELOPMENT/MASTER_PLAN.md
+3. HELP/DEVELOPMENT/REQUIREMENTS.md
+4. HELP/DEVELOPMENT/SETTINGS_SPEC.md
+5. HELP/DEVELOPMENT/UX_UI_SPEC.md
+6. HELP/DEVELOPMENT/AGENT_WORKFLOW.md   <- also the process contract
+7. HELP/DEVELOPMENT/ACCEPTANCE_TESTS.md
+8. HELP/DEVELOPMENT/PROGRESS.md        <- READ THIS CAREFULLY, see below
+9. HELP/DEVELOPMENT/DECISIONS.md       <- durable decisions already made
+10. HELP/DEVELOPMENT/CHANGELOG_DEV.md  <- recent milestones/commits
+
+PROGRESS.md is the single source of truth for "where things actually
+are." If anything in chat/session context contradicts PROGRESS.md,
+PROGRESS.md wins. Do not trust a task summary from a prior conversation
+that isn't backed by PROGRESS.md, DECISIONS.md, or git history.
+
+------------------------------------------------------------------------
+STEP 1 — Inspect real repository state
+------------------------------------------------------------------------
+Run, in order:
+
+    git status
+    git branch --show-current
+    git log --oneline -15
+
+If `git status` shows uncommitted changes that are not yours (i.e. you
+did not just make them in this session): DO NOT overwrite, commit, or
+revert them. Stop and report what you found. Only proceed past this if
+the working tree is clean or the pending changes are ones you are
+mid-way through in *this* session.
+
+------------------------------------------------------------------------
+STEP 2 — Identify the first unfinished task
+------------------------------------------------------------------------
+In PROGRESS.md, read, in order:
+- "Current project phase" and "Current task"
+- "Completed tasks" / "In-progress tasks" / "Not-started tasks"
+- "Exact next action" and "Recommended command(s) to verify the next
+  action"
+
+The "Exact next action" field tells you precisely what to work on next.
+Do not skip ahead to a later phase/task even if it looks easier or more
+interesting — phases have prerequisites for a reason (see the
+dependency diagram in the Gap Analysis / MASTER_PLAN.md §4).
+
+If PROGRESS.md's "Not-started tasks" list is out of sync with what the
+repository actually contains (e.g. it lists something as not-started
+that clearly exists in code), trust the repository, but do not silently
+"fix" PROGRESS.md's wording as a side effect of an unrelated task —
+correct it as its own small step, and note the correction in
+CHANGELOG_DEV.md.
+
+------------------------------------------------------------------------
+STEP 3 — Inspect before changing
+------------------------------------------------------------------------
+Before touching any file for the identified task:
+- Read the relevant existing implementation (model/service/router/
+  template) in full.
+- Check HELP/DEVELOPMENT/DECISIONS.md for any decision that constrains
+  this task.
+- Re-read the relevant section(s) of the spec docs listed in Step 0.
+
+Do not assume a feature exists just because a similarly named file
+exists. Verify by reading it.
+
+------------------------------------------------------------------------
+STEP 4 — Work on exactly one task
+------------------------------------------------------------------------
+Scope discipline (AGENT_WORKFLOW.md section "Scope Control" applies):
+- No unrelated refactors.
+- No dependency changes without real need.
+- No broad renames.
+- No removal of existing functionality without an approved replacement.
+- One task = one coherent unit of work = eventually one commit.
+
+If a task turns out to require a product/architecture decision that
+isn't already settled in DECISIONS.md, and the decision is non-trivial
+or ambiguous: STOP, document the fork in PROGRESS.md's "Current
+blockers" and "Decisions relevant to the current task" sections, and
+do not guess. This matches AGENT_WORKFLOW.md's "Stop Conditions"
+(destructive migration, ambiguous product decision, auth/security
+regression, data loss risk, unknown external API contract, conflicting
+requirements).
+
+------------------------------------------------------------------------
+STEP 5 — Verify
+------------------------------------------------------------------------
+Minimum, every time:
+
+    python -m compileall app
+    python -m pytest -q
+
+For UI/API changes, also do the smoke/manual checks
+ACCEPTANCE_TESTS.md and AGENT_WORKFLOW.md section 9-10 call for
+(endpoint smoke test, auth behavior, and a manual walk-through of the
+primary path touched, e.g. login -> dashboard -> target feature -> save
+-> return -> verify persisted value).
+
+Only mark something verified in PROGRESS.md if you actually ran it in
+this session and saw it pass. Never claim a task is complete without
+verification.
+
+------------------------------------------------------------------------
+STEP 6 — Update the continuity files
+------------------------------------------------------------------------
+Every session that changes anything must update PROGRESS.md before
+ending, even if the task is incomplete. Specifically:
+
+- If the task COMPLETED: move it from "In-progress"/"Not-started" to
+  "Completed tasks" with evidence (what was verified, how). Update
+  "Last completed checkpoint", "Last successful verification", "Files
+  changed by the current task", and set a new "Exact next action" +
+  its verification command(s).
+
+- If the task is INCOMPLETE or BLOCKED: mark it IN_PROGRESS, not
+  COMPLETE. Document in PROGRESS.md:
+    * what was changed
+    * what remains
+    * what was verified
+    * what was NOT verified
+    * the exact next action for whoever resumes
+
+- Append a milestone entry to CHANGELOG_DEV.md (date, phase/task,
+  commit hash once committed, summary, verification).
+
+- If a durable architectural/product decision was made, add a numbered
+  entry to DECISIONS.md (do not duplicate routine implementation notes
+  there).
+
+------------------------------------------------------------------------
+STEP 7 — Commit
+------------------------------------------------------------------------
+Before committing:
+
+    git diff
+    git status
+
+Review the diff for anything unintended or accidental (temp files,
+unrelated changes, secrets). Never commit secrets, real credentials, or
+database dumps.
+
+Commit only a completed, coherent unit of work, with a small semantic
+message in the style AGENT_WORKFLOW.md section 11 shows, e.g.:
+
+    feat(settings): add system settings service
+    fix(alembic): read database url from app settings instead of ini
+
+One commit should not bundle multiple independent features/fixes.
+
+If the task is incomplete/blocked at session end, it is acceptable to
+leave the working tree uncommitted IF PROGRESS.md fully documents the
+state per Step 6 — but prefer committing whatever coherent, verified,
+non-breaking partial progress exists (e.g. a passing test added before
+the rest of a feature), clearly labeled, over leaving undocumented
+uncommitted state.
+
+------------------------------------------------------------------------
+STEP 8 — End of session checklist
+------------------------------------------------------------------------
+Before ending, confirm all of the following are true:
+
+[ ] PROGRESS.md reflects the real, current, verified state.
+[ ] CHANGELOG_DEV.md has a new entry if anything changed.
+[ ] DECISIONS.md has a new entry if a durable decision was made.
+[ ] `git status` is clean, or any uncommitted state is fully explained
+    in PROGRESS.md's "Current blockers" / task status.
+[ ] No secrets, credentials, or temporary/debug files were staged.
+[ ] A future agent with zero conversation memory could read
+    PROGRESS.md + DECISIONS.md + `git log` and know exactly what to do
+    next.
+
+That last checkbox is the actual goal of this whole file.

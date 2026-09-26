@@ -6,6 +6,36 @@
 
 Agent باید قبل از تغییر کد این سند و سایر development specs را بخواند.
 
+## 1.5 Continuity System (Git-based, session-independent)
+
+ClinicCore uses a Git-committed development continuity system so that
+any agent — after session expiration, context loss, plan/usage limits,
+connection failure, or a handoff to a different AI agent — can resume
+work without access to prior conversation history.
+
+The system consists of:
+
+- `HELP/CONTINUE_DEVELOPMENT.txt` — the reusable, step-by-step resume
+  instruction. Any agent starting a session on this repository should
+  follow it before reading anything else in this section.
+- `HELP/DEVELOPMENT/PROGRESS.md` — the single source of truth for
+  current phase, current task, task status, completed/in-progress/
+  not-started work, last verification, current blockers, and the exact
+  next action. **This file must be re-read at the start of every
+  session and updated before every session ends.**
+- `HELP/DEVELOPMENT/DECISIONS.md` — durable architectural/product
+  decisions made during this redesign effort (separate from the
+  original `HELP/DECISIONS.txt`). Not for routine implementation notes.
+- `HELP/DEVELOPMENT/CHANGELOG_DEV.md` — a concise, chronological log of
+  development milestones and commits (separate from `HELP/CHANGELOG.txt`).
+
+Rule: **Rule Zero (section 2) is not satisfied by inspecting the
+repository alone.** For any task after the continuity system exists,
+inspecting the repository means reading `PROGRESS.md` and
+`DECISIONS.md` first, then the code. A task must not be started,
+and a task's completion must not be recorded, without updating
+`PROGRESS.md` per `HELP/CONTINUE_DEVELOPMENT.txt` step 6.
+
 ## 2. Rule Zero
 
 **بدون بررسی repository شروع به بازنویسی نکن.**
@@ -222,3 +252,12 @@ Agent نباید با حدس، این موارد را حل کند.
 - risk
 - proposed order
 باشد.
+
+**Note (added once the Gap Analysis and continuity system exist):**
+The Gap Analysis described above has been produced, and the continuity
+system in section 1.5 is now in place. For every session *after* that
+point, the first task is **not** to redo this Gap Analysis — it is to
+follow `HELP/CONTINUE_DEVELOPMENT.txt`, starting from
+`HELP/DEVELOPMENT/PROGRESS.md`'s "Exact next action". Only redo or
+extend the Gap Analysis if `PROGRESS.md`/`DECISIONS.md` explicitly call
+for it (e.g. specs changed materially since the last analysis).
