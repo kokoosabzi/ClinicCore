@@ -28,7 +28,14 @@ def create_app() -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request):
-        return templates.TemplateResponse("home.html", {"request": request, "app_name": settings.app_name})
+       return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={
+            "request": request,
+            "app_name": settings.app_name,
+        },
+    )
 
     return app
 

@@ -22,19 +22,30 @@ async def form_data(request: Request) -> dict[str, str]:
 
 @router.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse("auth/login.html", {"request": request, "title": "ورود"})
-
+   return templates.TemplateResponse(
+    request=request,
+    name="auth/login.html",
+    context={
+        "request": request,
+        "title": "ورود",
+    },
+)
 
 @router.post("/login")
 async def login(request: Request, db: Session = Depends(get_db)):
     data = await form_data(request)
     user = AuthService(UserRepository(db)).authenticate(data.get("username", ""), data.get("password", ""))
     if user is None:
-        return templates.TemplateResponse(
-            "auth/login.html",
-            {"request": request, "title": "ورود", "error": "نام کاربری یا رمز عبور نادرست است."},
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
+       return templates.TemplateResponse(
+    request=request,
+    name="auth/login.html",
+    context={
+        "request": request,
+        "title": "ورود",
+        "error": "نام کاربری یا رمز عبور نادرست است.",
+    },
+    status_code=status.HTTP_401_UNAUTHORIZED,
+)
     request.session["username"] = user.username
     request.session["role"] = user.role.value
     if user.must_change_password:
@@ -50,7 +61,15 @@ def logout(request: Request):
 
 @router.get("/change-password", response_class=HTMLResponse)
 def change_password_form(request: Request):
-    return templates.TemplateResponse("auth/change_password.html", {"request": request, "title": "تغییر رمز", "csrf_token": get_csrf_token(request)})
+    return templates.TemplateResponse(
+    request=request,
+    name="auth/change_password.html",
+    context={
+        "request": request,
+        "title": "تغییر رمز",
+        "csrf_token": get_csrf_token(request),
+    },
+)
 
 
 @router.post("/change-password")
