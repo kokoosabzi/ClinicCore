@@ -27,7 +27,11 @@ def context(request: Request, title: str, **extra):
 
 
 def render(request: Request, template: str, title: str, **extra):
-    return templates.TemplateResponse(template, context(request, title, **extra))
+    return templates.TemplateResponse(
+        request=request,
+        name=template,
+        context=context(request, title, **extra),
+    )
 
 
 async def form_data(request: Request) -> dict[str, str]:
@@ -217,16 +221,27 @@ async def create_message_from_form(request: Request, db: Session = Depends(get_d
 @router.get("/print/patients/{patient_id}", response_class=HTMLResponse)
 def print_patient(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     patient = db.get(Patient, patient_id)
-    return templates.TemplateResponse("print/patient_card.html", context(request, "چاپ پرونده بیمار", patient=patient))
+    return templates.TemplateResponse(
+    request=request,
+    name="print/patient_card.html",
+    context=context(request, "چاپ پرونده بیمار", patient=patient),
+)
 
 
 @router.get("/print/appointments/{appointment_id}", response_class=HTMLResponse)
 def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointment = db.get(Appointment, appointment_id)
-    return templates.TemplateResponse("print/appointment_receipt.html", context(request, "چاپ رسید نوبت", appointment=appointment))
-
+    return templates.TemplateResponse(
+    request=request,
+    name="print/appointment_receipt.html",
+    context=context(request, "چاپ رسید نوبت", appointment=appointment),
+)
 
 @router.get("/print/payments/{payment_id}", response_class=HTMLResponse)
 def print_payment(payment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     payment = db.get(Payment, payment_id)
-    return templates.TemplateResponse("print/payment_receipt.html", context(request, "چاپ رسید پرداخت", payment=payment))
+    return templates.TemplateResponse(
+    request=request,
+    name="print/payment_receipt.html",
+    context=context(request, "چاپ رسید پرداخت", payment=payment),
+)
