@@ -5,43 +5,40 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-09-27
-Last updated by: AI agent (continuity-system setup task)
-Repository state this file describes: branch `main`, commit `e46d5c24b28937abcf6a267975b83b32a6908281`
+Last updated by: AI agent (Phase A1 — Database Test Fixture)
+Repository state this file describes: branch `main`, commit `a13ea11` (continuity system) + this session's uncommitted Phase A1 changes
 
 ---
 
 ## 1. Current project phase
 
-**Phase 0 — Baseline & Continuity Setup** (per `MASTER_PLAN.md` §4 "Phase 0 — Baseline & Specification", extended to include the development-continuity system).
+**Phase A — Baseline hardening**, task **A1 (Database Test Fixture)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-The Gap Analysis (see `HELP/DEVELOPMENT/GAP_ANALYSIS.md` if present, or the most recent Gap Analysis delivered to the project owner) has been completed and defines the phased plan referenced throughout this file: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
-
-No implementation phase (A through J) has started yet. This is intentional — the current task was scoped to build the continuity system only.
+A1 is complete (see §3). A2–A4 and all later phases have not started.
 
 ## 2. Current task
 
-**Task:** Establish the Git-based development continuity/checkpoint system (this file, `DECISIONS.md`, `CHANGELOG_DEV.md`, `HELP/CONTINUE_DEVELOPMENT.txt`, and an update to `AGENT_WORKFLOW.md`).
+**Task:** Phase A1 — Database Test Fixture. Provide a pytest fixture that provisions an isolated, throwaway database so later phases can write real CRUD/auth-flow tests, without touching the real PostgreSQL development database.
 
-**Task status:** `IN_PROGRESS` → will be marked `COMPLETE` in this same file once baseline tests are re-run and the commit is made (see §12 of `AGENT_WORKFLOW.md` — a task is only complete after verification, docs, and commit).
+**Task status:** `COMPLETE` — implemented, verified (`compileall` + full `pytest` suite green, 7/7), and documented in this same session. Not yet committed to git as of this update (commit happens immediately after this file is saved, per `HELP/CONTINUE_DEVELOPMENT.txt` step 7).
 
 ## 3. Completed tasks
 
 | Task | Status | Evidence |
 |---|---|---|
 | Repository inspection against `AGENTS.md` + development specs | COMPLETE | Gap Analysis delivered (20-section document + phased plan), based on a full read of `app/`, `alembic/`, `tests/`, `HELP/`, and a live `python -m compileall app` + `pytest` run (3/3 passed) on commit `e46d5c24`. |
-| Development continuity system scaffolding | IN_PROGRESS (this task) | This file + `DECISIONS.md` + `CHANGELOG_DEV.md` + `HELP/CONTINUE_DEVELOPMENT.txt` created; `AGENT_WORKFLOW.md` updated in the same commit. |
+| Development continuity system scaffolding | COMPLETE | Committed as `a13ea11` (verified via `git log`). |
+| **Phase A1 — Database Test Fixture** | COMPLETE | `tests/conftest.py` (fixtures: `db_engine`, `db_session_factory`, `db_session`, `client`) + `tests/test_db_fixture.py` (4 tests). All 7 tests pass (`python -m pytest -q`); `python -m compileall app` clean. Isolation, full HTTP CRUD round-trip, and existing auth guard (`require_user`) all verified by the new tests themselves. |
 
-No implementation phase (A–J) task has been started or completed. Do not mark any Phase A–J task as complete unless a future PROGRESS.md update documents real repository evidence for it.
+No implementation phase task beyond A1 has been started or completed. Do not mark any later Phase A–J task as complete unless a future PROGRESS.md update documents real repository evidence for it.
 
 ## 4. In-progress tasks
 
-- Continuity system setup (this task) — see §2.
+None.
 
 ## 5. Not-started tasks
 
-All of Phase A through Phase J from the Gap Analysis phased plan are **NOT_STARTED**:
-
-- **Phase A** — Baseline hardening: A1 (DB test fixture), A2 (fix `alembic.ini`/`env.py` hardcoded Postgres URL), A3 (reconcile appointment double-booking rule between `pages.py` and `AppointmentService`), A4 (document/warn on default admin credentials).
+- **Phase A (remaining)** — A2 (fix `alembic.ini`/`env.py` hardcoded Postgres URL), A3 (reconcile appointment double-booking rule between `pages.py` and `AppointmentService`), A4 (document/warn on default admin credentials).
 - **Phase B** — Settings & Application Identity (model, service, `/settings` UI, permissions).
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
@@ -54,51 +51,55 @@ All of Phase A through Phase J from the Gap Analysis phased plan are **NOT_START
 
 ## 6. Last completed checkpoint
 
-Gap Analysis completed and delivered (repository read-only inspection, commit `e46d5c24`). This continuity-system task is the current checkpoint being closed out.
+Phase A1 (Database Test Fixture) implemented and verified this session, on top of the continuity-system commit `a13ea11`.
 
 ## 7. Last successful verification
 
-Run against commit `e46d5c24`, this session:
+Run this session, on the repository state described above:
 
 ```
 python -m compileall app     # PASS — no syntax/import errors
-python -m pytest -q          # PASS — 3 passed (test_health_endpoint,
-                              #        test_home_is_persian_rtl,
-                              #        test_password_hash_roundtrip)
+python -m pytest -q          # PASS — 7 passed:
+                              #   test_health_endpoint
+                              #   test_home_is_persian_rtl
+                              #   test_password_hash_roundtrip
+                              #   test_db_session_fixture_persists_and_queries_a_model
+                              #   test_client_fixture_isolated_database_per_test
+                              #   test_client_fixture_supports_full_crud_round_trip_through_http
+                              #   test_client_fixture_still_enforces_authentication
 ```
 
-No database was available in the verification environment, so DB-backed routes (dashboard, patients, appointments, financial, messaging pages) were **not** exercised via live HTTP calls — this was true for the Gap Analysis and remains true now. Phase A1 (add a DB test fixture) is the task that will close this gap; until then, do not assume DB-backed routes are verified beyond static code review.
+DB-backed routes can now be exercised in tests via the `client`/`db_session` fixtures in `tests/conftest.py` (SQLite in-memory, isolated per test). This does **not** verify the app against real PostgreSQL, nor does it verify the Alembic migration chain — both remain open per Gap Analysis §15/§17 and are unrelated to A1's scope (A1 uses `Base.metadata.create_all`, not Alembic).
 
 ## 8. Files changed by the current task
 
-- `HELP/DEVELOPMENT/PROGRESS.md` — created (this file)
-- `HELP/DEVELOPMENT/DECISIONS.md` — created
-- `HELP/DEVELOPMENT/CHANGELOG_DEV.md` — created
-- `HELP/CONTINUE_DEVELOPMENT.txt` — created
-- `HELP/DEVELOPMENT/AGENT_WORKFLOW.md` — updated (added a "Continuity System" section referencing the four files above)
+- `tests/conftest.py` — created. Fixtures: `db_engine`, `db_session_factory`, `db_session`, `client`. See its module docstring for the audit-middleware monkeypatch rationale.
+- `tests/test_db_fixture.py` — created. 4 smoke tests proving isolation, a full HTTP CRUD round-trip, and that the existing `require_user` auth guard is unaffected by the DB override.
+- `HELP/DEVELOPMENT/PROGRESS.md` — this update.
+- `HELP/DEVELOPMENT/CHANGELOG_DEV.md` — new entry added (see file).
 
-No application code, templates, migrations, or tests were touched by this task.
+No application code (`app/**`), migrations, templates, or static assets were touched by this task.
 
 ## 9. Current blockers
 
-None blocking the continuity system itself. Blockers that **will** affect the next phase (Phase A):
+None for A1 (complete). Carried forward, unchanged, affecting later phases:
 
-- Phase H (SQLite) cannot start until Phase A2 (hardcoded Postgres URL in `alembic.ini`/`env.py`) is fixed — recorded as a dependency, not an active blocker yet since Phase H is not next.
-- No PostgreSQL instance was available in the verification environment used for the Gap Analysis or this task — DB-backed manual verification steps in `ACCEPTANCE_TESTS.md` (AT-003 beyond `/health`, AT-501 dashboard KPIs, etc.) still need to be run in an environment with a real database before being marked verified.
+- Phase H (SQLite) cannot start until Phase A2 (hardcoded Postgres URL in `alembic.ini`/`env.py`) is fixed.
+- No PostgreSQL instance is available in the current verification environment — real-Postgres and Alembic-migration verification steps in `ACCEPTANCE_TESTS.md` still need to be run in an environment with a real database before being marked verified. A1's SQLite fixture does not close this gap; it only unblocks fast, isolated unit/integration tests.
 
 ## 10. Decisions relevant to the current task
 
-See `HELP/DEVELOPMENT/DECISIONS.md` for the durable record. Summary: the continuity system itself is additive documentation only (no code/schema/behavior change), so no architectural decision record was required for this task beyond documenting the continuity workflow's existence.
+See `HELP/DEVELOPMENT/DECISIONS.md` DDR-004 for the one architectural note from A1 (the audit-middleware monkeypatch, and why it wasn't "fixed" instead).
 
 ## 11. Exact next action
 
-Start **Phase A1**: add a `pytest` fixture that provisions a throwaway database (SQLite in-memory or temp file, independent of the later Phase H Local-deployment SQLite decision) so that subsequent phases can write real CRUD/auth-flow tests. This is the smallest, least ambiguous, dependency-free next task in the plan.
+Start **Phase A2**: make Alembic read the database URL from `app.core.config.settings`/`DATABASE_URL` instead of the value hardcoded in `alembic.ini`, per Gap Analysis §5/§14 and `PROGRESS.md`'s prior blocker notes. This is required before Phase H (SQLite) can start, and is otherwise independent of A1.
 
-If Phase A1 is judged unnecessary or already superseded by a different testing decision when work resumes, the next agent must record that as a decision in `DECISIONS.md` before deviating — do not silently skip it.
+If A2 is judged unnecessary or superseded when work resumes, record that as a decision in `DECISIONS.md` before deviating — do not silently skip it.
 
 ## 12. Recommended command(s) to verify the next action
 
-Before starting Phase A1:
+Before starting Phase A2:
 
 ```bash
 git status
@@ -106,14 +107,16 @@ git log --oneline -10
 cat HELP/DEVELOPMENT/PROGRESS.md   # re-read this file for any update since this snapshot
 python -m compileall app
 python -m pytest -q
+grep -n "sqlalchemy.url" alembic.ini
+sed -n '1,40p' alembic/env.py
 ```
 
-After implementing Phase A1 (example — adjust to the fixture actually built):
+After implementing Phase A2 (adjust to what's actually built — e.g. if a test spins up a scratch SQLite/Postgres DB and runs `alembic upgrade head` against it):
 
 ```bash
-python -m pytest -q                     # full suite still green
-python -m pytest -q tests/ -k db        # new DB-fixture-based tests, if named accordingly
+python -m pytest -q
 python -m compileall app tests
+alembic upgrade head   # against whatever DB the fix targets, once implemented
 ```
 
-Do not mark Phase A1 complete in this file until both the implementation and a passing test run are confirmed in the same session, per `AGENT_WORKFLOW.md` §16 (Completion Criteria).
+Do not mark Phase A2 complete in `PROGRESS.md` until both the implementation and a passing verification run are confirmed in the same session, per `AGENT_WORKFLOW.md` §16 (Completion Criteria).

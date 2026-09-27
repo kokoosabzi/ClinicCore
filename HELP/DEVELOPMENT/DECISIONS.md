@@ -76,6 +76,38 @@ status.
 - **Status:** Active; satisfied by this task's diff (verify via `git diff`
   before commit — only `HELP/**` files should appear).
 
+## DDR-004 — Test fixture monkeypatches the audit middleware's `SessionLocal`; middleware itself not refactored
+
+- **Date:** 2026-09-27
+- **Decision:** `tests/conftest.py`'s `client` fixture redirects database
+  access to an isolated per-test SQLite database via two mechanisms:
+  (1) overriding the FastAPI `get_db` dependency (used by all routers),
+  and (2) monkeypatching `app.core.audit.SessionLocal` directly. (2) is
+  needed because `app/core/audit.py` does
+  `from app.core.database import SessionLocal` and calls `SessionLocal()`
+  directly inside `audit_request_middleware`, bypassing FastAPI's
+  dependency injection entirely — overriding `get_db` alone does not
+  redirect it. The middleware itself was **not** changed to use
+  dependency injection instead.
+- **Rationale:** Phase A1's scope is a test fixture, not an application
+  refactor ("Do not modify unrelated application code", "Do not
+  silently fix unrelated issues" — explicit task constraints). Changing
+  `audit_request_middleware` to accept an injected session is a real,
+  reasonable fix, but it is an application-code change with its own
+  blast radius (every request path) and belongs to a later, explicitly
+  scoped task, not folded into a test-infrastructure task.
+- **Alternatives considered:** Refactoring the middleware now to close
+  the gap properly (rejected — out of A1's authorized scope). Skipping
+  audit-safe testing and letting the middleware attempt a real
+  PostgreSQL connection during tests (rejected — would make every
+  DB-backed test fail or hang in any environment without a live
+  PostgreSQL instance, defeating the purpose of an isolated fixture).
+- **Status:** Active. Any future agent adding a *second* place that
+  imports `SessionLocal` directly (instead of using `get_db`) must
+  either route it through `get_db` or extend the same monkeypatch
+  pattern in `tests/conftest.py` — grep for `SessionLocal` before
+  assuming the `client` fixture covers a new code path.
+
 ---
 
 <!--

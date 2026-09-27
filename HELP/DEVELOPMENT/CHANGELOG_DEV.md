@@ -22,6 +22,20 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-09-27 — Phase A1: database test fixture
+
+- Phase/Task: Phase A / A1 (Database Test Fixture)
+- Commit: (recorded at commit time — see `git log`)
+- Summary: Added `tests/conftest.py` (`db_engine`, `db_session_factory`,
+  `db_session`, `client` fixtures — isolated in-memory SQLite per test,
+  via `Base.metadata.create_all`, not Alembic) and
+  `tests/test_db_fixture.py` (4 smoke tests: model persistence, test
+  isolation, full HTTP CRUD round-trip, existing auth guard unaffected).
+  No application code changed; see DDR-004 in `DECISIONS.md` for why the
+  audit middleware required a monkeypatch rather than a refactor.
+- Verification: `python -m compileall app` clean; `python -m pytest -q`
+  — 7 passed (3 pre-existing + 4 new), 0 failed.
+
 ## 2026-09-27 — Development continuity system established
 
 - Phase/Task: Phase 0 (pre-Phase-A) / continuity-system setup
