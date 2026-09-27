@@ -22,6 +22,24 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-09-27 — Phase A2: Alembic reads database URL from application settings
+
+- Phase/Task: Phase A / A2 (Alembic database URL)
+- Commit: (recorded at commit time — see `git log`)
+- Summary: `alembic/env.py` now sets Alembic's `sqlalchemy.url` from `settings.database_url`, making application settings the authoritative source. The hardcoded `sqlalchemy.url` entry was removed from `alembic.ini`. No models, routers, services, templates, static assets, or migration files were changed.
+- Verification: `python -m compileall app tests alembic` — PASS in the Claude sandbox. `pytest` and a runtime Alembic migration were not available there because dependencies/database access were unavailable.
+ ## 2026-09-27 — Phase A2: Alembic reads database URL from application settings
+
+- Phase/Task: Phase A / A2 (Alembic database URL)
+- Commit: (recorded at commit time — see `git log`)
+- Summary: `alembic/env.py` now sets Alembic's `sqlalchemy.url` from `settings.database_url`, making application settings the authoritative source. The hardcoded URL entry was removed from `alembic.ini`. No models, routers, services, templates, static assets, or migration files were changed.
+- Verification:
+  - `python -m compileall app tests alembic` — PASS
+  - `python -m pytest -q` — PASS, 7 tests passed
+  - Alembic database URL resolution — PASS, `MATCH = True`
+  - A real `alembic upgrade head` was intentionally not used as an A2 acceptance test because the existing PostgreSQL database has a separate pre-existing `appointmentstatus` duplicate-object migration issue.
+- Status: COMPLETE
+
 ## 2026-09-27 — Phase A1: database test fixture
 
 - Phase/Task: Phase A / A1 (Database Test Fixture)

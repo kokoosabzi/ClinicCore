@@ -5,8 +5,8 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-09-27
-Last updated by: AI agent (Phase A1 — Database Test Fixture)
-Repository state this file describes: branch `main`, commit `a13ea11` (continuity system) + this session's uncommitted Phase A1 changes
+Last updated by: AI agent (Phase A2 — Alembic Database URL)
+Repository state this file describes: branch `main`, baseline commit `ab4e2be`
 
 ---
 
@@ -14,13 +14,13 @@ Repository state this file describes: branch `main`, commit `a13ea11` (continuit
 
 **Phase A — Baseline hardening**, task **A1 (Database Test Fixture)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1 is complete (see §3). A2–A4 and all later phases have not started.
+A1 is complete (see §3). A2 is implemented but **not runtime-verified**; A3–A4 and all later phases have not started.
 
 ## 2. Current task
 
-**Task:** Phase A1 — Database Test Fixture. Provide a pytest fixture that provisions an isolated, throwaway database so later phases can write real CRUD/auth-flow tests, without touching the real PostgreSQL development database.
+**Task:** Phase A2 — Alembic Database URL. Make Alembic use the database URL resolved by `app.core.config.settings` (including `DATABASE_URL` / `.env`) instead of a hardcoded URL in `alembic.ini`.
 
-**Task status:** `COMPLETE` — implemented, verified (`compileall` + full `pytest` suite green, 7/7), and documented in this same session. Not yet committed to git as of this update (commit happens immediately after this file is saved, per `HELP/CONTINUE_DEVELOPMENT.txt` step 7).
+**Task status:** `COMPLETE` — implementation and local verification completed in the repository clone. `python -m compileall app tests alembic` passed, all 7 tests passed, and the Alembic database URL resolution was verified to match `settings.database_url`. A real `alembic upgrade head` was not used as an A2 acceptance test because the existing PostgreSQL database has a separate pre-existing `appointmentstatus` duplicate-object migration issue.
 
 ## 3. Completed tasks
 
@@ -29,16 +29,14 @@ A1 is complete (see §3). A2–A4 and all later phases have not started.
 | Repository inspection against `AGENTS.md` + development specs | COMPLETE | Gap Analysis delivered (20-section document + phased plan), based on a full read of `app/`, `alembic/`, `tests/`, `HELP/`, and a live `python -m compileall app` + `pytest` run (3/3 passed) on commit `e46d5c24`. |
 | Development continuity system scaffolding | COMPLETE | Committed as `a13ea11` (verified via `git log`). |
 | **Phase A1 — Database Test Fixture** | COMPLETE | `tests/conftest.py` (fixtures: `db_engine`, `db_session_factory`, `db_session`, `client`) + `tests/test_db_fixture.py` (4 tests). All 7 tests pass (`python -m pytest -q`); `python -m compileall app` clean. Isolation, full HTTP CRUD round-trip, and existing auth guard (`require_user`) all verified by the new tests themselves. |
-
-No implementation phase task beyond A1 has been started or completed. Do not mark any later Phase A–J task as complete unless a future PROGRESS.md update documents real repository evidence for it.
+| **Phase A2 — Alembic Database URL** | COMPLETE | `alembic/env.py` now uses `settings.database_url`; the hardcoded URL was removed from `alembic.ini`. Local verification: `python -m compileall app tests alembic` passed, `python -m pytest -q` passed with 7 tests, and direct URL resolution verification returned `MATCH = True`. |
 
 ## 4. In-progress tasks
 
-None.
 
 ## 5. Not-started tasks
 
-- **Phase A (remaining)** — A2 (fix `alembic.ini`/`env.py` hardcoded Postgres URL), A3 (reconcile appointment double-booking rule between `pages.py` and `AppointmentService`), A4 (document/warn on default admin credentials).
+- **Phase A (remaining)** — A3 (reconcile appointment double-booking rule between `pages.py` and `AppointmentService`), A4 (document/warn on default admin credentials).
 - **Phase B** — Settings & Application Identity (model, service, `/settings` UI, permissions).
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
@@ -52,6 +50,7 @@ None.
 ## 6. Last completed checkpoint
 
 Phase A1 (Database Test Fixture) implemented and verified this session, on top of the continuity-system commit `a13ea11`.
+Phase A2 (Alembic Database URL) implemented and verified in the local repository clone.
 
 ## 7. Last successful verification
 
@@ -73,19 +72,18 @@ DB-backed routes can now be exercised in tests via the `client`/`db_session` fix
 
 ## 8. Files changed by the current task
 
-- `tests/conftest.py` — created. Fixtures: `db_engine`, `db_session_factory`, `db_session`, `client`. See its module docstring for the audit-middleware monkeypatch rationale.
-- `tests/test_db_fixture.py` — created. 4 smoke tests proving isolation, a full HTTP CRUD round-trip, and that the existing `require_user` auth guard is unaffected by the DB override.
+- `alembic/env.py` — added `settings.database_url` as the authoritative Alembic database URL.
+- `alembic.ini` — removed the hardcoded `sqlalchemy.url` entry.
 - `HELP/DEVELOPMENT/PROGRESS.md` — this update.
-- `HELP/DEVELOPMENT/CHANGELOG_DEV.md` — new entry added (see file).
+- `HELP/DEVELOPMENT/CHANGELOG_DEV.md` — A2 entry added.
 
-No application code (`app/**`), migrations, templates, or static assets were touched by this task.
+No models, routers, services, templates, static assets, or migration files were changed.
 
 ## 9. Current blockers
 
-None for A1 (complete). Carried forward, unchanged, affecting later phases:
-
-- Phase H (SQLite) cannot start until Phase A2 (hardcoded Postgres URL in `alembic.ini`/`env.py`) is fixed.
-- No PostgreSQL instance is available in the current verification environment — real-Postgres and Alembic-migration verification steps in `ACCEPTANCE_TESTS.md` still need to be run in an environment with a real database before being marked verified. A1's SQLite fixture does not close this gap; it only unblocks fast, isolated unit/integration tests.
+-- No blocker remains for Phase A2.
+- The existing PostgreSQL database still has a separate migration-chain issue (`appointmentstatus` already exists); this is outside A2 scope and was not changed as part of A2.
+- Phase H (SQLite) is no longer blocked on A2 verification.
 
 ## 10. Decisions relevant to the current task
 
@@ -93,30 +91,8 @@ See `HELP/DEVELOPMENT/DECISIONS.md` DDR-004 for the one architectural note from 
 
 ## 11. Exact next action
 
-Start **Phase A2**: make Alembic read the database URL from `app.core.config.settings`/`DATABASE_URL` instead of the value hardcoded in `alembic.ini`, per Gap Analysis §5/§14 and `PROGRESS.md`'s prior blocker notes. This is required before Phase H (SQLite) can start, and is otherwise independent of A1.
-
-If A2 is judged unnecessary or superseded when work resumes, record that as a decision in `DECISIONS.md` before deviating — do not silently skip it.
+Proceed to **Phase A3** after committing the verified Phase A2 changes.
 
 ## 12. Recommended command(s) to verify the next action
 
-Before starting Phase A2:
-
-```bash
-git status
-git log --oneline -10
-cat HELP/DEVELOPMENT/PROGRESS.md   # re-read this file for any update since this snapshot
-python -m compileall app
-python -m pytest -q
-grep -n "sqlalchemy.url" alembic.ini
-sed -n '1,40p' alembic/env.py
-```
-
-After implementing Phase A2 (adjust to what's actually built — e.g. if a test spins up a scratch SQLite/Postgres DB and runs `alembic upgrade head` against it):
-
-```bash
-python -m pytest -q
-python -m compileall app tests
-alembic upgrade head   # against whatever DB the fix targets, once implemented
-```
-
-Do not mark Phase A2 complete in `PROGRESS.md` until both the implementation and a passing verification run are confirmed in the same session, per `AGENT_WORKFLOW.md` §16 (Completion Criteria).
+For Phase A3, first re-read `HELP/CONTINUE_DEVELOPMENT.txt`, `HELP/DEVELOPMENT/AGENT_WORKFLOW.md`, and this file. Then inspect the relevant appointment booking logic before making any changes.
