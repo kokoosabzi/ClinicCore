@@ -21,6 +21,12 @@ ClinicCore uses a simple Clean Architecture-inspired layout without unnecessary 
 ## Operational modules
 The generated MVP shell includes users, patient intake, appointment booking, simple finance, provider-neutral messaging, and audit logging.
 
+## Appointment booking integrity
+- Appointment booking flows call `AppointmentService`; validation is not duplicated in individual routers.
+- The current model represents one shared clinic schedule, so one non-deleted appointment may occupy each `starts_at` value.
+- A partial unique database index enforces that rule during concurrent requests while allowing a soft-deleted appointment's slot to be reused.
+- A future practitioner or room model must scope the active-slot constraint to that resource.
+
 ## Security flow
 - Session middleware stores the authenticated username and role.
 - HTML and JSON workflows use RBAC dependencies.
