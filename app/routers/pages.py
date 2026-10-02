@@ -14,8 +14,11 @@ from app.models.appointment import Appointment
 from app.models.financial import Expense, ExpenseCategory, Payment
 from app.models.messaging import Message, MessageProvider
 from app.models.patient import Patient
+from app.repositories.appointment_repository import AppointmentRepository
 from app.repositories.patient_repository import PatientRepository
+from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
+from app.services.appointment_service import AppointmentService, AppointmentSlotUnavailableError
 from app.services.patient_service import PatientService
 
 router = APIRouter(tags=["pages"])
@@ -140,15 +143,17 @@ def appointment_form(request: Request, user=Depends(require_user)):
 async def create_appointment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
-    starts_at = datetime.fromisoformat(data["starts_at"])
-    exists = db.scalar(select(Appointment).where(Appointment.starts_at == starts_at, Appointment.is_deleted.is_(False)))
-    if exists:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Appointment time is already booked")
-    return save_and_redirect(
-        db,
-        Appointment(patient_id=int(data["patient_id"]), starts_at=starts_at, reason=data.get("reason") or None, notes=data.get("notes") or None),
-        "/appointments",
+    appointment_data = AppointmentCreate(
+        patient_id=int(data["patient_id"]),
+        starts_at=datetime.fromisoformat(data["starts_at"]),
+        reason=data.get("reason") or None,
+        notes=data.get("notes") or None,
     )
+    try:
+        AppointmentService(AppointmentRepository(db)).book(appointment_data)
+    except AppointmentSlotUnavailableError as error:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(error)) from error
+    return RedirectResponse(url="/appointments", status_code=303)
 
 
 @router.get("/financial", response_class=HTMLResponse)

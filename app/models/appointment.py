@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -28,3 +28,15 @@ class Appointment(TimestampMixin, SoftDeleteMixin, Base):
     notes: Mapped[str | None] = mapped_column(Text)
 
     patient = relationship("Patient", back_populates="appointments")
+
+    __table_args__ = (
+        # ClinicCore currently schedules a single shared appointment slot.
+        # Deleted appointments do not occupy a slot and can be replaced.
+        Index(
+            "uq_active_appointment_starts_at",
+            "starts_at",
+            unique=True,
+            postgresql_where=text("NOT is_deleted"),
+            sqlite_where=text("is_deleted = 0"),
+        ),
+    )

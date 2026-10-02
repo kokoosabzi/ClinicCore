@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-02
+- Completed Sprint 5 appointment booking integrity work.
+- Centralized duplicate active-slot validation in `AppointmentService` for both JSON and HTML booking flows.
+- Added a reversible partial unique index migration so deleted appointments do not consume a time slot.
+- Added duplicate-slot and soft-delete release scenario tests.
+
 ## 2026-08-04
 - Created Sprint 1 project foundation.
 - Added FastAPI application factory and health endpoint.
