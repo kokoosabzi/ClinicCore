@@ -127,6 +127,15 @@
     <select name="print_show_footer"><option value="true" {% if settings["print.show_footer"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_footer"] == "false" %}selected{% endif %}>خیر</option></select>
   </label>
 
+  <h2>سیستم</h2>
+  <label>ثبت رویدادهای سامانه
+    <select name="system_audit_enabled">
+      <option value="true" {% if settings["system.audit_enabled"] == "true" %}selected{% endif %}>فعال</option>
+      <option value="false" {% if settings["system.audit_enabled"] == "false" %}selected{% endif %}>غیرفعال</option>
+    </select>
+  </label>
+  <p class="muted">این گزینه ثبت رویدادهای درخواست‌های سامانه در لاگ داخلی را کنترل می‌کند.</p>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
