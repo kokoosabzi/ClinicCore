@@ -52,6 +52,7 @@ def test_admin_can_save_and_reload_settings(client):
             "print_show_logo": "false",
             "print_show_header": "true",
             "print_show_footer": "false",
+            "system_audit_enabled": "false",
         },
         follow_redirects=False,
     )
@@ -71,6 +72,8 @@ def test_admin_can_save_and_reload_settings(client):
     assert 'name="contacts_require_phone"' in saved.text
     assert 'option value="thermal" selected' in saved.text
     assert 'name="print_margin_top"' in saved.text
+    assert 'name="system_audit_enabled"' in saved.text
+    assert 'option value="false" selected' in saved.text
 
 
 def test_invalid_timezone_is_rejected(client):
@@ -111,6 +114,25 @@ def test_invalid_messaging_provider_is_rejected(client):
             "app_title": "کلینیک‌کور",
             "messaging_enabled": "true",
             "messaging_default_provider": "invalid-provider",
+        },
+    )
+    assert response.status_code == 200
+    assert "معتبر نیست" in response.text
+
+
+def test_invalid_system_audit_setting_is_rejected(client):
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+
+    form = client.get("/settings")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+
+    response = client.post(
+        "/settings",
+        data={
+            "csrf_token": csrf_token,
+            "app_name": "ClinicCore",
+            "app_title": "کلینیک‌کور",
+            "system_audit_enabled": "maybe",
         },
     )
     assert response.status_code == 200
