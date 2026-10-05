@@ -5,22 +5,22 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase C3 — shared PageHeader/Breadcrumb components)
+Last updated by: AI agent (Phase C4 — form/table states and feedback)
 Repository state this file describes: branch `main`, latest C2 design-system implementation is recorded in the commit immediately preceding this continuity update
 
 ---
 
 ## 1. Current project phase
 
-**Phase C — Design System & Navigation**, next task **C3 (Shared PageHeader/Breadcrumb components)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase C — Design System & Navigation**, next task **C5 (Form/table states and feedback), per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, A4, B1, B2, B3, B4, and C1 are complete. C3 is the current task.
+A1, A2, A3, A4, B1, B2, B3, B4, and C1 are complete. C4 is the current task.
 
 ## 2. Current task
 
-**Task:** Phase C3 — Shared PageHeader/Breadcrumb components.
+**Task:** Phase C4 — Form/table states and feedback.
 
-**Task status:** COMPLETE. Added a reusable PageHeader/Breadcrumb partial and adopted it on the main list/dashboard pages without changing business behavior.
+**Task status:** COMPLETE. Standardized form submission feedback, validation focus states, success/error alerts, and empty table states without changing business behavior.
 
 ## 3. Completed tasks
 
@@ -53,7 +53,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase C3 — Shared PageHeader/Breadcrumb components**, implemented on `main`; this slice is complete and the next task is C4 form/table states and feedback.
+**Phase C4 — Form/table states and feedback**, implemented on `main`; this slice is complete and the next task is C5 final design-system cleanup.
 
 ## 7. Last successful verification
 
@@ -104,7 +104,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase C4 — Form/table states and feedback**: standardize validation, empty, loading, and success/error presentation without changing business behavior.
+Start **Phase C5 — Final design-system cleanup**: remove remaining duplicate visual tokens and verify shared UI consistency without changing business behavior.
 
 ## 12. Recommended command(s) to verify the next action
 
