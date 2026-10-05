@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
+from app.services.datetime_service import format_current_datetime
 
 
 class Base(DeclarativeBase):
@@ -34,6 +35,13 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.datetime_date_format = datetime_settings.get("datetime.date_format") or "YYYY/MM/DD"
         request.state.datetime_time_format = datetime_settings.get("datetime.time_format") or "24"
         request.state.datetime_show_seconds = datetime_settings.get("datetime.show_seconds") or "false"
+        request.state.current_datetime = format_current_datetime(
+            request.state.datetime_timezone,
+            request.state.datetime_calendar,
+            request.state.datetime_date_format,
+            request.state.datetime_time_format,
+            request.state.datetime_show_seconds == "true",
+        )
         request.state.reports_default_format = report_settings.get("reports.default_format") or "html"
         request.state.reports_include_timestamp = report_settings.get("reports.include_timestamp") or "true"
         request.state.messaging_enabled = messaging_settings.get("messaging.enabled") or "false"
@@ -62,6 +70,7 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.datetime_date_format = "YYYY/MM/DD"
         request.state.datetime_time_format = "24"
         request.state.datetime_show_seconds = "false"
+        request.state.current_datetime = format_current_datetime()
         request.state.reports_default_format = "html"
         request.state.reports_include_timestamp = "true"
         request.state.messaging_enabled = "false"
