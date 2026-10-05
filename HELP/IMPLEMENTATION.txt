@@ -1,62 +1,66 @@
 # Implementation and Run Instructions
 
 ## 1. Install
-```bash
+\`\`\`bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e '.[dev]'
-```
+\`\`\`
 
 ## 2. Configure PostgreSQL
-Create `.env`:
+Create \`.env\`:
 
-```env
+\`\`\`env
 DATABASE_URL=postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore
-SECRET_KEY=replace-me
+SECRET_KEY=replace-with-a-long-random-secret
 ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin
-```
+ADMIN_PASSWORD=replace-with-a-strong-unique-password
+\`\`\`
+
+**Production requirement:** do not leave \`ADMIN_PASSWORD=admin\`. The fallback \`admin\` password is for development only. Set the production credentials before running the seed command.
 
 ## 3. Migrate database
-```bash
+\`\`\`bash
 alembic upgrade head
-```
+\`\`\`
 
 ## 4. Create initial manager
-```bash
+\`\`\`bash
 python scripts/seed_admin.py
-```
+\`\`\`
+
+The seeded admin is forced to change the password on first login. If the fallback password is used, the seed script prints a security warning.
 
 ## 5. Run
-```bash
+\`\`\`bash
 uvicorn app.main:app --reload
-```
+\`\`\`
 
 ## 6. Validate
-```bash
+\`\`\`bash
 python -m pytest
-```
+\`\`\`
 
 ## Main pages
-- `/login`
-- `/dashboard`
-- `/patients/new`
-- `/appointments/new`
-- `/financial/payments/new`
-- `/financial/expenses/new`
-- `/messages/new`
+- \`/login\`
+- \`/dashboard\`
+- \`/patients/new\`
+- \`/appointments/new\`
+- \`/financial/payments/new\`
+- \`/financial/expenses/new\`
+- \`/messages/new\`
 
 ## Developer shortcuts
-```bash
+\`\`\`bash
 make install
 make compile
 make test
 make migrate
 make seed
 make run
-```
+\`\`\`
 
 ## Local PostgreSQL with Docker
-```bash
+\`\`\`bash
 docker compose up -d postgres
-```
+\`\`\`
