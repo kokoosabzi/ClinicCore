@@ -50,6 +50,8 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.print_show_logo = print_settings.get("print.show_logo") or "true"
         request.state.print_show_header = print_settings.get("print.show_header") or "true"
         request.state.print_show_footer = print_settings.get("print.show_footer") or "true"
+        system_settings = service.get_group("system")
+        request.state.system_audit_enabled = system_settings.get("system.audit_enabled") or "true"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
@@ -74,6 +76,7 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.print_show_logo = "true"
         request.state.print_show_header = "true"
         request.state.print_show_footer = "true"
+        request.state.system_audit_enabled = "true"
     try:
         yield db
     finally:
