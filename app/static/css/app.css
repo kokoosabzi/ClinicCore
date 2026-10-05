@@ -112,3 +112,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .breadcrumb a:hover { color:var(--color-primary); }
 .page-subtitle { margin:.3rem 0 0; color:var(--color-muted); font-size:.95rem; }
 .page-header-actions { display:flex; justify-content:flex-end; margin:-.5rem 0 1rem; }
+
+/* Form, table and feedback states */
+.alert { border-radius:var(--radius-md); padding:var(--space-3); border:1px solid; }
+.alert.success { background:#d1e7dd; border-color:#a3cfbb; color:#0f5132; }
+.alert.error { background:#f8d7da; border-color:#f1aeb5; color:#842029; }
+.alert.info { background:#cff4fc; border-color:#9eeaf9; color:#055160; }
+.empty-state { text-align:center; color:var(--color-muted); padding:2rem 1rem; }
+.empty-state strong { display:block; color:var(--color-text); margin-bottom:.25rem; }
+.form input:focus:invalid, .form textarea:focus:invalid, .form select:focus:invalid { border-color:var(--color-danger); }
+.form.is-submitting { opacity:.75; }
+.form.is-submitting button[type="submit"] { cursor:wait; }
