@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo, available_timezones
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -16,11 +18,20 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "clinic.logo": ("", "string", "مسیر یا شناسه لوگوی کلینیک"),
     "clinic.header_text": ("", "string", "متن سربرگ"),
     "clinic.footer_text": ("", "string", "متن پاورقی"),
+    "datetime.calendar": ("jalali", "enum", "تقویم نمایشی: جلالی یا میلادی"),
+    "datetime.timezone": ("Asia/Tehran", "timezone", "منطقه زمانی سامانه"),
+    "datetime.date_format": ("YYYY/MM/DD", "enum", "قالب نمایش تاریخ"),
+    "datetime.time_format": ("24", "enum", "قالب نمایش ساعت: ۱۲ یا ۲۴ ساعته"),
+    "datetime.show_seconds": ("false", "boolean", "نمایش ثانیه در ساعت"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
     "app.theme": {"light", "dark", "system"},
     "app.density": {"comfortable", "compact"},
+    "datetime.calendar": {"jalali", "gregorian"},
+    "datetime.date_format": {"YYYY/MM/DD", "YYYY-MM-DD", "DD/MM/YYYY", "DD-MM-YYYY"},
+    "datetime.time_format": {"12", "24"},
+    "datetime.show_seconds": {"true", "false"},
 }
 
 
@@ -47,6 +58,10 @@ class SettingsService:
             raise ValueError(f"Unknown setting: {key}")
         if key in ALLOWED_VALUES and value not in ALLOWED_VALUES[key]:
             raise ValueError(f"Invalid value for setting: {key}")
+        if key == "datetime.timezone":
+            if not value or value not in available_timezones():
+                raise ValueError("Invalid timezone")
+            ZoneInfo(value)
         if value is not None and len(value) > 4000:
             raise ValueError("Setting value is too long")
         setting = self.db.scalar(select(SystemSetting).where(SystemSetting.key == key))
@@ -58,7 +73,12 @@ class SettingsService:
                 value_type=value_type,
                 category=key.split(".", 1)[0],
                 description=description,
-                is_public=key in {"app.name", "app.title", "app.theme", "app.density", "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text"},
+                is_public=key in {
+                    "app.name", "app.title", "app.theme", "app.density",
+                    "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text",
+                    "datetime.calendar", "datetime.timezone", "datetime.date_format",
+                    "datetime.time_format", "datetime.show_seconds",
+                },
                 updated_by=user_id,
             )
             self.db.add(setting)
