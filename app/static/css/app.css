@@ -122,3 +122,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .form input:focus:invalid, .form textarea:focus:invalid, .form select:focus:invalid { border-color:var(--color-danger); }
 .form.is-submitting { opacity:.75; }
 .form.is-submitting button[type="submit"] { cursor:wait; }
+
+
+.header-datetime { display:inline-flex; align-items:center; margin-inline-start:auto; padding:var(--space-2) var(--space-3); color:var(--color-muted); font-size:.9rem; white-space:nowrap; }
+@media (max-width:700px) { .header-datetime { order:3; width:100%; justify-content:center; margin-inline-start:0; } }

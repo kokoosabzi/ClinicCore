@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 
 def gregorian_to_jalali(value: date | datetime) -> tuple[int, int, int]:
@@ -53,6 +53,28 @@ def jalali_to_gregorian(year: int, month: int, day: int) -> date:
 def format_jalali(value: date | datetime, separator: str = "/") -> str:
     year, month, day = gregorian_to_jalali(value)
     return f"{year:04d}{separator}{month:02d}{separator}{day:02d}"
+
+
+def current_datetime(timezone_name: str = "Asia/Tehran") -> datetime:
+    """Return the current instant converted to the configured timezone."""
+    return datetime.now(timezone.utc).astimezone(ZoneInfo(timezone_name))
+
+
+def format_current_datetime(timezone_name: str = "Asia/Tehran", calendar: str = "jalali", date_format: str = "YYYY/MM/DD", time_format: str = "24", show_seconds: bool = False, now: datetime | None = None) -> str:
+    value = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(timezone_name))
+    if calendar == "jalali":
+        year, month, day = gregorian_to_jalali(value)
+    else:
+        year, month, day = value.year, value.month, value.day
+    rendered_date = date_format.replace("YYYY", f"{year:04d}").replace("MM", f"{month:02d}").replace("DD", f"{day:02d}")
+    if time_format == "12":
+        hour = value.hour % 12 or 12
+        rendered_time = f"{hour:02d}:{value.minute:02d}"
+    else:
+        rendered_time = f"{value.hour:02d}:{value.minute:02d}"
+    if show_seconds:
+        rendered_time += f":{value.second:02d}"
+    return f"{rendered_date} {rendered_time}"
 
 
 def parse_jalali(value: str, separator: str = "/") -> date:
