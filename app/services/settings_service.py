@@ -23,6 +23,11 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "datetime.date_format": ("YYYY/MM/DD", "enum", "قالب نمایش تاریخ"),
     "datetime.time_format": ("24", "enum", "قالب نمایش ساعت: ۱۲ یا ۲۴ ساعته"),
     "datetime.show_seconds": ("false", "boolean", "نمایش ثانیه در ساعت"),
+    "reports.logo": ("", "string", "لوگوی گزارش"),
+    "reports.header": ("", "string", "سربرگ گزارش"),
+    "reports.footer": ("", "string", "پاورقی گزارش"),
+    "reports.default_format": ("html", "enum", "قالب پیش‌فرض گزارش"),
+    "reports.include_timestamp": ("true", "boolean", "نمایش زمان تولید گزارش"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -32,6 +37,8 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "datetime.date_format": {"YYYY/MM/DD", "YYYY-MM-DD", "DD/MM/YYYY", "DD-MM-YYYY"},
     "datetime.time_format": {"12", "24"},
     "datetime.show_seconds": {"true", "false"},
+    "reports.default_format": {"html", "csv", "pdf"},
+    "reports.include_timestamp": {"true", "false"},
 }
 
 
@@ -81,6 +88,8 @@ class SettingsService:
                     "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text",
                     "datetime.calendar", "datetime.timezone", "datetime.date_format",
                     "datetime.time_format", "datetime.show_seconds",
+                    "reports.logo", "reports.header", "reports.footer",
+                    "reports.default_format", "reports.include_timestamp",
                 },
                 updated_by=user_id,
             )
