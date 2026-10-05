@@ -53,7 +53,7 @@ class SettingsService:
             result[row.key] = row.value
         return result
 
-    def set(self, key: str, value: str | None, user_id: int | None = None) -> SystemSetting:
+    def _validate(self, key: str, value: str | None) -> None:
         if key not in DEFAULTS:
             raise ValueError(f"Unknown setting: {key}")
         if key in ALLOWED_VALUES and value not in ALLOWED_VALUES[key]:
@@ -64,6 +64,9 @@ class SettingsService:
             ZoneInfo(value)
         if value is not None and len(value) > 4000:
             raise ValueError("Setting value is too long")
+
+    def set(self, key: str, value: str | None, user_id: int | None = None) -> SystemSetting:
+        self._validate(key, value)
         setting = self.db.scalar(select(SystemSetting).where(SystemSetting.key == key))
         default_value, value_type, description = DEFAULTS[key]
         if setting is None:
@@ -90,5 +93,7 @@ class SettingsService:
         return setting
 
     def set_many(self, values: dict[str, str | None], user_id: int | None = None) -> None:
+        for key, value in values.items():
+            self._validate(key, value)
         for key, value in values.items():
             self.set(key, value, user_id=user_id)
