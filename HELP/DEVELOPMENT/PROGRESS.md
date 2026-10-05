@@ -6,15 +6,15 @@
 
 Last updated: 2026-10-05
 Last updated by: AI agent (Phase C4 — form/table states and feedback)
-Repository state this file describes: branch `main`, latest C2 design-system implementation is recorded in the commit immediately preceding this continuity update
+Repository state this file describes: branch `main`, latest C5 design-system cleanup is recorded in the current continuity update
 
 ---
 
 ## 1. Current project phase
 
-**Phase C — Design System & Navigation**, next task **C5 (Form/table states and feedback), per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase C — Design System & Navigation**, next task **C5 (Final design-system cleanup)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, A4, B1, B2, B3, B4, and C1 are complete. C4 is the current task.
+A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, C3, and C4 are complete. C5 is the current task.
 
 ## 2. Current task
 
@@ -53,7 +53,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase C4 — Form/table states and feedback**, implemented on `main`; this slice is complete and the next task is C5 final design-system cleanup.
+**Phase C5 — Final design-system cleanup**, implemented on `main`; this slice is complete and the next task is D1 Jalali date service.
 
 ## 7. Last successful verification
 
@@ -104,7 +104,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase C5 — Final design-system cleanup**: remove remaining duplicate visual tokens and verify shared UI consistency without changing business behavior.
+Start **Phase D1 — Jalali date service**: add a focused date conversion/service foundation without changing appointment storage semantics.
 
 ## 12. Recommended command(s) to verify the next action
 
