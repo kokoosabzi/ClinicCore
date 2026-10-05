@@ -7,6 +7,8 @@ from app.models.system_setting import SystemSetting
 DEFAULTS: dict[str, tuple[str, str, str]] = {
     "app.name": ("ClinicCore", "string", "نام داخلی سامانه"),
     "app.title": ("کلینیک‌کور", "string", "عنوان نمایشی سامانه"),
+    "app.theme": ("system", "enum", "حالت نمایش: روشن، تاریک یا سیستم"),
+    "app.density": ("comfortable", "enum", "تراکم نمایش: راحت یا فشرده"),
     "clinic.name": ("", "string", "نام کلینیک"),
     "clinic.address": ("", "string", "آدرس کلینیک"),
     "clinic.phone": ("", "string", "تلفن کلینیک"),
@@ -14,6 +16,11 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "clinic.logo": ("", "string", "مسیر یا شناسه لوگوی کلینیک"),
     "clinic.header_text": ("", "string", "متن سربرگ"),
     "clinic.footer_text": ("", "string", "متن پاورقی"),
+}
+
+ALLOWED_VALUES: dict[str, set[str]] = {
+    "app.theme": {"light", "dark", "system"},
+    "app.density": {"comfortable", "compact"},
 }
 
 
@@ -38,6 +45,8 @@ class SettingsService:
     def set(self, key: str, value: str | None, user_id: int | None = None) -> SystemSetting:
         if key not in DEFAULTS:
             raise ValueError(f"Unknown setting: {key}")
+        if key in ALLOWED_VALUES and value not in ALLOWED_VALUES[key]:
+            raise ValueError(f"Invalid value for setting: {key}")
         if value is not None and len(value) > 4000:
             raise ValueError("Setting value is too long")
         setting = self.db.scalar(select(SystemSetting).where(SystemSetting.key == key))
@@ -49,7 +58,7 @@ class SettingsService:
                 value_type=value_type,
                 category=key.split(".", 1)[0],
                 description=description,
-                is_public=key in {"app.name", "app.title", "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text"},
+                is_public=key in {"app.name", "app.title", "app.theme", "app.density", "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text"},
                 updated_by=user_id,
             )
             self.db.add(setting)
