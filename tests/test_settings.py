@@ -1,3 +1,5 @@
+import re
+
 from app.core.auth import require_admin
 
 
@@ -7,11 +9,16 @@ def test_settings_requires_admin(client):
 
 
 def test_admin_can_save_and_reload_settings(client):
-    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin", "id": 1}
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+
+    form = client.get("/settings")
+    assert form.status_code == 200
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+
     response = client.post(
         "/settings",
         data={
-            "csrf_token": "",
+            "csrf_token": csrf_token,
             "app_name": "ClinicCore Test",
             "app_title": "سامانه آزمایشی",
             "clinic_name": "کلینیک نمونه",
@@ -24,4 +31,9 @@ def test_admin_can_save_and_reload_settings(client):
         },
         follow_redirects=False,
     )
-    assert response.status_code in (303, 400)
+    assert response.status_code == 303
+
+    saved = client.get("/settings")
+    assert saved.status_code == 200
+    assert "ClinicCore Test" in saved.text
+    assert "کلینیک نمونه" in saved.text
