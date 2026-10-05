@@ -22,6 +22,13 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-10-02 — Phase A3: appointment booking integrity
+
+- Phase/Task: Phase A / A3 (reconcile duplicate appointment booking rule)
+- Commit: (recorded at commit time — see `git log`)
+- Summary: Moved active-slot validation from the HTML page router into `AppointmentService`, routed JSON and HTML booking through that service, and added a partial unique index migration that excludes soft-deleted appointments. Added duplicate-slot and released-slot API scenarios.
+- Verification: `python -m compileall app tests alembic` — PASS. Fresh SQLite `DATABASE_URL=sqlite:////tmp/cliniccore-alembic.db alembic upgrade head` — PASS through `20261002_0004`. `python -m pytest -q` was blocked before collection because `httpx` is not installed; `python -m pip install -e '.[dev]'` could not access PyPI (403).
+
 ## 2026-09-27 — Phase A2: Alembic reads database URL from application settings
 
 - Phase/Task: Phase A / A2 (Alembic database URL)

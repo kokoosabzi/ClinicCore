@@ -110,6 +110,14 @@ status.
 
 ---
 
+## DDR-005 — Appointment slots are globally unique while active
+
+- **Date:** 2026-10-02
+- **Decision:** ClinicCore currently permits exactly one non-deleted appointment for a given `starts_at` value. The service performs an early availability check and a database partial unique index is the authoritative concurrent-write guard. Soft-deleted appointments release their time slot.
+- **Rationale:** The present domain model has no practitioner, room, or resource field; its existing HTML route already treated every occupied start time as unavailable. Applying the rule in the service gives HTML and JSON routes identical behavior, while the partial index prevents a check-then-insert race without deleting historical records.
+- **Alternatives considered:** Keeping validation only in the HTML router (rejected — API bypasses it); a normal unique index (rejected — it would prevent a replacement booking after soft deletion); a provider-scoped constraint (deferred — no provider/resource domain exists yet).
+- **Status:** Active. When practitioner or room scheduling is added, replace this constraint with a scoped active-slot constraint through a new migration and decision record.
+
 <!--
 Template for new entries — copy this block for each new decision:
 
