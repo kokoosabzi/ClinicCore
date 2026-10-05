@@ -28,6 +28,13 @@ def test_admin_can_save_and_reload_settings(client):
             "clinic_logo": "",
             "clinic_header_text": "سربرگ",
             "clinic_footer_text": "پاورقی",
+            "app_theme": "light",
+            "app_density": "compact",
+            "datetime_calendar": "jalali",
+            "datetime_timezone": "Asia/Tehran",
+            "datetime_date_format": "DD/MM/YYYY",
+            "datetime_time_format": "24",
+            "datetime_show_seconds": "true",
         },
         follow_redirects=False,
     )
@@ -37,3 +44,26 @@ def test_admin_can_save_and_reload_settings(client):
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
     assert "کلینیک نمونه" in saved.text
+
+
+def test_invalid_timezone_is_rejected(client):
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+
+    form = client.get("/settings")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+
+    response = client.post(
+        "/settings",
+        data={
+            "csrf_token": csrf_token,
+            "app_name": "ClinicCore",
+            "app_title": "کلینیک‌کور",
+            "datetime_calendar": "jalali",
+            "datetime_timezone": "Invalid/Timezone",
+            "datetime_date_format": "YYYY/MM/DD",
+            "datetime_time_format": "24",
+            "datetime_show_seconds": "false",
+        },
+        follow_redirects=False,
+    )
+    assert response.status_code == 400 or response.status_code == 422
