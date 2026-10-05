@@ -44,6 +44,14 @@ def test_admin_can_save_and_reload_settings(client):
             "messaging_default_provider": "email",
             "contacts_enabled": "false",
             "contacts_require_phone": "true",
+            "print_paper_size": "thermal",
+            "print_margin_top": "5",
+            "print_margin_right": "5",
+            "print_margin_bottom": "5",
+            "print_margin_left": "5",
+            "print_show_logo": "false",
+            "print_show_header": "true",
+            "print_show_footer": "false",
         },
         follow_redirects=False,
     )
@@ -61,6 +69,8 @@ def test_admin_can_save_and_reload_settings(client):
     assert 'option value="email" selected' in saved.text
     assert 'name="contacts_enabled"' in saved.text
     assert 'name="contacts_require_phone"' in saved.text
+    assert 'option value="thermal" selected' in saved.text
+    assert 'name="print_margin_top"' in saved.text
 
 
 def test_invalid_timezone_is_rejected(client):
