@@ -248,12 +248,18 @@ def appointment_form(request: Request, user=Depends(require_user)):
 async def create_appointment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
-    appointment_data = AppointmentCreate(
-        patient_id=int(data["patient_id"]),
-        starts_at=parse_configured_datetime(f"{data['starts_at_date']} {data['starts_at_time']}", request.state.datetime_calendar),
-        reason=data.get("reason") or None,
-        notes=data.get("notes") or None,
-    )
+    try:
+        appointment_data = AppointmentCreate(
+            patient_id=int(data["patient_id"]),
+            starts_at=parse_configured_datetime(
+                f"{data['starts_at_date']} {data['starts_at_time']}",
+                request.state.datetime_calendar,
+            ),
+            reason=data.get("reason") or None,
+            notes=data.get("notes") or None,
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(status_code=400, detail="تاریخ یا ساعت نوبت معتبر نیست.") from error
     try:
         AppointmentService(AppointmentRepository(db)).book(appointment_data)
     except AppointmentSlotUnavailableError as error:
