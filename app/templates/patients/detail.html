@@ -3,8 +3,8 @@
 <div class="page-title"><h1>پرونده {{ patient.first_name }} {{ patient.last_name }}</h1><div><a class="button" href="/patients/{{ patient.id }}/edit">ویرایش</a> <a class="button secondary" href="/print/patients/{{ patient.id }}">چاپ</a></div></div>
 <section class="card"><p>کد ملی: {{ patient.national_code or '-' }}</p><p>تلفن: {{ patient.phone or '-' }}</p><p>یادداشت: {{ patient.notes or '-' }}</p></section>
 <h2>نوبت‌ها</h2>
-<table><thead><tr><th>زمان</th><th>وضعیت</th><th>علت</th></tr></thead><tbody>{% for item in appointments %}<tr><td>{{ item.starts_at }}</td><td>{{ item.status }}</td><td>{{ item.reason or '' }}</td></tr>{% else %}<tr><td colspan="3">نوبتی ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
+<table><thead><tr><th>زمان</th><th>وضعیت</th><th>علت</th></tr></thead><tbody>{% for item in appointments %}<tr><td>{{ item.starts_at }}</td><td>{{ item.status }}</td><td>{{ item.reason or '' }}</td></tr>{% else %}<tr><td colspan="3" class="empty-state"><strong>نوبتی ثبت نشده است.</strong></td></tr>{% endfor %}</tbody></table>
 <h2>پرداخت‌ها</h2>
-<table><thead><tr><th>تاریخ</th><th>مبلغ</th><th>رسید</th></tr></thead><tbody>{% for item in payments %}<tr><td>{{ item.paid_at }}</td><td>{{ item.amount }}</td><td><a href="/print/payments/{{ item.id }}">چاپ</a></td></tr>{% else %}<tr><td colspan="3">پرداختی ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
+<table><thead><tr><th>تاریخ</th><th>مبلغ</th><th>رسید</th></tr></thead><tbody>{% for item in payments %}<tr><td>{{ item.paid_at }}</td><td>{{ item.amount }}</td><td><a href="/print/payments/{{ item.id }}">چاپ</a></td></tr>{% else %}<tr><td colspan="3" class="empty-state"><strong>پرداختی ثبت نشده است.</strong></td></tr>{% endfor %}</tbody></table>
 <form method="post" action="/ui/patients/{{ patient.id }}/delete" onsubmit="return confirm('حذف شود؟')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="danger" type="submit">حذف نرم</button></form>
 {% endblock %}
