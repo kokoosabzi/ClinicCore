@@ -6,7 +6,11 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
 from app.core.audit import audit_request_middleware
+from app.core.database import get_db
+from app.core.auth import current_user
+from app.core.database import SessionLocal
 from app.routers import appointments, auth, financial, health, messaging, pages, patients, users
+from sqlalchemy import select
 
 
 templates = Jinja2Templates(directory="app/templates")
@@ -27,15 +31,19 @@ def create_app() -> FastAPI:
     app.include_router(pages.router)
 
     @app.get("/", response_class=HTMLResponse)
-    def home(request: Request):
-       return templates.TemplateResponse(
-        request=request,
-        name="home.html",
-        context={
-            "request": request,
-            "app_name": settings.app_name,
-        },
-    )
+    def home(request: Request, db=__import__("fastapi").Depends(get_db)):
+        app_name = getattr(request.state, "app_name", settings.app_name)
+        app_title = getattr(request.state, "app_title", settings.app_name)
+        return templates.TemplateResponse(
+            request=request,
+            name="home.html",
+            context={
+                "request": request,
+                "app_name": app_name,
+                "app_title": app_title,
+                "user": current_user(request),
+            },
+        )
 
     return app
 
