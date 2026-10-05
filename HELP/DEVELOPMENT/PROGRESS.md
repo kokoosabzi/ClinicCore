@@ -6,7 +6,7 @@
 
 Last updated: 2026-10-05
 Last updated by: AI agent (Phase C2 — design tokens and shared UI primitives)
-Repository state this file describes: branch `main`, latest B4 reporting-settings implementation is recorded in the commits immediately preceding this continuity update
+Repository state this file describes: branch `main`, latest C2 design-system implementation is recorded in the commit immediately preceding this continuity update
 
 ---
 
@@ -14,7 +14,7 @@ Repository state this file describes: branch `main`, latest B4 reporting-setting
 
 **Phase C — Design System & Navigation**, next task **C2 (Design tokens and shared UI primitives)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
+A1, A2, A3, A4, B1, B2, B3, B4, and C1 are complete. C2 is the current task.
 
 ## 2. Current task
 
@@ -67,7 +67,6 @@ Do not treat the A3 PR verification as a fresh post-merge full test run; it is t
 
 ## 8. Files changed by the current task
 
-B4 reporting-settings changed:
 - `app/services/settings_service.py`
 - `app/core/database.py`
 - `app/routers/pages.py`
