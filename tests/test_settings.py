@@ -35,6 +35,11 @@ def test_admin_can_save_and_reload_settings(client):
             "datetime_date_format": "DD/MM/YYYY",
             "datetime_time_format": "24",
             "datetime_show_seconds": "true",
+            "reports_logo": "",
+            "reports_header": "گزارش کلینیک",
+            "reports_footer": "پایان گزارش",
+            "reports_default_format": "pdf",
+            "reports_include_timestamp": "false",
         },
         follow_redirects=False,
     )
@@ -47,6 +52,8 @@ def test_admin_can_save_and_reload_settings(client):
     assert 'value="Asia/Tehran"' in saved.text
     assert 'option value="DD/MM/YYYY" selected' in saved.text
     assert 'option value="true" selected' in saved.text
+    assert 'option value="pdf" selected' in saved.text
+    assert "گزارش کلینیک" in saved.text
 
 
 def test_invalid_timezone_is_rejected(client):
