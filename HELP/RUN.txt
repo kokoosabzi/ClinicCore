@@ -1,21 +1,21 @@
 # Run Guide
 
 ## Apply migrations
-```bash
+\`\`\`bash
 alembic upgrade head
-```
+\`\`\`
 
 ## Start app
-```bash
+\`\`\`bash
 uvicorn app.main:app --reload
-```
+\`\`\`
 
 ## Health check
-Open `http://127.0.0.1:8000/health`.
+Open \`http://127.0.0.1:8000/health\`.
 
 ## Seed first admin
-```bash
+\`\`\`bash
 python scripts/seed_admin.py
-```
+\`\`\`
 
-Default local credentials: `admin` / `admin`.
+**Security warning:** the development fallback credentials are \`admin\` / \`admin\`. For any deployment beyond local development, set a unique \`ADMIN_USERNAME\` and strong \`ADMIN_PASSWORD\` in \`.env\` before seeding. The seeded admin is required to change its password on first login.
