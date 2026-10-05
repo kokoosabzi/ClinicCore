@@ -5,7 +5,7 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase B4 — contacts settings)
+Last updated by: AI agent (Phase B4 — printing settings)
 Repository state this file describes: branch `main`, latest B4 reporting-settings implementation is recorded in the commits immediately preceding this continuity update
 
 ---
@@ -18,9 +18,9 @@ A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
 
 ## 2. Current task
 
-**Task:** Phase B4 — Contacts settings slice.
+**Task:** Phase B4 — Printing settings slice.
 
-**Task status:** COMPLETE. Added persistent contact-management enable/disable and phone-required settings with validation and admin UI controls.
+**Task status:** COMPLETE. Added persistent paper size, print margins, and logo/header/footer visibility settings with validation and admin UI controls.
 
 ## 3. Completed tasks
 
@@ -42,7 +42,7 @@ None.
 
 ## 5. Not-started tasks
 
-- **Phase B4** — Printing/System settings.
+- **Phase B4** — System settings.
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
 - **Phase E** — Dashboard & Reporting (today's-appointments KPI fix, charts, report pages).
@@ -54,7 +54,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase B4 — Contacts settings slice**, implemented on `main`; this slice is complete and the next B4 slice is Printing settings.
+**Phase B4 — Printing settings slice**, implemented on `main`; this slice is complete and the next B4 slice is System settings.
 
 ## 7. Last successful verification
 
@@ -106,7 +106,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase B4 — Printing settings**: inspect the existing print/report presentation abstractions and add the smallest safe persistent printing configuration slice.
+Start **Phase B4 — System settings**: inspect existing runtime/system configuration and add the smallest safe persistent system configuration slice.
 
 ## 12. Recommended command(s) to verify the next action
 
