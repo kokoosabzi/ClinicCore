@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 
 
 def gregorian_to_jalali(value: date | datetime) -> tuple[int, int, int]:
