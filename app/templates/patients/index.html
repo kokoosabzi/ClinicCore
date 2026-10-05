@@ -14,7 +14,7 @@
   {% for patient in patients %}
     <tr><td>{{ patient.id }}</td><td>{{ patient.first_name }} {{ patient.last_name }}</td><td>{{ patient.national_code or '' }}</td><td>{{ patient.phone or '' }}</td><td><a href="/patients/{{ patient.id }}">پرونده</a></td></tr>
   {% else %}
-    <tr><td colspan="5">موردی یافت نشد.</td></tr>
+    <tr><td colspan="5" class="empty-state"><strong>بیماری ثبت نشده است.</strong>برای شروع، بیمار جدید را ثبت کنید.</td></tr>
   {% endfor %}
   </tbody>
 </table>
