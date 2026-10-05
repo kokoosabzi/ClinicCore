@@ -15,6 +15,9 @@ async def audit_request_middleware(request: Request, call_next: Callable[[Reques
     details = f"{request.method} {request.url.path} -> {response.status_code}"
     db = SessionLocal()
     try:
+        from app.services.settings_service import SettingsService
+        if SettingsService(db).get("system.audit_enabled", "true") != "true":
+            return response
         AuditService(db).log(action="http_request", entity="system", actor=actor, details=details)
     except SQLAlchemyError:
         db.rollback()
