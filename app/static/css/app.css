@@ -64,3 +64,20 @@ th { background:var(--bg); }
 :root[data-density="compact"] .card,
 :root[data-density="compact"] .form { padding:.85rem; }
 :root[data-density="compact"] .grid { gap:.65rem; }
+
+.nav-toggle { display:none; border:1px solid var(--border); background:var(--surface); color:var(--text); padding:.45rem .7rem; }
+.topbar nav a { padding:.45rem .65rem; border-radius:8px; color:var(--text); }
+.topbar nav a:hover, .topbar nav a.active { background:var(--bg); color:var(--primary); }
+.page-actions { margin-bottom:.75rem; }
+.back-link { display:inline-flex; align-items:center; gap:.35rem; padding:.4rem .65rem; border:1px solid var(--border); border-radius:8px; background:var(--surface); }
+@media (max-width:700px) {
+  .topbar { flex-wrap:wrap; padding:.75rem 1rem; }
+  .nav-toggle { display:inline-block; }
+  .topbar nav { display:none; width:100%; flex-direction:column; gap:.25rem; }
+  .topbar nav.is-open { display:flex; }
+  .topbar nav a, .logout-form { width:100%; }
+  .logout-form button { width:100%; }
+  .container { margin-top:1rem; }
+  .page-title { align-items:flex-start; flex-direction:column; }
+  table { display:block; overflow-x:auto; white-space:nowrap; }
+}
