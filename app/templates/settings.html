@@ -91,6 +91,20 @@
   </label>
   <p class="muted">کلیدها، رمزها و اطلاعات محرمانه ارائه‌دهندگان در این تنظیمات ذخیره نمی‌شوند.</p>
 
+  <h2>مخاطبین</h2>
+  <label>فعال بودن مدیریت اطلاعات تماس
+    <select name="contacts_enabled">
+      <option value="true" {% if settings['contacts.enabled'] == 'true' %}selected{% endif %}>بله</option>
+      <option value="false" {% if settings['contacts.enabled'] == 'false' %}selected{% endif %}>خیر</option>
+    </select>
+  </label>
+  <label>الزام ثبت شماره تماس
+    <select name="contacts_require_phone">
+      <option value="false" {% if settings['contacts.require_phone'] == 'false' %}selected{% endif %}>خیر</option>
+      <option value="true" {% if settings['contacts.require_phone'] == 'true' %}selected{% endif %}>بله</option>
+    </select>
+  </label>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
