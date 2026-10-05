@@ -41,6 +41,8 @@ def context(request: Request, title: str, **extra):
         "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
         "datetime_time_format": getattr(request.state, "datetime_time_format", "24"),
         "datetime_show_seconds": getattr(request.state, "datetime_show_seconds", "false"),
+        "reports_default_format": getattr(request.state, "reports_default_format", "html"),
+        "reports_include_timestamp": getattr(request.state, "reports_include_timestamp", "true"),
         **extra,
     }
 
@@ -80,7 +82,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -104,6 +106,11 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "datetime.date_format": data.get("datetime_date_format", "YYYY/MM/DD"),
         "datetime.time_format": data.get("datetime_time_format", "24"),
         "datetime.show_seconds": data.get("datetime_show_seconds", "false"),
+        "reports.logo": data.get("reports_logo", "").strip(),
+        "reports.header": data.get("reports_header", "").strip(),
+        "reports.footer": data.get("reports_footer", "").strip(),
+        "reports.default_format": data.get("reports_default_format", "html"),
+        "reports.include_timestamp": data.get("reports_include_timestamp", "true"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
