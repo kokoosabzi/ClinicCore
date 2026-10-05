@@ -22,6 +22,13 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-10-05 — Phase B3: date and time settings
+
+- Phase/Task: Phase B / B3
+- Commit: implementation series immediately preceding this continuity update
+- Summary: Added persistent calendar, timezone, date-format, time-format, and seconds-display settings under the existing settings subsystem. Added timezone/enum validation, admin UI controls, and propagated the preferences through the shared layout without changing stored business datetime semantics.
+- Verification: Repository-level implementation and focused test inspection completed. No fresh local `compileall`/pytest run was available in this GitHub-only session.
+
 ## 2026-10-05 — Phase B1: persistent application identity settings
 
 - Phase/Task: Phase B / B1
