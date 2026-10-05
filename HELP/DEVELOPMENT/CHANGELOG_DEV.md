@@ -22,6 +22,13 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-10-05 — Phase B1: persistent application identity settings
+
+- Phase/Task: Phase B / B1
+- Commit: `720ef4a` implementation series (latest application change before continuity update)
+- Summary: Added persistent `system_settings` storage, a central `SettingsService`, admin-only `/settings` UI for application and clinic identity, and dynamic application identity in shared/home/auth UI. Added Alembic revision `20261005_0005` and focused settings tests.
+- Verification: Repository-level implementation and test inspection completed. No fresh local `compileall`/pytest run was available in this GitHub-only session. B2 is the next scoped task.
+
 ## 2026-10-05 — Phase A4: default admin credential warning
 
 - Phase/Task: Phase A / A4
