@@ -66,4 +66,5 @@ def test_invalid_timezone_is_rejected(client):
         },
         follow_redirects=False,
     )
-    assert response.status_code == 400 or response.status_code == 422
+    assert response.status_code == 200
+    assert "معتبر نیست" in response.text
