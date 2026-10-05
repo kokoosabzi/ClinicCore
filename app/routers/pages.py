@@ -45,6 +45,8 @@ def context(request: Request, title: str, **extra):
         "reports_include_timestamp": getattr(request.state, "reports_include_timestamp", "true"),
         "messaging_enabled": getattr(request.state, "messaging_enabled", "false"),
         "messaging_default_provider": getattr(request.state, "messaging_default_provider", "sms"),
+        "contacts_enabled": getattr(request.state, "contacts_enabled", "true"),
+        "contacts_require_phone": getattr(request.state, "contacts_require_phone", "false"),
         **extra,
     }
 
@@ -115,6 +117,8 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "reports.include_timestamp": data.get("reports_include_timestamp", "true"),
         "messaging.enabled": data.get("messaging_enabled", "false"),
         "messaging.default_provider": data.get("messaging_default_provider", "sms"),
+        "contacts.enabled": data.get("contacts_enabled", "true"),
+        "contacts.require_phone": data.get("contacts_require_phone", "false"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
