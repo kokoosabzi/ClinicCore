@@ -44,6 +44,9 @@ def test_admin_can_save_and_reload_settings(client):
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
     assert "کلینیک نمونه" in saved.text
+    assert 'value="Asia/Tehran"' in saved.text
+    assert 'option value="DD/MM/YYYY" selected' in saved.text
+    assert 'option value="true" selected' in saved.text
 
 
 def test_invalid_timezone_is_rejected(client):
