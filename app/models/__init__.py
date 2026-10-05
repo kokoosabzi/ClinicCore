@@ -3,6 +3,7 @@ from app.models.audit import AuditLog
 from app.models.financial import Expense, ExpenseCategory, Payment, PaymentStatus
 from app.models.messaging import Message, MessageProvider, MessageStatus
 from app.models.patient import Patient
+from app.models.system_setting import SystemSetting
 from app.models.user import User, UserRole
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "Patient",
     "Payment",
     "PaymentStatus",
+    "SystemSetting",
     "User",
     "UserRole",
 ]
