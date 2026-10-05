@@ -30,6 +30,8 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "reports.include_timestamp": ("true", "boolean", "نمایش زمان تولید گزارش"),
     "messaging.enabled": ("false", "boolean", "فعال بودن سامانه پیام‌رسانی"),
     "messaging.default_provider": ("sms", "enum", "ارائه‌دهنده پیش‌فرض پیام"),
+    "contacts.enabled": ("true", "boolean", "فعال بودن مدیریت اطلاعات تماس"),
+    "contacts.require_phone": ("false", "boolean", "الزام ثبت شماره تماس"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -43,6 +45,8 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "reports.include_timestamp": {"true", "false"},
     "messaging.enabled": {"true", "false"},
     "messaging.default_provider": {"sms", "email", "telegram", "whatsapp", "iranian_messenger"},
+    "contacts.enabled": {"true", "false"},
+    "contacts.require_phone": {"true", "false"},
 }
 
 
@@ -95,6 +99,7 @@ class SettingsService:
                     "reports.logo", "reports.header", "reports.footer",
                     "reports.default_format", "reports.include_timestamp",
                     "messaging.enabled", "messaging.default_provider",
+                    "contacts.enabled", "contacts.require_phone",
                 },
                 updated_by=user_id,
             )
