@@ -38,6 +38,9 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.reports_include_timestamp = report_settings.get("reports.include_timestamp") or "true"
         request.state.messaging_enabled = messaging_settings.get("messaging.enabled") or "false"
         request.state.messaging_default_provider = messaging_settings.get("messaging.default_provider") or "sms"
+        contact_settings = service.get_group("contacts")
+        request.state.contacts_enabled = contact_settings.get("contacts.enabled") or "true"
+        request.state.contacts_require_phone = contact_settings.get("contacts.require_phone") or "false"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
@@ -52,6 +55,8 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.reports_include_timestamp = "true"
         request.state.messaging_enabled = "false"
         request.state.messaging_default_provider = "sms"
+        request.state.contacts_enabled = "true"
+        request.state.contacts_require_phone = "false"
     try:
         yield db
     finally:
