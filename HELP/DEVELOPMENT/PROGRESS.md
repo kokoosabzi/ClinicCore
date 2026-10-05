@@ -5,22 +5,22 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase A3 — appointment booking integrity merged)
-Repository state this file describes: branch `main`, latest merge commit `427e915`
+Last updated by: AI agent (Phase A4 — default admin credential warning)
+Repository state this file describes: branch `main`, latest A4 implementation commit `7afed42`
 
 ---
 
 ## 1. Current project phase
 
-**Phase A — Baseline hardening**, task **A4 (Default admin credential warning/documentation)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase A — Baseline hardening**, next task **B (Settings & Application Identity)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, and A3 are complete. A4 is the first remaining task in Phase A. Later phases have not started.
+A1, A2, A3, and A4 are complete. Phase B is the next remaining phase.
 
 ## 2. Current task
 
 **Task:** Phase A4 — document/warn on default admin credentials.
 
-**Task status:** NOT STARTED. A3 has been merged into `main`; no A4 implementation has been performed yet.
+**Task status:** COMPLETE. The seed script now warns when the insecure `admin` fallback password is used, and installation/authentication/run documentation clearly requires unique production admin credentials before seeding.
 
 ## 3. Completed tasks
 
@@ -31,6 +31,7 @@ A1, A2, and A3 are complete. A4 is the first remaining task in Phase A. Later ph
 | **Phase A1 — Database Test Fixture** | COMPLETE | Added isolated SQLite fixtures and 4 smoke tests; 7 tests passed. |
 | **Phase A2 — Alembic Database URL** | COMPLETE | `alembic/env.py` uses `settings.database_url`; hardcoded URL removed from `alembic.ini`; compileall, 7 tests, and URL resolution verification passed. |
 | **Phase A3 — Appointment booking integrity** | COMPLETE | PR #3 merged into `main` on 2026-10-05 as merge commit `427e9157057ea0daa64e2c176316a0ef9b723061`. Centralized active-slot validation in `AppointmentService`, added the active-slot partial unique index migration, unified HTML/JSON booking behavior, and added booking conflict scenarios. |
+| **Phase A4 — Default admin credential warning/documentation** | COMPLETE | Added a seed-time warning for the insecure `admin` fallback password and clarified the production credential requirement in `HELP/AUTHENTICATION.txt`, `HELP/IMPLEMENTATION.txt`, and `HELP/RUN.txt`. |
 
 ## 4. In-progress tasks
 
@@ -38,7 +39,6 @@ None.
 
 ## 5. Not-started tasks
 
-- **Phase A** — A4 (document/warn on default admin credentials).
 - **Phase B** — Settings & Application Identity (model, service, `/settings` UI, permissions).
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
@@ -51,7 +51,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase A3 — Appointment booking integrity**, merged to `main` as `427e915`.
+**Phase A4 — Default admin credential warning/documentation**, implemented on `main`; A4 is complete and Phase B is next.
 
 ## 7. Last successful verification
 
@@ -65,15 +65,19 @@ Do not treat the A3 PR verification as a fresh post-merge full test run; it is t
 
 ## 8. Files changed by the current task
 
-This status-only update changes:
+A4 changed:
+- `scripts/seed_admin.py`
+- `HELP/AUTHENTICATION.txt`
+- `HELP/IMPLEMENTATION.txt`
+- `HELP/RUN.txt`
+
+This continuity update changes:
 - `HELP/DEVELOPMENT/PROGRESS.md`
 - `HELP/DEVELOPMENT/CHANGELOG_DEV.md`
 
-A3 application changes are already present in `main` from merge commit `427e915`.
-
 ## 9. Current blockers
 
-- No blocker is recorded for A4 yet; A4 has not started.
+- No blocker is recorded for Phase B.
 - The pre-existing PostgreSQL migration-chain issue involving `appointmentstatus` remains a known environment/database issue and was not part of A3's scope.
 
 ## 10. Decisions relevant to the current task
@@ -85,7 +89,7 @@ A3 application changes are already present in `main` from merge commit `427e915`
 
 ## 11. Exact next action
 
-Start **Phase A4**: inspect the authentication/bootstrap/admin creation path and existing documentation for default admin credentials, then make the smallest scoped change that clearly warns operators and/or documents the required credential change. Do not change unrelated authentication behavior.
+Start **Phase B — Settings & Application Identity**. Inspect the existing configuration/application identity path and the Phase B requirements, then implement only the smallest coherent settings slice. Do not change unrelated authentication behavior.
 
 ## 12. Recommended command(s) to verify the next action
 
