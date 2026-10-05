@@ -32,6 +32,14 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "messaging.default_provider": ("sms", "enum", "ارائه‌دهنده پیش‌فرض پیام"),
     "contacts.enabled": ("true", "boolean", "فعال بودن مدیریت اطلاعات تماس"),
     "contacts.require_phone": ("false", "boolean", "الزام ثبت شماره تماس"),
+    "print.paper_size": ("A4", "enum", "اندازه کاغذ چاپ"),
+    "print.margin_top": ("10", "integer", "حاشیه بالای چاپ بر حسب میلی‌متر"),
+    "print.margin_right": ("10", "integer", "حاشیه راست چاپ بر حسب میلی‌متر"),
+    "print.margin_bottom": ("10", "integer", "حاشیه پایین چاپ بر حسب میلی‌متر"),
+    "print.margin_left": ("10", "integer", "حاشیه چپ چاپ بر حسب میلی‌متر"),
+    "print.show_logo": ("true", "boolean", "نمایش لوگو در چاپ"),
+    "print.show_header": ("true", "boolean", "نمایش سربرگ در چاپ"),
+    "print.show_footer": ("true", "boolean", "نمایش پاورقی در چاپ"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -47,6 +55,10 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "messaging.default_provider": {"sms", "email", "telegram", "whatsapp", "iranian_messenger"},
     "contacts.enabled": {"true", "false"},
     "contacts.require_phone": {"true", "false"},
+    "print.paper_size": {"A4", "A5", "thermal"},
+    "print.show_logo": {"true", "false"},
+    "print.show_header": {"true", "false"},
+    "print.show_footer": {"true", "false"},
 }
 
 
@@ -73,6 +85,13 @@ class SettingsService:
             raise ValueError(f"Unknown setting: {key}")
         if key in ALLOWED_VALUES and value not in ALLOWED_VALUES[key]:
             raise ValueError(f"Invalid value for setting: {key}")
+        if key.startswith("print.margin_"):
+            try:
+                margin = int(value or "")
+            except (TypeError, ValueError) as error:
+                raise ValueError("Invalid print margin") from error
+            if margin < 0 or margin > 100:
+                raise ValueError("Invalid print margin")
         if key == "datetime.timezone":
             if not value or value not in available_timezones():
                 raise ValueError("Invalid timezone")
@@ -100,6 +119,9 @@ class SettingsService:
                     "reports.default_format", "reports.include_timestamp",
                     "messaging.enabled", "messaging.default_provider",
                     "contacts.enabled", "contacts.require_phone",
+                    "print.paper_size", "print.margin_top", "print.margin_right",
+                    "print.margin_bottom", "print.margin_left", "print.show_logo",
+                    "print.show_header", "print.show_footer",
                 },
                 updated_by=user_id,
             )
