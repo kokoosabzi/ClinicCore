@@ -105,3 +105,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .button.secondary { background:var(--color-secondary); }
 .button.danger, button.danger { background:var(--color-danger); }
 .success { color:var(--color-success); }
+
+/* Shared PageHeader / Breadcrumb */
+.breadcrumb { display:flex; align-items:center; gap:.4rem; margin-bottom:.45rem; color:var(--color-muted); font-size:.9rem; }
+.breadcrumb a { color:var(--color-muted); }
+.breadcrumb a:hover { color:var(--color-primary); }
+.page-subtitle { margin:.3rem 0 0; color:var(--color-muted); font-size:.95rem; }
+.page-header-actions { display:flex; justify-content:flex-end; margin:-.5rem 0 1rem; }
