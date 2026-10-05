@@ -34,6 +34,8 @@ def context(request: Request, title: str, **extra):
         "app_title": getattr(request.state, "app_title", "ClinicCore"),
         "user": request.session.get("username"),
         "csrf_token": get_csrf_token(request),
+        "app_theme": getattr(request.state, "app_theme", "system"),
+        "app_density": getattr(request.state, "app_density", "comfortable"),
         **extra,
     }
 
