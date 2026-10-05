@@ -42,6 +42,8 @@ def test_admin_can_save_and_reload_settings(client):
             "reports_include_timestamp": "false",
             "messaging_enabled": "true",
             "messaging_default_provider": "email",
+            "contacts_enabled": "false",
+            "contacts_require_phone": "true",
         },
         follow_redirects=False,
     )
@@ -57,6 +59,8 @@ def test_admin_can_save_and_reload_settings(client):
     assert 'option value="pdf" selected' in saved.text
     assert "گزارش کلینیک" in saved.text
     assert 'option value="email" selected' in saved.text
+    assert 'name="contacts_enabled"' in saved.text
+    assert 'name="contacts_require_phone"' in saved.text
 
 
 def test_invalid_timezone_is_rejected(client):
