@@ -24,6 +24,7 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         app_settings = service.get_group("app")
         datetime_settings = service.get_group("datetime")
         report_settings = service.get_group("reports")
+        messaging_settings = service.get_group("messaging")
         request.state.app_name = app_settings.get("app.name") or settings.app_name
         request.state.app_title = app_settings.get("app.title") or settings.app_name
         request.state.app_theme = app_settings.get("app.theme") or "system"
@@ -35,6 +36,8 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.datetime_show_seconds = datetime_settings.get("datetime.show_seconds") or "false"
         request.state.reports_default_format = report_settings.get("reports.default_format") or "html"
         request.state.reports_include_timestamp = report_settings.get("reports.include_timestamp") or "true"
+        request.state.messaging_enabled = messaging_settings.get("messaging.enabled") or "false"
+        request.state.messaging_default_provider = messaging_settings.get("messaging.default_provider") or "sms"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
@@ -47,6 +50,8 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.datetime_show_seconds = "false"
         request.state.reports_default_format = "html"
         request.state.reports_include_timestamp = "true"
+        request.state.messaging_enabled = "false"
+        request.state.messaging_default_provider = "sms"
     try:
         yield db
     finally:
