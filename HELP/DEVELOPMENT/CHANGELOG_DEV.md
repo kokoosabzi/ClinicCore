@@ -20,6 +20,15 @@ changed).
 
 Add the newest entry at the top.
 
+## 2026-10-05 — Phase B4: system settings
+
+- Phase/Task: Phase B / B4 (System settings)
+- Commit: implementation series immediately preceding this continuity update
+- Summary: Added a persistent administrator-controlled audit logging setting under the System category. The audit middleware now respects the setting without exposing database URLs, secrets, or credentials through the Settings UI.
+- Verification: Repository-level implementation and focused test inspection completed. No fresh local compileall/pytest run was available in this GitHub-only session.
+
+
+
 ---
 
 ## 2026-10-05 — Phase B3: date and time settings
