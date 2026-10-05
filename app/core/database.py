@@ -20,16 +20,28 @@ def get_db(request: Request) -> Generator[Session, None, None]:
     try:
         from app.services.settings_service import SettingsService
 
-        app_settings = SettingsService(db).get_group("app")
+        service = SettingsService(db)
+        app_settings = service.get_group("app")
+        datetime_settings = service.get_group("datetime")
         request.state.app_name = app_settings.get("app.name") or settings.app_name
         request.state.app_title = app_settings.get("app.title") or settings.app_name
         request.state.app_theme = app_settings.get("app.theme") or "system"
         request.state.app_density = app_settings.get("app.density") or "comfortable"
+        request.state.datetime_calendar = datetime_settings.get("datetime.calendar") or "jalali"
+        request.state.datetime_timezone = datetime_settings.get("datetime.timezone") or "Asia/Tehran"
+        request.state.datetime_date_format = datetime_settings.get("datetime.date_format") or "YYYY/MM/DD"
+        request.state.datetime_time_format = datetime_settings.get("datetime.time_format") or "24"
+        request.state.datetime_show_seconds = datetime_settings.get("datetime.show_seconds") or "false"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
         request.state.app_theme = "system"
         request.state.app_density = "comfortable"
+        request.state.datetime_calendar = "jalali"
+        request.state.datetime_timezone = "Asia/Tehran"
+        request.state.datetime_date_format = "YYYY/MM/DD"
+        request.state.datetime_time_format = "24"
+        request.state.datetime_show_seconds = "false"
     try:
         yield db
     finally:
