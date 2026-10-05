@@ -21,14 +21,15 @@
 <body>
   <header class="topbar">
     <strong>{{ app_title or "کلینیک‌کور" }}</strong>
-    <nav>
-      <a href="/dashboard">داشبورد</a>
-      <a href="/patients">بیماران</a>
-      <a href="/appointments">نوبت‌ها</a>
-      <a href="/financial">مالی</a>
-      <a href="/messages">پیام‌ها</a>
+    <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
+    <nav id="main-nav">
+      <a class="{% if request.url.path == '/dashboard' %}active{% endif %}" href="/dashboard">داشبورد</a>
+      <a class="{% if request.url.path.startswith('/patients') %}active{% endif %}" href="/patients">بیماران</a>
+      <a class="{% if request.url.path.startswith('/appointments') %}active{% endif %}" href="/appointments">نوبت‌ها</a>
+      <a class="{% if request.url.path.startswith('/financial') %}active{% endif %}" href="/financial">مالی</a>
+      <a class="{% if request.url.path.startswith('/messages') %}active{% endif %}" href="/messages">پیام‌ها</a>
       {% if user and (user.role == "admin" or user["role"] == "admin") %}
-      <a href="/settings">تنظیمات</a>
+      <a class="{% if request.url.path.startswith('/settings') %}active{% endif %}" href="/settings">تنظیمات</a>
       {% endif %}
       <a href="/login">ورود</a>
       {% if user %}
@@ -36,6 +37,11 @@
       {% endif %}
     </nav>
   </header>
-  <main class="container">{% block content %}{% endblock %}</main>
+  <main class="container">
+    {% if request.url.path != "/dashboard" %}
+    <div class="page-actions no-print"><a class="back-link" href="javascript:history.back()">بازگشت</a></div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>
