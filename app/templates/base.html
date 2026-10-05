@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" dir="rtl" data-theme="{{ app_theme or 'system' }}" data-density="{{ app_density or 'comfortable' }}">
+<html lang="fa" dir="rtl" data-theme="{{ app_theme or 'system' }}" data-density="{{ app_density or 'comfortable' }}" data-calendar="{{ datetime_calendar or 'jalali' }}" data-timezone="{{ datetime_timezone or 'Asia/Tehran' }}" data-date-format="{{ datetime_date_format or 'YYYY/MM/DD' }}" data-time-format="{{ datetime_time_format or '24' }}" data-show-seconds="{{ datetime_show_seconds or 'false' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,8 +8,14 @@
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script>
-    document.documentElement.dataset.theme = "{{ app_theme or 'system' }}";
-    document.documentElement.dataset.density = "{{ app_density or 'comfortable' }}";
+    const root = document.documentElement;
+    root.dataset.theme = "{{ app_theme or 'system' }}";
+    root.dataset.density = "{{ app_density or 'comfortable' }}";
+    root.dataset.calendar = "{{ datetime_calendar or 'jalali' }}";
+    root.dataset.timezone = "{{ datetime_timezone or 'Asia/Tehran' }}";
+    root.dataset.dateFormat = "{{ datetime_date_format or 'YYYY/MM/DD' }}";
+    root.dataset.timeFormat = "{{ datetime_time_format or '24' }}";
+    root.dataset.showSeconds = "{{ datetime_show_seconds or 'false' }}";
   </script>
 </head>
 <body>
