@@ -87,3 +87,36 @@ def parse_jalali(value: str, separator: str = "/") -> date:
     except ValueError as exc:
         raise ValueError("Jalali date must contain numbers") from exc
     return jalali_to_gregorian(year, month, day)
+
+
+def parse_configured_datetime(value: str, calendar: str = "jalali") -> datetime:
+    """Parse a local date/time entered in the configured calendar into Gregorian datetime."""
+    value = value.strip()
+    try:
+        date_text, time_text = value.replace("T", " ").split(None, 1)
+        hour, minute = (int(part) for part in time_text[:5].split(":"))
+        if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+            raise ValueError
+        parts = date_text.replace("-", "/").split("/")
+        if len(parts) != 3:
+            raise ValueError
+        year, month, day = (int(part) for part in parts)
+        if calendar == "jalali":
+            converted = jalali_to_gregorian(year, month, day)
+        else:
+            converted = date(year, month, day)
+        return datetime(converted.year, converted.month, converted.day, hour, minute)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Invalid configured date/time") from exc
+
+
+def format_configured_datetime(value: datetime, calendar: str = "jalali", date_format: str = "YYYY/MM/DD", time_format: str = "24") -> str:
+    if calendar == "jalali":
+        year, month, day = gregorian_to_jalali(value)
+    else:
+        year, month, day = value.year, value.month, value.day
+    rendered_date = date_format.replace("YYYY", f"{year:04d}").replace("MM", f"{month:02d}").replace("DD", f"{day:02d}")
+    if time_format == "12":
+        hour = value.hour % 12 or 12
+        return f"{rendered_date} {hour:02d}:{value.minute:02d}"
+    return f"{rendered_date} {value.hour:02d}:{value.minute:02d}"
