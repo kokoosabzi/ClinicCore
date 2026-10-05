@@ -20,11 +20,16 @@ def get_db(request: Request) -> Generator[Session, None, None]:
     try:
         from app.services.settings_service import SettingsService
 
-        request.state.app_name = SettingsService(db).get("app.name", settings.app_name)
-        request.state.app_title = SettingsService(db).get("app.title", settings.app_name)
+        app_settings = SettingsService(db).get_group("app")
+        request.state.app_name = app_settings.get("app.name") or settings.app_name
+        request.state.app_title = app_settings.get("app.title") or settings.app_name
+        request.state.app_theme = app_settings.get("app.theme") or "system"
+        request.state.app_density = app_settings.get("app.density") or "comfortable"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
+        request.state.app_theme = "system"
+        request.state.app_density = "comfortable"
     try:
         yield db
     finally:
