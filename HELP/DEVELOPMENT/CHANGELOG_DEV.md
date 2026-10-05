@@ -22,6 +22,13 @@ Add the newest entry at the top.
 
 ---
 
+## 2026-10-05 — Phase A4: default admin credential warning
+
+- Phase/Task: Phase A / A4
+- Commit: `7afed422fd60c6764d4eb01f25237a0fd56ea556` (documentation/run-guide update; implementation commits immediately before this continuity update include `8ab5517`, `893c754`, and `4218d8d`)
+- Summary: The admin seed command now prints a security warning when the insecure `admin` fallback password is used. Authentication, implementation, and run guides now clearly identify the fallback as development-only and require production credentials to be configured before seeding.
+- Verification: Repository/code inspection completed; A4 changes are limited to the admin bootstrap warning and related documentation. No fresh local `pytest` or `compileall` run was available in this GitHub-only session.
+
 ## 2026-10-05 — Phase A3 merged to main and continuity state synchronized
 
 - Phase/Task: Phase A / A3 (appointment booking integrity)
