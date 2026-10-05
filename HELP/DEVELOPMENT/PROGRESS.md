@@ -5,26 +5,24 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase B4 — system settings)
+Last updated by: AI agent (Phase C2 — design tokens and shared UI primitives)
 Repository state this file describes: branch `main`, latest B4 reporting-settings implementation is recorded in the commits immediately preceding this continuity update
 
 ---
 
 ## 1. Current project phase
 
-**Phase B — Settings & Application Identity**, next task **B4 (Messaging/Contacts/Reporting/Printing/System settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase C — Design System & Navigation**, next task **C2 (Design tokens and shared UI primitives)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
 A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
 
 ## 2. Current task
 
-**Task:** Phase B4 — System settings slice.
+**Task:** Phase C2 — Design tokens and shared UI primitives.
 
-**Task status:** COMPLETE. Added persistent system audit logging enable/disable setting with validation and admin UI control; audit middleware now honors the setting.
+**Task status:** COMPLETE. Extracted shared visual tokens and reusable UI primitive styling into the global stylesheet without changing business behavior.
 
 ## 3. Completed tasks
-
-| **Phase C1 — Shared navigation foundation** | COMPLETE | Added active navigation state, responsive mobile menu, and shared back navigation to the base layout. |
 
 | Task | Status | Evidence |
 |---|---|---|
@@ -55,7 +53,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase C1 — Shared navigation foundation**, implemented on `main`; this slice is complete and the next task is C2 design tokens/shared UI primitives.
+**Phase C2 — Design tokens and shared UI primitives**, implemented on `main`; this slice is complete and the next task is C3 shared PageHeader/Breadcrumb components.
 
 ## 7. Last successful verification
 
@@ -107,7 +105,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase C2 — Design tokens and shared UI primitives**: extract the existing visual constants into reusable CSS variables/classes without changing business behavior.
+Start **Phase C3 — Shared PageHeader/Breadcrumb components**: introduce reusable page header and breadcrumb/back presentation without changing business behavior.
 
 ## 12. Recommended command(s) to verify the next action
 
