@@ -71,6 +71,8 @@ No local runtime verification was available in this GitHub-only session. Reposit
 
 Start **Phase D3 — Jalali-aware appointment date input/display**: adapt appointment date entry and display to the configured calendar while converting values back to the existing Gregorian datetime storage format.
 
+D3 implementation is complete on `feature-calendar-input`; pending merge to `main`.
+
 ## 12. Recommended command(s) to verify the next action
 
 ```
