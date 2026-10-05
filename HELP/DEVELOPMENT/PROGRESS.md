@@ -5,8 +5,8 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase B2 — theme/mode and appearance settings)
-Repository state this file describes: branch `main`, latest B2 implementation commit `3782ae1`
+Last updated by: AI agent (Phase B4 — reporting settings)
+Repository state this file describes: branch `main`, latest B4 reporting-settings implementation is recorded in the commits immediately preceding this continuity update
 
 ---
 
@@ -18,9 +18,9 @@ A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
 
 ## 2. Current task
 
-**Task:** Phase A4 — document/warn on default admin credentials.
+**Task:** Phase B4 — Reporting settings slice.
 
-**Task status:** COMPLETE. The seed script now warns when the insecure `admin` fallback password is used, and installation/authentication/run documentation clearly requires unique production admin credentials before seeding.
+**Task status:** COMPLETE. Added persistent report logo/header/footer, default format, and timestamp-display settings with validation and admin UI controls. Messaging, contacts, printing, and system settings remain separate B4 slices.
 
 ## 3. Completed tasks
 
@@ -42,9 +42,7 @@ None.
 
 ## 5. Not-started tasks
 
-- **Phase B3** — Date & Time settings.
-- **Phase B3** — Date & Time settings.
-- **Phase B4** — Messaging/Contacts/Reporting/Printing/System settings.
+- **Phase B4** — Messaging/Contacts/Printing/System settings.
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
 - **Phase E** — Dashboard & Reporting (today's-appointments KPI fix, charts, report pages).
@@ -56,7 +54,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase B2 — Theme/mode and appearance settings**, implemented on `main`; B2 is complete and B3 is next.
+**Phase B4 — Reporting settings slice**, implemented on `main`; this slice is complete and the next B4 slice is Messaging settings.
 
 ## 7. Last successful verification
 
@@ -70,7 +68,7 @@ Do not treat the A3 PR verification as a fresh post-merge full test run; it is t
 
 ## 8. Files changed by the current task
 
-B2 changed:
+B4 reporting-settings changed:
 - `app/services/settings_service.py`
 - `app/core/database.py`
 - `app/routers/pages.py`
@@ -108,7 +106,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase B2 — Appearance settings**: add persistent theme/mode presentation settings with validation and apply them through the shared layout without requiring a server restart. Keep B2 limited to appearance behavior.
+Start **Phase B4 — Messaging settings**: inspect the existing messaging/provider abstractions and add the smallest safe persistent configuration slice. Keep credentials/secrets out of repository and HTML.
 
 ## 12. Recommended command(s) to verify the next action
 
