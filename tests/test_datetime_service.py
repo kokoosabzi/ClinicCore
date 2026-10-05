@@ -34,3 +34,13 @@ def test_format_current_datetime_uses_timezone_and_calendar():
     now = datetime(2026, 3, 21, 20, 30, 5, tzinfo=timezone.utc)
     assert format_current_datetime("Asia/Tehran", "jalali", "YYYY/MM/DD", "24", True, now) == "1405/01/01 00:00:05"
     assert format_current_datetime("Asia/Tehran", "gregorian", "YYYY-MM-DD", "12", False, now) == "2026-03-22 12:00"
+
+
+def test_parse_configured_jalali_datetime():
+    from app.services.datetime_service import parse_configured_datetime
+    assert parse_configured_datetime("1405/01/01 12:30", "jalali").isoformat() == "2026-03-21T12:30:00"
+
+
+def test_parse_configured_gregorian_datetime():
+    from app.services.datetime_service import parse_configured_datetime
+    assert parse_configured_datetime("2026/03/21 12:30", "gregorian").isoformat() == "2026-03-21T12:30:00"
