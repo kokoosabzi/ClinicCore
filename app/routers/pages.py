@@ -47,6 +47,14 @@ def context(request: Request, title: str, **extra):
         "messaging_default_provider": getattr(request.state, "messaging_default_provider", "sms"),
         "contacts_enabled": getattr(request.state, "contacts_enabled", "true"),
         "contacts_require_phone": getattr(request.state, "contacts_require_phone", "false"),
+        "print_paper_size": getattr(request.state, "print_paper_size", "A4"),
+        "print_margin_top": getattr(request.state, "print_margin_top", "10"),
+        "print_margin_right": getattr(request.state, "print_margin_right", "10"),
+        "print_margin_bottom": getattr(request.state, "print_margin_bottom", "10"),
+        "print_margin_left": getattr(request.state, "print_margin_left", "10"),
+        "print_show_logo": getattr(request.state, "print_show_logo", "true"),
+        "print_show_header": getattr(request.state, "print_show_header", "true"),
+        "print_show_footer": getattr(request.state, "print_show_footer", "true"),
         **extra,
     }
 
@@ -86,7 +94,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -119,6 +127,14 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "messaging.default_provider": data.get("messaging_default_provider", "sms"),
         "contacts.enabled": data.get("contacts_enabled", "true"),
         "contacts.require_phone": data.get("contacts_require_phone", "false"),
+        "print.paper_size": data.get("print_paper_size", "A4"),
+        "print.margin_top": data.get("print_margin_top", "10"),
+        "print.margin_right": data.get("print_margin_right", "10"),
+        "print.margin_bottom": data.get("print_margin_bottom", "10"),
+        "print.margin_left": data.get("print_margin_left", "10"),
+        "print.show_logo": data.get("print_show_logo", "true"),
+        "print.show_header": data.get("print_show_header", "true"),
+        "print.show_footer": data.get("print_show_footer", "true"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
