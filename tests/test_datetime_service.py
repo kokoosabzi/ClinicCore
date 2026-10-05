@@ -25,3 +25,12 @@ def test_invalid_input_is_rejected():
         jalali_to_gregorian(1405, 13, 1)
     with pytest.raises(ValueError):
         parse_jalali("bad-date")
+
+
+def test_format_current_datetime_uses_timezone_and_calendar():
+    from datetime import datetime, timezone
+    from app.services.datetime_service import format_current_datetime
+
+    now = datetime(2026, 3, 21, 20, 30, 5, tzinfo=timezone.utc)
+    assert format_current_datetime("Asia/Tehran", "jalali", "YYYY/MM/DD", "24", True, now) == "1405/01/01 00:00:05"
+    assert format_current_datetime("Asia/Tehran", "gregorian", "YYYY-MM-DD", "12", False, now) == "2026-03-22 12:00"
