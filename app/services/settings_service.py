@@ -28,6 +28,8 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "reports.footer": ("", "string", "پاورقی گزارش"),
     "reports.default_format": ("html", "enum", "قالب پیش‌فرض گزارش"),
     "reports.include_timestamp": ("true", "boolean", "نمایش زمان تولید گزارش"),
+    "messaging.enabled": ("false", "boolean", "فعال بودن سامانه پیام‌رسانی"),
+    "messaging.default_provider": ("sms", "enum", "ارائه‌دهنده پیش‌فرض پیام"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -39,6 +41,8 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "datetime.show_seconds": {"true", "false"},
     "reports.default_format": {"html", "csv", "pdf"},
     "reports.include_timestamp": {"true", "false"},
+    "messaging.enabled": {"true", "false"},
+    "messaging.default_provider": {"sms", "email", "telegram", "whatsapp", "iranian_messenger"},
 }
 
 
@@ -90,6 +94,7 @@ class SettingsService:
                     "datetime.time_format", "datetime.show_seconds",
                     "reports.logo", "reports.header", "reports.footer",
                     "reports.default_format", "reports.include_timestamp",
+                    "messaging.enabled", "messaging.default_provider",
                 },
                 updated_by=user_id,
             )
