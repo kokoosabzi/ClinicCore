@@ -36,6 +36,11 @@ def context(request: Request, title: str, **extra):
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
+        "datetime_calendar": getattr(request.state, "datetime_calendar", "jalali"),
+        "datetime_timezone": getattr(request.state, "datetime_timezone", "Asia/Tehran"),
+        "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
+        "datetime_time_format": getattr(request.state, "datetime_time_format", "24"),
+        "datetime_show_seconds": getattr(request.state, "datetime_show_seconds", "false"),
         **extra,
     }
 
@@ -75,7 +80,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("clinic"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -94,13 +99,18 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "clinic.logo": data.get("clinic_logo", "").strip(),
         "clinic.header_text": data.get("clinic_header_text", "").strip(),
         "clinic.footer_text": data.get("clinic_footer_text", "").strip(),
+        "datetime.calendar": data.get("datetime_calendar", "jalali"),
+        "datetime.timezone": data.get("datetime_timezone", "Asia/Tehran").strip(),
+        "datetime.date_format": data.get("datetime_date_format", "YYYY/MM/DD"),
+        "datetime.time_format": data.get("datetime_time_format", "24"),
+        "datetime.show_seconds": data.get("datetime_show_seconds", "false"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("clinic"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
     SettingsService(db).set_many(values)
