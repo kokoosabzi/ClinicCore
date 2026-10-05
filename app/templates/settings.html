@@ -55,6 +55,24 @@
     </select>
   </label>
 
+  <h2>گزارش‌ها</h2>
+  <label>لوگوی گزارش<input name="reports_logo" value="{{ settings['reports.logo'] or '' }}" maxlength="4000"></label>
+  <label>سربرگ گزارش<textarea name="reports_header" maxlength="4000">{{ settings['reports.header'] or '' }}</textarea></label>
+  <label>پاورقی گزارش<textarea name="reports_footer" maxlength="4000">{{ settings['reports.footer'] or '' }}</textarea></label>
+  <label>قالب پیش‌فرض گزارش
+    <select name="reports_default_format">
+      <option value="html" {% if settings['reports.default_format'] == 'html' %}selected{% endif %}>HTML</option>
+      <option value="csv" {% if settings['reports.default_format'] == 'csv' %}selected{% endif %}>CSV</option>
+      <option value="pdf" {% if settings['reports.default_format'] == 'pdf' %}selected{% endif %}>PDF</option>
+    </select>
+  </label>
+  <label>نمایش زمان تولید گزارش
+    <select name="reports_include_timestamp">
+      <option value="true" {% if settings['reports.include_timestamp'] == 'true' %}selected{% endif %}>بله</option>
+      <option value="false" {% if settings['reports.include_timestamp'] == 'false' %}selected{% endif %}>خیر</option>
+    </select>
+  </label>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
