@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>داشبورد</h1>
+{% set page_title = "داشبورد" %}
+{% include "partials/page_header.html" with context %}
 <div class="grid stats">
   <div class="card"><span>بیماران</span><strong>{{ summary.patients if summary else 0 }}</strong></div>
   <div class="card"><span>نوبت‌ها</span><strong>{{ summary.appointments if summary else 0 }}</strong></div>
