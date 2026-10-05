@@ -40,6 +40,7 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "print.show_logo": ("true", "boolean", "نمایش لوگو در چاپ"),
     "print.show_header": ("true", "boolean", "نمایش سربرگ در چاپ"),
     "print.show_footer": ("true", "boolean", "نمایش پاورقی در چاپ"),
+    "system.audit_enabled": ("true", "boolean", "فعال بودن ثبت رویدادهای سامانه"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -59,6 +60,7 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "print.show_logo": {"true", "false"},
     "print.show_header": {"true", "false"},
     "print.show_footer": {"true", "false"},
+    "system.audit_enabled": {"true", "false"},
 }
 
 
@@ -122,6 +124,7 @@ class SettingsService:
                     "print.paper_size", "print.margin_top", "print.margin_right",
                     "print.margin_bottom", "print.margin_left", "print.show_logo",
                     "print.show_header", "print.show_footer",
+                    "system.audit_enabled",
                 },
                 updated_by=user_id,
             )
