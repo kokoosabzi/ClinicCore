@@ -9,6 +9,21 @@
   <label>نام سامانه<input name="app_name" value="{{ settings['app.name'] or '' }}" maxlength="4000" required></label>
   <label>عنوان نمایشی سامانه<input name="app_title" value="{{ settings['app.title'] or '' }}" maxlength="4000" required></label>
 
+  <h2>ظاهر</h2>
+  <label>حالت نمایش
+    <select name="app_theme">
+      <option value="system" {% if settings['app.theme'] == 'system' %}selected{% endif %}>همگام با سیستم</option>
+      <option value="light" {% if settings['app.theme'] == 'light' %}selected{% endif %}>روشن</option>
+      <option value="dark" {% if settings['app.theme'] == 'dark' %}selected{% endif %}>تاریک</option>
+    </select>
+  </label>
+  <label>تراکم نمایش
+    <select name="app_density">
+      <option value="comfortable" {% if settings['app.density'] == 'comfortable' %}selected{% endif %}>راحت</option>
+      <option value="compact" {% if settings['app.density'] == 'compact' %}selected{% endif %}>فشرده</option>
+    </select>
+  </label>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
