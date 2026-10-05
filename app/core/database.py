@@ -39,8 +39,17 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.messaging_enabled = messaging_settings.get("messaging.enabled") or "false"
         request.state.messaging_default_provider = messaging_settings.get("messaging.default_provider") or "sms"
         contact_settings = service.get_group("contacts")
+        print_settings = service.get_group("print")
         request.state.contacts_enabled = contact_settings.get("contacts.enabled") or "true"
         request.state.contacts_require_phone = contact_settings.get("contacts.require_phone") or "false"
+        request.state.print_paper_size = print_settings.get("print.paper_size") or "A4"
+        request.state.print_margin_top = print_settings.get("print.margin_top") or "10"
+        request.state.print_margin_right = print_settings.get("print.margin_right") or "10"
+        request.state.print_margin_bottom = print_settings.get("print.margin_bottom") or "10"
+        request.state.print_margin_left = print_settings.get("print.margin_left") or "10"
+        request.state.print_show_logo = print_settings.get("print.show_logo") or "true"
+        request.state.print_show_header = print_settings.get("print.show_header") or "true"
+        request.state.print_show_footer = print_settings.get("print.show_footer") or "true"
     except Exception:
         request.state.app_name = settings.app_name
         request.state.app_title = settings.app_name
@@ -57,6 +66,14 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.messaging_default_provider = "sms"
         request.state.contacts_enabled = "true"
         request.state.contacts_require_phone = "false"
+        request.state.print_paper_size = "A4"
+        request.state.print_margin_top = "10"
+        request.state.print_margin_right = "10"
+        request.state.print_margin_bottom = "10"
+        request.state.print_margin_left = "10"
+        request.state.print_show_logo = "true"
+        request.state.print_show_header = "true"
+        request.state.print_show_footer = "true"
     try:
         yield db
     finally:
