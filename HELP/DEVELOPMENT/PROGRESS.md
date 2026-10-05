@@ -5,16 +5,16 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase A4 — default admin credential warning)
-Repository state this file describes: branch `main`, latest A4 implementation commit `7afed42`
+Last updated by: AI agent (Phase B1 — persistent application identity settings)
+Repository state this file describes: branch `main`, latest B1 implementation commit `720ef4a`
 
 ---
 
 ## 1. Current project phase
 
-**Phase A — Baseline hardening**, next task **B (Settings & Application Identity)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase B — Settings & Application Identity**, task **B2 (Appearance settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, and A4 are complete. Phase B is the next remaining phase.
+A1, A2, A3, A4, and B1 are complete. B2 is the next task within Phase B.
 
 ## 2. Current task
 
@@ -32,6 +32,7 @@ A1, A2, A3, and A4 are complete. Phase B is the next remaining phase.
 | **Phase A2 — Alembic Database URL** | COMPLETE | `alembic/env.py` uses `settings.database_url`; hardcoded URL removed from `alembic.ini`; compileall, 7 tests, and URL resolution verification passed. |
 | **Phase A3 — Appointment booking integrity** | COMPLETE | PR #3 merged into `main` on 2026-10-05 as merge commit `427e9157057ea0daa64e2c176316a0ef9b723061`. Centralized active-slot validation in `AppointmentService`, added the active-slot partial unique index migration, unified HTML/JSON booking behavior, and added booking conflict scenarios. |
 | **Phase A4 — Default admin credential warning/documentation** | COMPLETE | Added a seed-time warning for the insecure `admin` fallback password and clarified the production credential requirement in `HELP/AUTHENTICATION.txt`, `HELP/IMPLEMENTATION.txt`, and `HELP/RUN.txt`. |
+| **Phase B1 — Persistent application identity settings** | COMPLETE | Added persistent `system_settings`, a central `SettingsService`, admin-only `/settings` UI, application/clinic identity fields, and dynamic application identity in shared/auth/home templates. |
 
 ## 4. In-progress tasks
 
@@ -39,7 +40,9 @@ None.
 
 ## 5. Not-started tasks
 
-- **Phase B** — Settings & Application Identity (model, service, `/settings` UI, permissions).
+- **Phase B2** — Appearance settings (theme/mode and presentation preferences).
+- **Phase B3** — Date & Time settings.
+- **Phase B4** — Messaging/Contacts/Reporting/Printing/System settings.
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
 - **Phase E** — Dashboard & Reporting (today's-appointments KPI fix, charts, report pages).
@@ -51,7 +54,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase A4 — Default admin credential warning/documentation**, implemented on `main`; A4 is complete and Phase B is next.
+**Phase B1 — Persistent application identity settings**, implemented on `main`; B1 is complete and B2 is next.
 
 ## 7. Last successful verification
 
@@ -65,11 +68,19 @@ Do not treat the A3 PR verification as a fresh post-merge full test run; it is t
 
 ## 8. Files changed by the current task
 
-A4 changed:
-- `scripts/seed_admin.py`
-- `HELP/AUTHENTICATION.txt`
-- `HELP/IMPLEMENTATION.txt`
-- `HELP/RUN.txt`
+B1 changed:
+- `app/models/system_setting.py`
+- `app/models/__init__.py`
+- `app/services/settings_service.py`
+- `app/core/database.py`
+- `app/routers/pages.py`
+- `app/main.py`
+- `app/templates/base.html`
+- `app/templates/home.html`
+- `app/templates/settings.html`
+- `app/templates/auth/login.html`
+- `alembic/versions/20261005_0005_system_settings.py`
+- `tests/test_settings.py`
 
 This continuity update changes:
 - `HELP/DEVELOPMENT/PROGRESS.md`
@@ -89,7 +100,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase B — Settings & Application Identity**. Inspect the existing configuration/application identity path and the Phase B requirements, then implement only the smallest coherent settings slice. Do not change unrelated authentication behavior.
+Start **Phase B2 — Appearance settings**: add persistent theme/mode presentation settings with validation and apply them through the shared layout without requiring a server restart. Keep B2 limited to appearance behavior.
 
 ## 12. Recommended command(s) to verify the next action
 
