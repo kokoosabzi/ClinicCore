@@ -1,0 +1,12 @@
+<nav class="breadcrumb no-print" aria-label="مسیر صفحه">
+  <a href="/dashboard">داشبورد</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ page_title }}</span>
+</nav>
+<div class="page-title">
+  <div>
+    <h1>{{ page_title }}</h1>
+    {% if page_subtitle %}<p class="page-subtitle">{{ page_subtitle }}</p>{% endif %}
+  </div>
+  {% if action_url and action_label %}<a class="button" href="{{ action_url }}">{{ action_label }}</a>{% endif %}
+</div>
