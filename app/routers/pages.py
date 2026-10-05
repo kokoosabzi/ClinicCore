@@ -20,13 +20,22 @@ from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
 from app.services.appointment_service import AppointmentService, AppointmentSlotUnavailableError
 from app.services.patient_service import PatientService
+from app.services.settings_service import SettingsService
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory="app/templates")
 
 
 def context(request: Request, title: str, **extra):
-    return {"request": request, "title": title, "user": request.session.get("username"), "csrf_token": get_csrf_token(request), **extra}
+    return {
+        "request": request,
+        "title": title,
+        "app_name": getattr(request.state, "app_name", "ClinicCore"),
+        "app_title": getattr(request.state, "app_title", "ClinicCore"),
+        "user": request.session.get("username"),
+        "csrf_token": get_csrf_token(request),
+        **extra,
+    }
 
 
 def render(request: Request, template: str, title: str, **extra):
@@ -56,6 +65,46 @@ def patient_payload(data: dict[str, str]) -> dict[str, str | None]:
         "phone": data.get("phone") or None,
         "notes": data.get("notes") or None,
     }
+
+
+@router.get("/settings", response_class=HTMLResponse)
+def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+    return render(
+        request,
+        "settings.html",
+        "تنظیمات سامانه",
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("clinic"),
+        saved=request.query_params.get("saved") == "1",
+    )
+
+
+@router.post("/settings")
+async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
+    values = {
+        "app.name": data.get("app_name", "").strip(),
+        "app.title": data.get("app_title", "").strip(),
+        "clinic.name": data.get("clinic_name", "").strip(),
+        "clinic.address": data.get("clinic_address", "").strip(),
+        "clinic.phone": data.get("clinic_phone", "").strip(),
+        "clinic.email": data.get("clinic_email", "").strip(),
+        "clinic.logo": data.get("clinic_logo", "").strip(),
+        "clinic.header_text": data.get("clinic_header_text", "").strip(),
+        "clinic.footer_text": data.get("clinic_footer_text", "").strip(),
+    }
+    if not values["app.name"] or not values["app.title"]:
+        return render(
+            request,
+            "settings.html",
+            "تنظیمات سامانه",
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("clinic"),
+            error="نام سامانه و عنوان نمایشی الزامی هستند.",
+        )
+    SettingsService(db).set_many(values)
+    request.state.app_name = values["app.name"]
+    request.state.app_title = values["app.title"]
+    return RedirectResponse(url="/settings?saved=1", status_code=303)
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
@@ -227,26 +276,27 @@ async def create_message_from_form(request: Request, db: Session = Depends(get_d
 def print_patient(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     patient = db.get(Patient, patient_id)
     return templates.TemplateResponse(
-    request=request,
-    name="print/patient_card.html",
-    context=context(request, "چاپ پرونده بیمار", patient=patient),
-)
+        request=request,
+        name="print/patient_card.html",
+        context=context(request, "چاپ پرونده بیمار", patient=patient),
+    )
 
 
 @router.get("/print/appointments/{appointment_id}", response_class=HTMLResponse)
 def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointment = db.get(Appointment, appointment_id)
     return templates.TemplateResponse(
-    request=request,
-    name="print/appointment_receipt.html",
-    context=context(request, "چاپ رسید نوبت", appointment=appointment),
-)
+        request=request,
+        name="print/appointment_receipt.html",
+        context=context(request, "چاپ رسید نوبت", appointment=appointment),
+    )
+
 
 @router.get("/print/payments/{payment_id}", response_class=HTMLResponse)
 def print_payment(payment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     payment = db.get(Payment, payment_id)
     return templates.TemplateResponse(
-    request=request,
-    name="print/payment_receipt.html",
-    context=context(request, "چاپ رسید پرداخت", payment=payment),
-)
+        request=request,
+        name="print/payment_receipt.html",
+        context=context(request, "چاپ رسید پرداخت", payment=payment),
+    )
