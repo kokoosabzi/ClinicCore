@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-title"><h1>تقویم نوبت‌ها</h1><a class="button" href="/appointments/new">نوبت جدید</a></div>
+{% set page_title = "تقویم نوبت‌ها" %}
+{% set action_url = "/appointments/new" %}
+{% set action_label = "نوبت جدید" %}
+{% include "partials/page_header.html" with context %}
 <table><thead><tr><th>شناسه</th><th>بیمار</th><th>زمان</th><th>وضعیت</th><th>چاپ</th></tr></thead><tbody>{% for item in appointments %}<tr><td>{{ item.id }}</td><td>{{ item.patient_id }}</td><td>{{ item.starts_at }}</td><td>{{ item.status }}</td><td><a href="/print/appointments/{{ item.id }}">رسید</a></td></tr>{% else %}<tr><td colspan="5">نوبتی ثبت نشده است.</td></tr>{% endfor %}</tbody></table>
 {% endblock %}
