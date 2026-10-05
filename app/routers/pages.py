@@ -55,6 +55,7 @@ def context(request: Request, title: str, **extra):
         "print_show_logo": getattr(request.state, "print_show_logo", "true"),
         "print_show_header": getattr(request.state, "print_show_header", "true"),
         "print_show_footer": getattr(request.state, "print_show_footer", "true"),
+        "system_audit_enabled": getattr(request.state, "system_audit_enabled", "true"),
         **extra,
     }
 
@@ -135,6 +136,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "print.show_logo": data.get("print_show_logo", "true"),
         "print.show_header": data.get("print_show_header", "true"),
         "print.show_footer": data.get("print_show_footer", "true"),
+        "system.audit_enabled": data.get("system_audit_enabled", "true"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
