@@ -12,9 +12,9 @@ Repository state this file describes: branch `main`, latest B2 implementation co
 
 ## 1. Current project phase
 
-**Phase B — Settings & Application Identity**, next task **B3 (Date & Time settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase B — Settings & Application Identity**, next task **B4 (Messaging/Contacts/Reporting/Printing/System settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, A4, B1, and B2 are complete. B3 is the next task within Phase B.
+A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
 
 ## 2. Current task
 
@@ -34,6 +34,7 @@ A1, A2, A3, A4, B1, and B2 are complete. B3 is the next task within Phase B.
 | **Phase A4 — Default admin credential warning/documentation** | COMPLETE | Added a seed-time warning for the insecure `admin` fallback password and clarified the production credential requirement in `HELP/AUTHENTICATION.txt`, `HELP/IMPLEMENTATION.txt`, and `HELP/RUN.txt`. |
 | **Phase B1 — Persistent application identity settings** | COMPLETE | Added persistent `system_settings`, a central `SettingsService`, admin-only `/settings` UI, application/clinic identity fields, and dynamic application identity in shared/auth/home templates. |
 | **Phase B2 — Theme/mode and appearance settings** | COMPLETE | Added persistent light/dark/system theme and comfortable/compact density settings, validation, admin UI controls, and dynamic application-wide rendering through the shared layout. |
+| **Phase B3 — Date & Time settings** | COMPLETE | Added persistent calendar, timezone, date-format, time-format, and seconds-display preferences, validation, admin UI controls, and shared-layout propagation. Business datetime storage and Jalali conversion remain outside B3 scope. |
 
 ## 4. In-progress tasks
 
