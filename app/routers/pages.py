@@ -235,12 +235,12 @@ async def delete_patient_from_form(patient_id: int, request: Request, db: Sessio
 @router.get("/appointments", response_class=HTMLResponse)
 def appointments_index(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointments = list(db.scalars(select(Appointment).where(Appointment.is_deleted.is_(False)).order_by(Appointment.starts_at.desc())))
-    display_times = {item.id: format_configured_datetime(item.starts_at, request.state.datetime_calendar, request.state.datetime_date_format, request.state.datetime_time_format) for item in appointments}
+    display_times = {item.id: format_configured_datetime(item.starts_at, request.state.datetime_calendar, request.state.datetime_date_format, request.state.datetime_time_format, request.state.datetime_show_seconds == "true") for item in appointments}
     return render(request, "appointments/index.html", "تقویم نوبت‌ها", appointments=appointments, display_times=display_times)
 
 
 @router.get("/appointments/new", response_class=HTMLResponse)
-def appointment_form(request: Request, user=Depends(require_user)):
+def appointment_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     return render(request, "appointments/form.html", "ثبت نوبت")
 
 
