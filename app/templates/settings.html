@@ -73,6 +73,24 @@
     </select>
   </label>
 
+  <h2>پیام‌رسانی</h2>
+  <label>فعال بودن پیام‌رسانی
+    <select name="messaging_enabled">
+      <option value="false" {% if settings['messaging.enabled'] == 'false' %}selected{% endif %}>خیر</option>
+      <option value="true" {% if settings['messaging.enabled'] == 'true' %}selected{% endif %}>بله</option>
+    </select>
+  </label>
+  <label>ارائه‌دهنده پیش‌فرض
+    <select name="messaging_default_provider">
+      <option value="sms" {% if settings['messaging.default_provider'] == 'sms' %}selected{% endif %}>پیامک</option>
+      <option value="email" {% if settings['messaging.default_provider'] == 'email' %}selected{% endif %}>ایمیل</option>
+      <option value="telegram" {% if settings['messaging.default_provider'] == 'telegram' %}selected{% endif %}>تلگرام</option>
+      <option value="whatsapp" {% if settings['messaging.default_provider'] == 'whatsapp' %}selected{% endif %}>واتساپ</option>
+      <option value="iranian_messenger" {% if settings['messaging.default_provider'] == 'iranian_messenger' %}selected{% endif %}>پیام‌رسان ایرانی</option>
+    </select>
+  </label>
+  <p class="muted">کلیدها، رمزها و اطلاعات محرمانه ارائه‌دهندگان در این تنظیمات ذخیره نمی‌شوند.</p>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
