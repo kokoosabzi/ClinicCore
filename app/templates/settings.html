@@ -105,6 +105,28 @@
     </select>
   </label>
 
+  <h2>چاپ</h2>
+  <label>اندازه کاغذ چاپ
+    <select name="print_paper_size">
+      <option value="A4" {% if settings["print.paper_size"] == "A4" %}selected{% endif %}>A4</option>
+      <option value="A5" {% if settings["print.paper_size"] == "A5" %}selected{% endif %}>A5</option>
+      <option value="thermal" {% if settings["print.paper_size"] == "thermal" %}selected{% endif %}>حرارتی</option>
+    </select>
+  </label>
+  <label>حاشیه بالا (میلی‌متر)<input type="number" name="print_margin_top" min="0" max="100" value="{{ settings["print.margin_top"] or "10" }}"></label>
+  <label>حاشیه راست (میلی‌متر)<input type="number" name="print_margin_right" min="0" max="100" value="{{ settings["print.margin_right"] or "10" }}"></label>
+  <label>حاشیه پایین (میلی‌متر)<input type="number" name="print_margin_bottom" min="0" max="100" value="{{ settings["print.margin_bottom"] or "10" }}"></label>
+  <label>حاشیه چپ (میلی‌متر)<input type="number" name="print_margin_left" min="0" max="100" value="{{ settings["print.margin_left"] or "10" }}"></label>
+  <label>نمایش لوگو
+    <select name="print_show_logo"><option value="true" {% if settings["print.show_logo"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_logo"] == "false" %}selected{% endif %}>خیر</option></select>
+  </label>
+  <label>نمایش سربرگ
+    <select name="print_show_header"><option value="true" {% if settings["print.show_header"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_header"] == "false" %}selected{% endif %}>خیر</option></select>
+  </label>
+  <label>نمایش پاورقی
+    <select name="print_show_footer"><option value="true" {% if settings["print.show_footer"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_footer"] == "false" %}selected{% endif %}>خیر</option></select>
+  </label>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
