@@ -1,39 +1,48 @@
 # Authentication Guide
 
 ## Initial admin user
-Default development credentials are:
 
-- Username: `admin`
-- Password: `admin`
+The seed script creates the first admin account and marks it for a mandatory password change on first login.
 
-Override with environment variables before seeding:
+**Security warning:** \`admin\` / \`admin\` is a development-only fallback. Never use the fallback password in a production deployment. Set a unique \`ADMIN_USERNAME\` and a strong \`ADMIN_PASSWORD\` in \`.env\` **before** running the seed script.
 
-```env
+\`\`\`env
 ADMIN_USERNAME=admin
-ADMIN_PASSWORD=change-this-password
+ADMIN_PASSWORD=replace-with-a-strong-unique-password
 SECRET_KEY=replace-with-long-random-secret
-```
+\`\`\`
+
+If the admin user has already been created with the fallback password, change it immediately at first login or with:
+
+\`\`\`bash
+python scripts/change_admin_password.py
+\`\`\`
 
 ## Create admin
+
 After migrations and database configuration:
 
-```bash
+\`\`\`bash
 python scripts/seed_admin.py
-```
+\`\`\`
+
+The seed command is idempotent: if the configured admin username already exists, it does not overwrite the existing account.
 
 ## Login
+
 Open:
 
-```text
+\`\`\`text
 http://127.0.0.1:8000/login
-```
+\`\`\`
 
-Sessions use Starlette `SessionMiddleware`. Production deployments must set a strong `SECRET_KEY` and HTTPS settings.
+Sessions use Starlette \`SessionMiddleware\`. Production deployments must set a strong \`SECRET_KEY\` and HTTPS settings.
 
 ## Change admin password
-```bash
+
+\`\`\`bash
 python scripts/change_admin_password.py
-```
+\`\`\`
 
 HTML pages and JSON API endpoints are protected with session/RBAC dependencies. UI write forms include CSRF tokens.
 
