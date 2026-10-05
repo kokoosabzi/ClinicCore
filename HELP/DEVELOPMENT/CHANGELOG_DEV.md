@@ -1,3 +1,10 @@
+## 2026-10-06 — Phase D1: Jalali date service
+
+- Phase/Task: Phase D / D1
+- Commit: implementation commits on branch codex-d1-jalali
+- Summary: Added focused Gregorian/Jalali conversion, formatting, and parsing helpers under app/services/datetime_service.py. Added unit coverage for known conversions, round-trip conversion, datetime display, and invalid input. Appointment storage semantics were left unchanged.
+- Verification: Repository implementation inspection completed. No fresh local compileall/pytest run was available in this GitHub-only session.
+
 ## 2026-10-05 — Phase C2: design tokens and shared UI primitives
 - Phase/Task: Phase C / C2
 - Commit: `dbc25789b7ae8e316f671fb4cd4d8f36946b965c`
