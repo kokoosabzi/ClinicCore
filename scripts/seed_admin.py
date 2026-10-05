@@ -23,6 +23,10 @@ def main() -> None:
             )
             db.commit()
             print(f"Created admin user: {settings.admin_username}")
+            if settings.admin_password == "admin":
+                print("WARNING: The default admin password is insecure. Set ADMIN_PASSWORD before seeding a production deployment.")
+            else:
+                print("The admin account is marked to require a password change on first login.")
         else:
             print(f"Admin user already exists: {settings.admin_username}")
     finally:
