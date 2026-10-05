@@ -5,16 +5,16 @@
 > If this file disagrees with a chat/session memory, this file wins.
 
 Last updated: 2026-10-05
-Last updated by: AI agent (Phase B1 — persistent application identity settings)
-Repository state this file describes: branch `main`, latest B1 implementation commit `720ef4a`
+Last updated by: AI agent (Phase B2 — theme/mode and appearance settings)
+Repository state this file describes: branch `main`, latest B2 implementation commit `3782ae1`
 
 ---
 
 ## 1. Current project phase
 
-**Phase B — Settings & Application Identity**, task **B2 (Appearance settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
+**Phase B — Settings & Application Identity**, next task **B3 (Date & Time settings)**, per `MASTER_PLAN.md` §4 and the phased plan below: **Phase A (baseline hardening) → B (Settings) → C (Design System) → D (Calendar) → E (Dashboard/Reporting) → F (Messaging/Contacts) → G (Printing) → H (SQLite) → I (Plugins) → J (Final QA)**.
 
-A1, A2, A3, A4, and B1 are complete. B2 is the next task within Phase B.
+A1, A2, A3, A4, B1, and B2 are complete. B3 is the next task within Phase B.
 
 ## 2. Current task
 
@@ -33,6 +33,7 @@ A1, A2, A3, A4, and B1 are complete. B2 is the next task within Phase B.
 | **Phase A3 — Appointment booking integrity** | COMPLETE | PR #3 merged into `main` on 2026-10-05 as merge commit `427e9157057ea0daa64e2c176316a0ef9b723061`. Centralized active-slot validation in `AppointmentService`, added the active-slot partial unique index migration, unified HTML/JSON booking behavior, and added booking conflict scenarios. |
 | **Phase A4 — Default admin credential warning/documentation** | COMPLETE | Added a seed-time warning for the insecure `admin` fallback password and clarified the production credential requirement in `HELP/AUTHENTICATION.txt`, `HELP/IMPLEMENTATION.txt`, and `HELP/RUN.txt`. |
 | **Phase B1 — Persistent application identity settings** | COMPLETE | Added persistent `system_settings`, a central `SettingsService`, admin-only `/settings` UI, application/clinic identity fields, and dynamic application identity in shared/auth/home templates. |
+| **Phase B2 — Theme/mode and appearance settings** | COMPLETE | Added persistent light/dark/system theme and comfortable/compact density settings, validation, admin UI controls, and dynamic application-wide rendering through the shared layout. |
 
 ## 4. In-progress tasks
 
@@ -40,7 +41,7 @@ None.
 
 ## 5. Not-started tasks
 
-- **Phase B2** — Appearance settings (theme/mode and presentation preferences).
+- **Phase B3** — Date & Time settings.
 - **Phase B3** — Date & Time settings.
 - **Phase B4** — Messaging/Contacts/Reporting/Printing/System settings.
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
@@ -54,7 +55,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase B1 — Persistent application identity settings**, implemented on `main`; B1 is complete and B2 is next.
+**Phase B2 — Theme/mode and appearance settings**, implemented on `main`; B2 is complete and B3 is next.
 
 ## 7. Last successful verification
 
@@ -68,8 +69,14 @@ Do not treat the A3 PR verification as a fresh post-merge full test run; it is t
 
 ## 8. Files changed by the current task
 
-B1 changed:
-- `app/models/system_setting.py`
+B2 changed:
+- `app/services/settings_service.py`
+- `app/core/database.py`
+- `app/routers/pages.py`
+- `app/main.py`
+- `app/templates/base.html`
+- `app/templates/settings.html`
+- `app/static/css/app.css`
 - `app/models/__init__.py`
 - `app/services/settings_service.py`
 - `app/core/database.py`
