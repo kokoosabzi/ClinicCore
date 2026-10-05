@@ -113,7 +113,16 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
-    SettingsService(db).set_many(values)
+    try:
+        SettingsService(db).set_many(values)
+    except ValueError as error:
+        return render(
+            request,
+            "settings.html",
+            "تنظیمات سامانه",
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
+            error="مقدار یکی از تنظیمات تاریخ و زمان معتبر نیست.",
+        )
     request.state.app_name = values["app.name"]
     request.state.app_title = values["app.title"]
     return RedirectResponse(url="/settings?saved=1", status_code=303)
