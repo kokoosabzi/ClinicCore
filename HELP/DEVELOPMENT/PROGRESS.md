@@ -24,6 +24,8 @@ A1, A2, A3, A4, B1, B2, and B3 are complete. B4 is the next task within Phase B.
 
 ## 3. Completed tasks
 
+| **Phase C1 — Shared navigation foundation** | COMPLETE | Added active navigation state, responsive mobile menu, and shared back navigation to the base layout. |
+
 | Task | Status | Evidence |
 |---|---|---|
 | Repository inspection against `AGENTS.md` + development specs | COMPLETE | Gap Analysis delivered (20-section document + phased plan), based on a full read of `app/`, `alembic/`, `tests/`, `HELP/`, and a live `python -m compileall app` + `pytest` run (3/3 passed) on commit `e46d5c24`. |
@@ -43,7 +45,6 @@ None.
 ## 5. Not-started tasks
 
 - **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
-- **Phase C** — Design System & Navigation (design tokens, shared partials, Back/Breadcrumb, theme).
 - **Phase D** — Calendar & Date/Time (Jalali conversion service, header clock, date picker).
 - **Phase E** — Dashboard & Reporting (today's-appointments KPI fix, charts, report pages).
 - **Phase F** — Messaging & Contacts (Contact model/CRUD, honest provider selection).
@@ -54,7 +55,7 @@ None.
 
 ## 6. Last completed checkpoint
 
-**Phase B4 — System settings slice**, implemented on `main`; B4 is complete and the next task is Phase C.
+**Phase C1 — Shared navigation foundation**, implemented on `main`; this slice is complete and the next task is C2 design tokens/shared UI primitives.
 
 ## 7. Last successful verification
 
@@ -106,7 +107,7 @@ This continuity update changes:
 
 ## 11. Exact next action
 
-Start **Phase C — Design System & Navigation**: inspect the existing shared layout and CSS, then implement the smallest safe design-system/navigation slice.
+Start **Phase C2 — Design tokens and shared UI primitives**: extract the existing visual constants into reusable CSS variables/classes without changing business behavior.
 
 ## 12. Recommended command(s) to verify the next action
 
