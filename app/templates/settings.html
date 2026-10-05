@@ -24,6 +24,37 @@
     </select>
   </label>
 
+  <h2>تاریخ و زمان</h2>
+  <label>تقویم نمایش
+    <select name="datetime_calendar">
+      <option value="jalali" {% if settings['datetime.calendar'] == 'jalali' %}selected{% endif %}>جلالی</option>
+      <option value="gregorian" {% if settings['datetime.calendar'] == 'gregorian' %}selected{% endif %}>میلادی</option>
+    </select>
+  </label>
+  <label>منطقه زمانی
+    <input name="datetime_timezone" value="{{ settings['datetime.timezone'] or 'Asia/Tehran' }}" maxlength="100" required>
+  </label>
+  <label>قالب تاریخ
+    <select name="datetime_date_format">
+      <option value="YYYY/MM/DD" {% if settings['datetime.date_format'] == 'YYYY/MM/DD' %}selected{% endif %}>۱۴۰۵/۰۷/۱۳</option>
+      <option value="YYYY-MM-DD" {% if settings['datetime.date_format'] == 'YYYY-MM-DD' %}selected{% endif %}>۱۴۰۵-۰۷-۱۳</option>
+      <option value="DD/MM/YYYY" {% if settings['datetime.date_format'] == 'DD/MM/YYYY' %}selected{% endif %}>۱۳/۰۷/۱۴۰۵</option>
+      <option value="DD-MM-YYYY" {% if settings['datetime.date_format'] == 'DD-MM-YYYY' %}selected{% endif %}>۱۳-۰۷-۱۴۰۵</option>
+    </select>
+  </label>
+  <label>قالب ساعت
+    <select name="datetime_time_format">
+      <option value="24" {% if settings['datetime.time_format'] == '24' %}selected{% endif %}>۲۴ ساعته</option>
+      <option value="12" {% if settings['datetime.time_format'] == '12' %}selected{% endif %}>۱۲ ساعته</option>
+    </select>
+  </label>
+  <label>نمایش ثانیه
+    <select name="datetime_show_seconds">
+      <option value="false" {% if settings['datetime.show_seconds'] == 'false' %}selected{% endif %}>خیر</option>
+      <option value="true" {% if settings['datetime.show_seconds'] == 'true' %}selected{% endif %}>بله</option>
+    </select>
+  </label>
+
   <h2>هویت کلینیک</h2>
   <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
