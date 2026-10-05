@@ -17,6 +17,16 @@
     root.dataset.timeFormat = "{{ datetime_time_format or '24' }}";
     root.dataset.showSeconds = "{{ datetime_show_seconds or 'false' }}";
   </script>
+  <script>
+    document.addEventListener("submit", function (event) {
+      const form = event.target;
+      if (!form.classList.contains("form")) return;
+      form.classList.add("is-submitting");
+      form.setAttribute("aria-busy", "true");
+      const button = form.querySelector("button[type=\"submit\"]");
+      if (button) { button.disabled = true; button.dataset.originalText = button.textContent; button.textContent = "در حال ثبت..."; }
+    });
+  </script>
 </head>
 <body>
   <header class="topbar">
