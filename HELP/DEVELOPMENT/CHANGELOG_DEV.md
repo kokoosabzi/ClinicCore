@@ -1,6 +1,6 @@
 ## 2026-10-05 — Phase C2: design tokens and shared UI primitives
 - Phase/Task: Phase C / C2
-- Commit: pending
+- Commit: `dbc25789b7ae8e316f671fb4cd4d8f36946b965c`
 - Summary: Extracted the global color, typography, spacing, radius, shadow, and semantic state values into reusable CSS design tokens. Added shared focus, card, button, and status primitives without changing application behavior.
 - Verification: Repository implementation inspection completed. No fresh local compileall/pytest or browser smoke test was available in this GitHub-only session.
 
