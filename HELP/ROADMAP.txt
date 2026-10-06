@@ -6,9 +6,9 @@
 - Sprint 3: Authentication shell, system logs, printable forms, admin seeding, and implementation runbook.
 - Sprint 4: Priority completion with dev environment files, CSRF, RBAC guards, patient management, index pages, console messaging provider, and first-login password rotation.
 - Sprint 5: Centralized appointment slot validation with a database-backed active-slot uniqueness guarantee.
+- Sprint 6: Jalali/Gregorian calendar conversion, configured appointment date input/display, timezone-aware header datetime, and calendar formatting tests.
 
 ## Next
-- Sprint 6: Jalali calendar utilities and full appointment lifecycle actions.
 - Sprint 7: Financial reports, patient balance, cash box, doctor share, and clinic share.
 - Sprint 8: Specialty plugin contracts and first psychology plugin workflow.
 - Sprint 9: Production hardening, deployment notes, logging configuration, and backup/restore runbook.
