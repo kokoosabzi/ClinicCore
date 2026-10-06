@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06
+- Completed the calendar/date-time foundation for appointment input and display.
+- Corrected Jalali/Gregorian conversion and rejected invalid Jalali dates such as non-leap-year Esfand 30.
+- Preserved Gregorian/Python datetime storage while converting at the presentation/input boundary.
+- Added Persian numeral rendering and correct 12-hour marker/seconds ordering.
+- Added focused conversion, validation, and configured appointment datetime tests.
+
 ## 2026-10-02
 - Completed Sprint 5 appointment booking integrity work.
 - Centralized duplicate active-slot validation in `AppointmentService` for both JSON and HTML booking flows.
