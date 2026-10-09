@@ -21,6 +21,7 @@ from app.services.dashboard_service import DashboardService
 from app.services.appointment_service import AppointmentService, AppointmentSlotUnavailableError
 from app.services.patient_service import PatientService
 from app.services.settings_service import SettingsService
+from app.services.datetime_service import format_configured_datetime, parse_configured_datetime
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory="app/templates")
@@ -234,11 +235,12 @@ async def delete_patient_from_form(patient_id: int, request: Request, db: Sessio
 @router.get("/appointments", response_class=HTMLResponse)
 def appointments_index(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointments = list(db.scalars(select(Appointment).where(Appointment.is_deleted.is_(False)).order_by(Appointment.starts_at.desc())))
-    return render(request, "appointments/index.html", "تقویم نوبت‌ها", appointments=appointments)
+    display_times = {item.id: format_configured_datetime(item.starts_at, request.state.datetime_calendar, request.state.datetime_date_format, request.state.datetime_time_format, request.state.datetime_show_seconds == "true") for item in appointments}
+    return render(request, "appointments/index.html", "تقویم نوبت‌ها", appointments=appointments, display_times=display_times)
 
 
 @router.get("/appointments/new", response_class=HTMLResponse)
-def appointment_form(request: Request, user=Depends(require_user)):
+def appointment_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     return render(request, "appointments/form.html", "ثبت نوبت")
 
 
@@ -246,12 +248,18 @@ def appointment_form(request: Request, user=Depends(require_user)):
 async def create_appointment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
-    appointment_data = AppointmentCreate(
-        patient_id=int(data["patient_id"]),
-        starts_at=datetime.fromisoformat(data["starts_at"]),
-        reason=data.get("reason") or None,
-        notes=data.get("notes") or None,
-    )
+    try:
+        appointment_data = AppointmentCreate(
+            patient_id=int(data["patient_id"]),
+            starts_at=parse_configured_datetime(
+                f"{data['starts_at_date']} {data['starts_at_time']}",
+                request.state.datetime_calendar,
+            ),
+            reason=data.get("reason") or None,
+            notes=data.get("notes") or None,
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(status_code=400, detail="تاریخ یا ساعت نوبت معتبر نیست.") from error
     try:
         AppointmentService(AppointmentRepository(db)).book(appointment_data)
     except AppointmentSlotUnavailableError as error:

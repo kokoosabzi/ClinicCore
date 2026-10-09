@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>رزرو نوبت</h1>
+{% set page_title = "رزرو نوبت" %}
+{% include "partials/page_header.html" with context %}
 <form method="post" action="/ui/appointments" class="form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <label>شناسه بیمار<input name="patient_id" type="number" min="1" required></label>
-  <label>زمان شروع<input name="starts_at" type="datetime-local" required></label>
+  <label>تاریخ نوبت
+    <input name="starts_at_date" type="text" inputmode="numeric" autocomplete="off" placeholder="{{ '1405/01/01' if datetime_calendar == 'jalali' else '2026/01/01' }}" pattern="\\d{4}[-/]\\d{2}[-/]\\d{2}" required>
+  </label>
+  <label>ساعت نوبت<input name="starts_at_time" type="time" required></label>
+  <small>تقویم فعال: {{ "جلالی" if datetime_calendar == "jalali" else "میلادی" }}</small>
   <label>علت مراجعه<input name="reason" maxlength="200"></label>
   <label>یادداشت<textarea name="notes"></textarea></label>
   <button type="submit">ثبت نوبت</button>

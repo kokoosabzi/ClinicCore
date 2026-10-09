@@ -4,5 +4,5 @@
 {% set action_url = "/appointments/new" %}
 {% set action_label = "نوبت جدید" %}
 {% include "partials/page_header.html" with context %}
-<table><thead><tr><th>شناسه</th><th>بیمار</th><th>زمان</th><th>وضعیت</th><th>چاپ</th></tr></thead><tbody>{% for item in appointments %}<tr><td>{{ item.id }}</td><td>{{ item.patient_id }}</td><td>{{ item.starts_at }}</td><td>{{ item.status }}</td><td><a href="/print/appointments/{{ item.id }}">رسید</a></td></tr>{% else %}<tr><td colspan="5" class="empty-state"><strong>نوبتی ثبت نشده است.</strong>برای شروع، یک نوبت جدید ثبت کنید.</td></tr>{% endfor %}</tbody></table>
+<table><thead><tr><th>شناسه</th><th>بیمار</th><th>زمان</th><th>وضعیت</th><th>چاپ</th></tr></thead><tbody>{% for item in appointments %}<tr><td>{{ item.id }}</td><td>{{ item.patient_id }}</td><td>{{ display_times[item.id] }}</td><td>{{ item.status }}</td><td><a href="/print/appointments/{{ item.id }}">رسید</a></td></tr>{% else %}<tr><td colspan="5" class="empty-state"><strong>نوبتی ثبت نشده است.</strong>برای شروع، یک نوبت جدید ثبت کنید.</td></tr>{% endfor %}</tbody></table>
 {% endblock %}
