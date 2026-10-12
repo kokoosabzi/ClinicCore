@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="print-sheet">
-  <h1>رسید پرداخت</h1>
-  <div class="print-grid">
-    <span>شناسه پرداخت:</span><strong>{{ payment.id if payment else "" }}</strong>
-    <span>شناسه بیمار:</span><strong>{{ payment.patient_id if payment else "" }}</strong>
-    <span>مبلغ:</span><strong>{{ payment.amount if payment else "" }} ریال</strong>
-    <span>تاریخ:</span><strong>{{ payment.paid_at if payment else "" }}</strong>
-  </div>
-  <button class="no-print" onclick="window.print()">چاپ</button>
+<section class="print-sheet" data-print-document>
+  {% include "print/partials/brand_header.html" %}
+  <h2 class="print-document-title">{{ print_title or "رسید پرداخت" }}</h2>
+  <table class="print-details"><tbody>
+    <tr><th>شناسه پرداخت</th><td>{{ payment.id if payment else "" }}</td></tr>
+    <tr><th>شناسه بیمار</th><td>{{ payment.patient_id if payment else "" }}</td></tr>
+    <tr><th>مبلغ</th><td>{{ payment.amount if payment else "" }} ریال</td></tr>
+    <tr><th>تاریخ</th><td>{{ payment.paid_at if payment else "" }}</td></tr>
+  </tbody></table>
+  {% if print_message %}<p class="print-message">{{ print_message }}</p>{% endif %}
+  {% include "print/partials/brand_footer.html" %}
+  <div class="print-meta"><span>چاپ: {{ request.state.current_datetime }}</span><button class="no-print" onclick="window.print()">چاپ</button></div>
 </section>
 {% endblock %}
