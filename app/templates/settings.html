@@ -153,7 +153,8 @@
   <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
   <label>تلفن<input name="clinic_phone" value="{{ settings['clinic.phone'] or '' }}" maxlength="4000"></label>
   <label>ایمیل<input name="clinic_email" type="email" value="{{ settings['clinic.email'] or '' }}" maxlength="4000"></label>
-  <label>لوگو<input name="clinic_logo" value="{{ settings['clinic.logo'] or '' }}" maxlength="4000"></label>
+  <label>لوگوی سامانه / مؤسسه (مسیر یا URL)<input name="clinic_logo" value="{{ settings['clinic.logo'] or '' }}" maxlength="4000" placeholder="/static/uploads/clinic-logo.png"></label>
+  <p class="hint">در این نسخه مسیر فایل استاتیک یا URL لوگو وارد می‌شود؛ بارگذاری مستقیم فایل از همین فرم در مرحله بعد اضافه می‌شود.</p>
   <label>متن سربرگ<textarea name="clinic_header_text" maxlength="4000">{{ settings['clinic.header_text'] or '' }}</textarea></label>
   <label>متن پاورقی<textarea name="clinic_footer_text" maxlength="4000">{{ settings['clinic.footer_text'] or '' }}</textarea></label>
 
