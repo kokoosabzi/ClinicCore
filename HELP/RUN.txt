@@ -1,21 +1,34 @@
 # Run Guide
 
-## Apply migrations
-\`\`\`bash
-alembic upgrade head
-\`\`\`
+## Local database (SQLite; no Docker required)
 
-## Start app
-\`\`\`bash
-uvicorn app.main:app --reload
-\`\`\`
+The default database is `data/cliniccore.db`, relative to the project directory.
+The application creates the `data` directory when needed. The PostgreSQL
+database and Docker volume are not touched by this workflow.
 
-## Health check
-Open \`http://127.0.0.1:8000/health\`.
+From the project root, with the virtual environment activated:
+
+```powershell
+python -m alembic upgrade head
+python -m uvicorn app.main:app --reload
+```
+
+Open `http://127.0.0.1:8000/`. To check the health endpoint, open
+`http://127.0.0.1:8000/health`.
+
+## Optional: use PostgreSQL intentionally
+
+Set `DATABASE_URL` in your local `.env` file to a PostgreSQL URL. This is
+an explicit override; do not change or remove the existing PostgreSQL volume
+when switching to SQLite.
 
 ## Seed first admin
-\`\`\`bash
-python scripts/seed_admin.py
-\`\`\`
 
-**Security warning:** the development fallback credentials are \`admin\` / \`admin\`. For any deployment beyond local development, set a unique \`ADMIN_USERNAME\` and strong \`ADMIN_PASSWORD\` in \`.env\` before seeding. The seeded admin is required to change its password on first login.
+```powershell
+python scripts/seed_admin.py
+```
+
+**Security warning:** the development fallback credentials are `admin` / `admin`.
+For deployments beyond local development, set a unique `ADMIN_USERNAME` and
+strong `ADMIN_PASSWORD` in `.env` before seeding. The seeded admin must
+change its password on first login.

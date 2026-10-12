@@ -1,25 +1,41 @@
 # Installation Guide
 
 ## Requirements
-- Python 3.12+
-- PostgreSQL
 
-## Setup
-```bash
+- Python 3.12+
+- SQLite (included with supported Python builds)
+- PostgreSQL is optional when explicitly configured through `DATABASE_URL`
+
+## Setup (Windows PowerShell)
+
+```powershell
 python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
 ```
 
 ## Environment
-Create `.env` if defaults are not suitable:
 
-```env
-DATABASE_URL=postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore
-SECRET_KEY=change-me
+The default connection is `sqlite:///./data/cliniccore.db`; the application
+creates the `data` directory if needed. The existing `.env` file is not
+rewritten automatically. If it contains a PostgreSQL `DATABASE_URL`, that
+explicit setting continues to take precedence until you change it yourself.
+
+For a new local environment, copy `.env.example` to `.env` or remove the
+`DATABASE_URL` line from your existing `.env` to use the application default.
+To intentionally use PostgreSQL, set `DATABASE_URL` to your PostgreSQL URL.
+
+## First run
+
+```powershell
+python -m alembic upgrade head
+python -m uvicorn app.main:app --reload
 ```
 
+Then open `http://127.0.0.1:8000/`.
+
 ## Required first-run documents
+
 - `HELP/IMPLEMENTATION.txt`
 - `HELP/AUTHENTICATION.txt`
 - `HELP/DB_TABLES.txt`

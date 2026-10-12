@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "ClinicCore"
-    database_url: str = "postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore"
+    # Local-first default; DATABASE_URL can override this for PostgreSQL deployments.
+    database_url: str = "sqlite:///./data/cliniccore.db"
     secret_key: str = "change-me-in-production"
     admin_username: str = "admin"
     admin_password: str = "admin"
