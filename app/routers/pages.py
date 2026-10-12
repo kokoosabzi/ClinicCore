@@ -112,7 +112,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -190,8 +190,8 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             if not image_bytes or len(image_bytes) > 2 * 1024 * 1024:
                 raise ValueError("حجم لوگو باید کمتر از ۲ مگابایت باشد.")
             signatures = {
-                ".png": image_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n"),
-                ".jpg": image_bytes.startswith(b"\\xff\\xd8\\xff"),
+                ".png": image_bytes.startswith(bytes([137]) + b"PNG" + bytes([13, 10, 26, 10])),
+                ".jpg": image_bytes.startswith(bytes([255, 216, 255])),
                 ".webp": image_bytes.startswith(b"RIFF") and image_bytes[8:12] == b"WEBP",
             }
             if not signatures[extension]:
