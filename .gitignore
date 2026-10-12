@@ -22,3 +22,7 @@ env/
 *.log
 
 cliniccore.egg-info/
+
+# Uploaded institution branding assets (runtime files, not source)
+app/static/uploads/clinic-logos/*
+!app/static/uploads/clinic-logos/.gitkeep
