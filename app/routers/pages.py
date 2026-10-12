@@ -203,12 +203,14 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             values["clinic.logo"] = f"/static/uploads/clinic-logos/{filename}"
         service.set_many(values)
     except ValueError as error:
+        error_text = str(error)
+        error_message = error_text if any("\\u0600" <= char <= "\\u06FF" for char in error_text) else "مقدار یکی از تنظیمات معتبر نیست."
         return render(
             request,
             "settings.html",
             "تنظیمات سامانه",
             settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
-            error=str(error) if str(error) else "یکی از مقادیر تنظیمات معتبر نیست.",
+            error=error_message,
         )
     request.state.app_name = values["app.name"]
     request.state.app_title = values["app.title"]
