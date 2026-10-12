@@ -1,0 +1,11 @@
+{% if print_show_header == "true" %}
+<header class="print-brand">
+  {% if print_show_logo == "true" and clinic_logo %}<img src="{{ clinic_logo }}" alt="لوگوی مؤسسه">{% endif %}
+  <div class="print-brand-text">
+    <h1>{{ clinic_name or app_title or "سامانه جامع سلامت" }}</h1>
+    {% if clinic_header_text %}<p>{{ clinic_header_text }}</p>{% endif %}
+    {% if clinic_address %}<p>{{ clinic_address }}</p>{% endif %}
+    {% if clinic_phone %}<p>تلفن: {{ clinic_phone }}{% if clinic_email %} · {{ clinic_email }}{% endif %}</p>{% endif %}
+  </div>
+</header>
+{% endif %}
