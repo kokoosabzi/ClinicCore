@@ -5,10 +5,10 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
+from app.core import audit as audit_module
 from app.core.audit import audit_request_middleware
 from app.core.database import get_db
 from app.core.auth import current_user
-from app.core.database import SessionLocal
 from app.services.settings_service import SettingsService
 from app.routers import appointments, auth, financial, health, messaging, pages, patients, users
 
@@ -22,7 +22,7 @@ async def load_app_settings(request: Request, call_next):
     if request.url.path.startswith(("/static/", "/health")):
         return await call_next(request)
 
-    db = SessionLocal()
+    db = audit_module.SessionLocal()
     try:
         service = SettingsService(db)
         keys = {}
