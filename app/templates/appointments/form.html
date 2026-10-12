@@ -2,16 +2,87 @@
 {% block content %}
 {% set page_title = "رزرو نوبت" %}
 {% include "partials/page_header.html" with context %}
-<form method="post" action="/ui/appointments" class="form">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>شناسه بیمار<input name="patient_id" type="number" min="1" required></label>
-  <label>تاریخ نوبت
-    <input name="starts_at_date" type="text" inputmode="numeric" autocomplete="off" placeholder="{{ '1405/01/01' if datetime_calendar == 'jalali' else '2026/01/01' }}" pattern="\\d{4}[-/]\\d{2}[-/]\\d{2}" required>
-  </label>
-  <label>ساعت نوبت<input name="starts_at_time" type="time" required></label>
-  <small>تقویم فعال: {{ "جلالی" if datetime_calendar == "jalali" else "میلادی" }}</small>
-  <label>علت مراجعه<input name="reason" maxlength="200"></label>
-  <label>یادداشت<textarea name="notes"></textarea></label>
-  <button type="submit">ثبت نوبت</button>
-</form>
+
+<section class="appointment-booking" data-appointment-calendar data-today="{{ today_jalali }}">
+  <div class="booking-intro">
+    <div>
+      <span class="eyebrow">مدیریت زمان کلینیک</span>
+      <h2>برای مراجعه، زمان مناسب را انتخاب کنید</h2>
+      <p>ابتدا بیمار و روز مراجعه را مشخص کنید؛ ساعت‌های آزاد به‌صورت زنده نمایش داده می‌شوند.</p>
+    </div>
+    <div class="booking-legend" aria-label="راهنمای وضعیت نوبت‌ها">
+      <span><i class="legend-dot available"></i> آزاد</span>
+      <span><i class="legend-dot booked"></i> رزروشده</span>
+      <span><i class="legend-dot past"></i> خارج از دسترس</span>
+    </div>
+  </div>
+
+  <form method="post" action="/ui/appointments" class="form appointment-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="starts_at_date" value="">
+    <input type="hidden" name="starts_at_time" value="">
+
+    <div class="booking-patient-fields">
+      <label class="field-label">بیمار
+        <select name="patient_id" required>
+          <option value="" disabled selected>بیمار را انتخاب کنید…</option>
+          {% for patient in patients %}
+          <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}{% if patient.phone %} · {{ patient.phone }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field-label">علت مراجعه <span class="optional-label">اختیاری</span>
+        <input name="reason" maxlength="200" placeholder="مثلاً ویزیت اولیه">
+      </label>
+    </div>
+
+    {% if not patients %}
+    <div class="alert info">هنوز بیماری ثبت نشده است. ابتدا از بخش بیماران، پرونده بیمار را ایجاد کنید.</div>
+    {% endif %}
+
+    <div class="booking-workspace">
+      <section class="calendar-panel" aria-labelledby="calendar-title">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">مرحله اول</span>
+            <h3 id="calendar-title">انتخاب روز</h3>
+          </div>
+          <div class="calendar-month-controls">
+            <button type="button" class="icon-button" data-month-prev aria-label="ماه قبل">‹</button>
+            <strong data-calendar-month></strong>
+            <button type="button" class="icon-button" data-month-next aria-label="ماه بعد">›</button>
+          </div>
+        </div>
+        <div class="calendar-grid" data-calendar-grid aria-label="تقویم شمسی"></div>
+        <div class="calendar-footnote"><span class="today-marker"></span> امروز</div>
+      </section>
+
+      <section class="slots-panel" aria-labelledby="slots-title">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">مرحله دوم</span>
+            <h3 id="slots-title">ساعت‌های قابل رزرو</h3>
+          </div>
+          <span class="selected-date-chip" data-selected-date>در حال آماده‌سازی تقویم…</span>
+        </div>
+        <p class="panel-description">ساعت‌ها با قالب ۲۴ ساعته نمایش داده می‌شوند.</p>
+        <div class="time-slots" data-time-slots aria-live="polite"></div>
+        <p class="slot-message" data-slot-message role="status">در حال دریافت ساعت‌های قابل رزرو…</p>
+        <div class="selected-slot-summary">
+          <span class="summary-icon" aria-hidden="true">✓</span>
+          <div><small>زمان انتخاب‌شده</small><strong data-selected-time>هنوز ساعتی انتخاب نشده</strong></div>
+        </div>
+      </section>
+    </div>
+
+    <label class="field-label notes-field">یادداشت پرونده <span class="optional-label">اختیاری</span>
+      <textarea name="notes" rows="3" placeholder="نکته‌ای که لازم است هنگام مراجعه بدانیم…"></textarea>
+    </label>
+    <div class="booking-submit-row">
+      <p>ثبت نهایی پس از بررسی دوباره آزادبودن ساعت انجام می‌شود.</p>
+      <button type="submit" class="booking-submit" {% if not patients %}disabled{% endif %}>ثبت نوبت <span aria-hidden="true">←</span></button>
+    </div>
+  </form>
+  <p class="schedule-note">بازه اولیه نمایش ساعت‌ها ۰۹:۰۰ تا ۱۷:۰۰ با فاصله‌های ۳۰ دقیقه‌ای است؛ تنظیم ساعات کاری و مدت نوبت برای هر پزشک، مرحله بعدی توسعه خواهد بود.</p>
+</section>
 {% endblock %}
