@@ -21,6 +21,14 @@ def test_admin_can_save_and_reload_settings(client):
             "csrf_token": csrf_token,
             "app_name": "ClinicCore Test",
             "app_title": "سامانه آزمایشی",
+            "app_primary_color": "#2255aa",
+            "app_theme": "dark",
+            "app_density": "compact",
+            "print_title": "رسید اختصاصی",
+            "print_message": "از مراجعه شما سپاسگزاریم",
+            "print_thermal_width": "58",
+            "print_show_table_borders": "false",
+            "print_show_lines": "false",
             "clinic_name": "کلینیک نمونه",
             "clinic_address": "تهران",
             "clinic_phone": "02112345678",
@@ -61,6 +69,11 @@ def test_admin_can_save_and_reload_settings(client):
     saved = client.get("/settings")
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
+    assert 'value="#2255aa"' in saved.text
+    assert 'option value="dark" selected' in saved.text
+    assert "رسید اختصاصی" in saved.text
+    assert "از مراجعه شما سپاسگزاریم" in saved.text
+    assert 'option value="58" selected' in saved.text
     assert "کلینیک نمونه" in saved.text
     assert 'value="Asia/Tehran"' in saved.text
     assert 'option value="DD/MM/YYYY" selected' in saved.text
