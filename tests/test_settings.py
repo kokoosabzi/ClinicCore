@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from app.core.auth import require_admin
 from app.core.config import Settings
+import app.routers.pages as pages_module
 
 
 def test_settings_requires_admin(client):
@@ -165,3 +166,32 @@ def test_postgres_database_url_is_rejected_for_this_phase():
 def test_sqlite_database_url_is_accepted():
     configured = Settings(database_url="sqlite:///./data/cliniccore.db")
     assert configured.database_url == "sqlite:///./data/cliniccore.db"
+
+
+def test_admin_can_upload_institution_logo(client, monkeypatch, tmp_path):
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+    monkeypatch.setattr(pages_module, "Path", lambda _path: tmp_path / "clinic-logos")
+
+    form = client.get("/settings")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+    png_bytes = bytes([137]) + b"PNG" + bytes([13, 10, 26, 10]) + b"test-image"
+
+    response = client.post(
+        "/settings",
+        data={
+            "csrf_token": csrf_token,
+            "app_name": "ClinicCore Test",
+            "app_title": "سامانه آزمایشی",
+            "app_primary_color": "#176b67",
+            "app_theme": "light",
+            "app_density": "comfortable",
+            "datetime_timezone": "Asia/Tehran",
+        },
+        files={"clinic_logo_file": ("logo.png", png_bytes, "image/png")},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+    saved = client.get("/settings")
+    assert "/static/uploads/clinic-logos/" in saved.text
+    assert len(list((tmp_path / "clinic-logos").glob("*.png"))) == 1
