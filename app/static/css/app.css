@@ -321,3 +321,22 @@ input:focus, textarea:focus, select:focus { border-color: #56a9a0; box-shadow: 0
 .form > h2 { margin: .4rem 0 0; padding: .65rem .8rem; border-inline-start: 4px solid var(--color-primary); border-bottom: 1px solid var(--color-border); border-radius: 4px; background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface)); font-size: 1.05rem; }
 .form > h2:not(:first-of-type) { margin-top: .9rem; }
 .form input[type="color"] { width: 100%; min-height: 48px; padding: .3rem; cursor: pointer; }
+
+
+/* Print documents must stay readable regardless of the application dark theme. */
+:root[data-print-view="true"] {
+  color-scheme: light !important;
+  --color-background: #ffffff !important;
+  --color-surface: #ffffff !important;
+  --color-text: #182b3a !important;
+  --color-muted: #526675 !important;
+  --color-border: #dce6eb !important;
+}
+:root[data-print-view="true"] body {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #182b3a !important;
+}
+:root[data-print-view="true"] .container {
+  background: #ffffff !important;
+}

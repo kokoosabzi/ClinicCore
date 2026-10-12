@@ -6,8 +6,8 @@
   <table class="print-details"><tbody>
     <tr><th>شناسه نوبت</th><td>{{ appointment.id if appointment else "" }}</td></tr>
     <tr><th>شناسه بیمار</th><td>{{ appointment.patient_id if appointment else "" }}</td></tr>
-    <tr><th>تاریخ و ساعت</th><td>{{ appointment.starts_at if appointment else "" }}</td></tr>
-    <tr><th>وضعیت</th><td>{{ appointment.status if appointment else "" }}</td></tr>
+    <tr><th>تاریخ و ساعت</th><td>{{ appointment_display_datetime or "" }}</td></tr>
+    <tr><th>وضعیت</th><td>{{ appointment_status_label or "" }}</td></tr>
   </tbody></table>
   {% if print_message %}<p class="print-message">{{ print_message }}</p>{% endif %}
   {% include "print/partials/brand_footer.html" %}

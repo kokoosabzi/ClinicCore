@@ -48,10 +48,10 @@ def context(request: Request, title: str, **extra):
         "clinic_email": getattr(request.state, "clinic_email", ""),
         "clinic_header_text": getattr(request.state, "clinic_header_text", ""),
         "clinic_footer_text": getattr(request.state, "clinic_footer_text", ""),
-        "datetime_calendar": getattr(request.state, "datetime_calendar", "jalali"),
+        "datetime_calendar": getattr(request.state, "datetime_calendar", None) or "jalali",
         "datetime_timezone": getattr(request.state, "datetime_timezone", "Asia/Tehran"),
-        "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
-        "datetime_time_format": getattr(request.state, "datetime_time_format", "24"),
+        "datetime_date_format": getattr(request.state, "datetime_date_format", None) or "YYYY/MM/DD",
+        "datetime_time_format": getattr(request.state, "datetime_time_format", None) or "24",
         "datetime_show_seconds": getattr(request.state, "datetime_show_seconds", "false"),
         "reports_default_format": getattr(request.state, "reports_default_format", "html"),
         "reports_include_timestamp": getattr(request.state, "reports_include_timestamp", "true"),
@@ -448,10 +448,34 @@ def print_patient(patient_id: int, request: Request, db: Session = Depends(get_d
 @router.get("/print/appointments/{appointment_id}", response_class=HTMLResponse)
 def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointment = db.get(Appointment, appointment_id)
+    display_datetime = ""
+    status_labels = {
+        "booked": "ثبت شده",
+        "rescheduled": "تغییر زمان یافته",
+        "cancelled": "لغو شده",
+        "waiting": "در انتظار",
+        "no_show": "عدم مراجعه",
+        "completed": "انجام شده",
+    }
+    status_label = status_labels.get(str(appointment.status), str(appointment.status)) if appointment else ""
+    if appointment:
+        display_datetime = format_configured_datetime(
+            appointment.starts_at,
+            getattr(request.state, "datetime_calendar", None) or "jalali",
+            getattr(request.state, "datetime_date_format", None) or "YYYY/MM/DD",
+            getattr(request.state, "datetime_time_format", None) or "24",
+            getattr(request.state, "datetime_show_seconds", None) == "true",
+        )
     return templates.TemplateResponse(
         request=request,
         name="print/appointment_receipt.html",
-        context=context(request, "چاپ رسید نوبت", appointment=appointment),
+        context=context(
+            request,
+            "چاپ رسید نوبت",
+            appointment=appointment,
+            appointment_display_datetime=display_datetime,
+            appointment_status_label=status_label,
+        ),
     )
 
 
