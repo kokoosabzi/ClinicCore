@@ -204,7 +204,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         service.set_many(values)
     except ValueError as error:
         error_text = str(error)
-        error_message = error_text if any("\\u0600" <= char <= "\\u06FF" for char in error_text) else "مقدار یکی از تنظیمات معتبر نیست."
+        error_message = error_text if any(0x0600 <= ord(char) <= 0x06FF for char in error_text) else "مقدار یکی از تنظیمات معتبر نیست."
         return render(
             request,
             "settings.html",
