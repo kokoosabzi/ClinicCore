@@ -41,7 +41,6 @@ def test_admin_can_save_and_reload_settings(client):
             "clinic_logo": "",
             "clinic_header_text": "سربرگ",
             "clinic_footer_text": "پاورقی",
-            "app_theme": "light",
             "app_density": "compact",
             "datetime_calendar": "jalali",
             "datetime_timezone": "Asia/Tehran",
