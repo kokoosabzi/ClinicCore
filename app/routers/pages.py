@@ -1,8 +1,11 @@
 from datetime import date, datetime, time, timedelta
+from pathlib import Path
+from uuid import uuid4
 from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from starlette.datastructures import UploadFile
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -116,7 +119,9 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
 
 @router.post("/settings")
 async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
-    data = await form_data(request)
+    submitted = await request.form()
+    data = {key: value for key, value in submitted.items() if isinstance(value, str)}
+    logo_upload = submitted.get("clinic_logo_file")
     verify_csrf(request, data.get("csrf_token"))
     values = {
         "app.name": data.get("app_name", "").strip(),
@@ -168,15 +173,42 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
+    service = SettingsService(db)
     try:
-        SettingsService(db).set_many(values)
+        for key, value in values.items():
+            service._validate(key, value)
+        if isinstance(logo_upload, UploadFile) and logo_upload.filename:
+            allowed_types = {
+                "image/png": ".png",
+                "image/jpeg": ".jpg",
+                "image/webp": ".webp",
+            }
+            extension = allowed_types.get(logo_upload.content_type or "")
+            if not extension:
+                raise ValueError("فرمت لوگو باید PNG، JPEG یا WebP باشد.")
+            image_bytes = await logo_upload.read(2 * 1024 * 1024 + 1)
+            if not image_bytes or len(image_bytes) > 2 * 1024 * 1024:
+                raise ValueError("حجم لوگو باید کمتر از ۲ مگابایت باشد.")
+            signatures = {
+                ".png": image_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n"),
+                ".jpg": image_bytes.startswith(b"\\xff\\xd8\\xff"),
+                ".webp": image_bytes.startswith(b"RIFF") and image_bytes[8:12] == b"WEBP",
+            }
+            if not signatures[extension]:
+                raise ValueError("محتوای فایل با فرمت تصویر اعلام‌شده مطابقت ندارد.")
+            upload_dir = Path("app/static/uploads/clinic-logos")
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            filename = f"{uuid4().hex}{extension}"
+            (upload_dir / filename).write_bytes(image_bytes)
+            values["clinic.logo"] = f"/static/uploads/clinic-logos/{filename}"
+        service.set_many(values)
     except ValueError as error:
         return render(
             request,
             "settings.html",
             "تنظیمات سامانه",
             settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
-            error="مقدار یکی از تنظیمات تاریخ و زمان معتبر نیست.",
+            error=str(error) if str(error) else "یکی از مقادیر تنظیمات معتبر نیست.",
         )
     request.state.app_name = values["app.name"]
     request.state.app_title = values["app.title"]
