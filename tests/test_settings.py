@@ -77,6 +77,7 @@ def test_admin_can_save_and_reload_settings(client):
     assert 'option value="dark" selected' in saved.text
     assert "رسید اختصاصی" in saved.text
     assert "از مراجعه شما سپاسگزاریم" in saved.text
+    assert 'name="clinic_logo_file"' in saved.text
     assert 'option value="58" selected' in saved.text
     assert "کلینیک نمونه" in saved.text
     assert 'value="Asia/Tehran"' in saved.text
