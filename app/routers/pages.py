@@ -48,10 +48,10 @@ def context(request: Request, title: str, **extra):
         "clinic_email": getattr(request.state, "clinic_email", ""),
         "clinic_header_text": getattr(request.state, "clinic_header_text", ""),
         "clinic_footer_text": getattr(request.state, "clinic_footer_text", ""),
-        "datetime_calendar": getattr(request.state, "datetime_calendar", "jalali"),
+        "datetime_calendar": getattr(request.state, "datetime_calendar", None) or "jalali",
         "datetime_timezone": getattr(request.state, "datetime_timezone", "Asia/Tehran"),
-        "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
-        "datetime_time_format": getattr(request.state, "datetime_time_format", "24"),
+        "datetime_date_format": getattr(request.state, "datetime_date_format", None) or "YYYY/MM/DD",
+        "datetime_time_format": getattr(request.state, "datetime_time_format", None) or "24",
         "datetime_show_seconds": getattr(request.state, "datetime_show_seconds", "false"),
         "reports_default_format": getattr(request.state, "reports_default_format", "html"),
         "reports_include_timestamp": getattr(request.state, "reports_include_timestamp", "true"),
@@ -464,7 +464,7 @@ def print_appointment(appointment_id: int, request: Request, db: Session = Depen
             getattr(request.state, "datetime_calendar", "jalali"),
             getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
             getattr(request.state, "datetime_time_format", "24"),
-            getattr(request.state, "datetime_show_seconds", "false") == "true",
+            getattr(request.state, "datetime_show_seconds", None) == "true",
         )
     return templates.TemplateResponse(
         request=request,
