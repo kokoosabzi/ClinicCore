@@ -156,6 +156,7 @@
   <label>مسیر یا URL لوگو<input name="clinic_logo" value="{{ settings['clinic.logo'] or '' }}" maxlength="4000" placeholder="/static/uploads/clinic-logo.png"></label>
   <label>یا بارگذاری لوگوی جدید (PNG، JPEG یا WebP، حداکثر ۲ مگابایت)<input type="file" name="clinic_logo_file" accept="image/png,image/jpeg,image/webp"></label>
   <p class="hint">در صورت انتخاب فایل جدید، لوگوی بارگذاری‌شده جایگزین مسیر یا URL قبلی خواهد شد.</p>
+  {% if settings['clinic.logo'] %}<div class="logo-preview"><p>پیش‌نمایش لوگوی فعلی</p><img src="{{ settings['clinic.logo'] }}" alt="لوگوی فعلی کلینیک" style="max-width: 220px; max-height: 100px; object-fit: contain" onerror="this.hidden=true"><p class="muted">برای جایگزینی، فایل جدید را انتخاب کنید. برای حذف لوگو، مسیر بالا را پاک کرده و ذخیره کنید.</p></div>{% endif %}
   <label>متن سربرگ<textarea name="clinic_header_text" maxlength="4000">{{ settings['clinic.header_text'] or '' }}</textarea></label>
   <label>متن پاورقی<textarea name="clinic_footer_text" maxlength="4000">{{ settings['clinic.footer_text'] or '' }}</textarea></label>
 
