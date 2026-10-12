@@ -73,6 +73,9 @@ def test_admin_can_save_and_reload_settings(client):
     saved = client.get("/settings")
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
+    assert 'data-theme="dark"' in saved.text
+    assert 'data-density="compact"' in saved.text
+    assert 'style="--color-primary: #2255aa"' in saved.text
     assert 'value="#2255aa"' in saved.text
     assert 'option value="dark" selected' in saved.text
     assert "رسید اختصاصی" in saved.text

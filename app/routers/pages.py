@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_admin, require_user
+from app.core.auth import current_user, require_admin, require_user
 from app.core.csrf import get_csrf_token, verify_csrf
 from app.core.database import get_db
 from app.models.appointment import Appointment
@@ -36,7 +36,7 @@ def context(request: Request, title: str, **extra):
         "title": title,
         "app_name": getattr(request.state, "app_name", "ClinicCore"),
         "app_title": getattr(request.state, "app_title", "ClinicCore"),
-        "user": request.session.get("username"),
+        "user": current_user(request),
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
