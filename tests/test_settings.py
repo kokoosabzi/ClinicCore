@@ -1,6 +1,10 @@
 import re
 
+import pytest
+from pydantic import ValidationError
+
 from app.core.auth import require_admin
+from app.core.config import Settings
 
 
 def test_settings_requires_admin(client):
@@ -150,3 +154,13 @@ def test_invalid_system_audit_setting_is_rejected(client):
     )
     assert response.status_code == 200
     assert "معتبر نیست" in response.text
+
+
+def test_postgres_database_url_is_rejected_for_this_phase():
+    with pytest.raises(ValidationError):
+        Settings(database_url="postgresql://user:password@localhost/cliniccore")
+
+
+def test_sqlite_database_url_is_accepted():
+    configured = Settings(database_url="sqlite:///./data/cliniccore.db")
+    assert configured.database_url == "sqlite:///./data/cliniccore.db"
