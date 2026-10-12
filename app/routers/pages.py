@@ -461,9 +461,9 @@ def print_appointment(appointment_id: int, request: Request, db: Session = Depen
     if appointment:
         display_datetime = format_configured_datetime(
             appointment.starts_at,
-            getattr(request.state, "datetime_calendar", "jalali"),
-            getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
-            getattr(request.state, "datetime_time_format", "24"),
+            getattr(request.state, "datetime_calendar", None) or "jalali",
+            getattr(request.state, "datetime_date_format", None) or "YYYY/MM/DD",
+            getattr(request.state, "datetime_time_format", None) or "24",
             getattr(request.state, "datetime_show_seconds", None) == "true",
         )
     return templates.TemplateResponse(
