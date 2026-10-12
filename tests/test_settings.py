@@ -1,6 +1,11 @@
 import re
 
+import pytest
+from pydantic import ValidationError
+
 from app.core.auth import require_admin
+from app.core.config import Settings
+import app.routers.pages as pages_module
 
 
 def test_settings_requires_admin(client):
@@ -21,6 +26,14 @@ def test_admin_can_save_and_reload_settings(client):
             "csrf_token": csrf_token,
             "app_name": "ClinicCore Test",
             "app_title": "سامانه آزمایشی",
+            "app_primary_color": "#2255aa",
+            "app_theme": "dark",
+            "app_density": "compact",
+            "print_title": "رسید اختصاصی",
+            "print_message": "از مراجعه شما سپاسگزاریم",
+            "print_thermal_width": "58",
+            "print_show_table_borders": "false",
+            "print_show_lines": "false",
             "clinic_name": "کلینیک نمونه",
             "clinic_address": "تهران",
             "clinic_phone": "02112345678",
@@ -28,7 +41,6 @@ def test_admin_can_save_and_reload_settings(client):
             "clinic_logo": "",
             "clinic_header_text": "سربرگ",
             "clinic_footer_text": "پاورقی",
-            "app_theme": "light",
             "app_density": "compact",
             "datetime_calendar": "jalali",
             "datetime_timezone": "Asia/Tehran",
@@ -61,6 +73,12 @@ def test_admin_can_save_and_reload_settings(client):
     saved = client.get("/settings")
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
+    assert 'value="#2255aa"' in saved.text
+    assert 'option value="dark" selected' in saved.text
+    assert "رسید اختصاصی" in saved.text
+    assert "از مراجعه شما سپاسگزاریم" in saved.text
+    assert 'name="clinic_logo_file"' in saved.text
+    assert 'option value="58" selected' in saved.text
     assert "کلینیک نمونه" in saved.text
     assert 'value="Asia/Tehran"' in saved.text
     assert 'option value="DD/MM/YYYY" selected' in saved.text
@@ -137,3 +155,42 @@ def test_invalid_system_audit_setting_is_rejected(client):
     )
     assert response.status_code == 200
     assert "معتبر نیست" in response.text
+
+
+def test_postgres_database_url_is_rejected_for_this_phase():
+    with pytest.raises(ValidationError):
+        Settings(database_url="postgresql://user:password@localhost/cliniccore")
+
+
+def test_sqlite_database_url_is_accepted():
+    configured = Settings(database_url="sqlite:///./data/cliniccore.db")
+    assert configured.database_url == "sqlite:///./data/cliniccore.db"
+
+
+def test_admin_can_upload_institution_logo(client, monkeypatch, tmp_path):
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+    monkeypatch.setattr(pages_module, "Path", lambda _path: tmp_path / "clinic-logos")
+
+    form = client.get("/settings")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+    png_bytes = bytes([137]) + b"PNG" + bytes([13, 10, 26, 10]) + b"test-image"
+
+    response = client.post(
+        "/settings",
+        data={
+            "csrf_token": csrf_token,
+            "app_name": "ClinicCore Test",
+            "app_title": "سامانه آزمایشی",
+            "app_primary_color": "#176b67",
+            "app_theme": "light",
+            "app_density": "comfortable",
+            "datetime_timezone": "Asia/Tehran",
+        },
+        files={"clinic_logo_file": ("logo.png", png_bytes, "image/png")},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+    saved = client.get("/settings")
+    assert "/static/uploads/clinic-logos/" in saved.text
+    assert len(list((tmp_path / "clinic-logos").glob("*.png"))) == 1

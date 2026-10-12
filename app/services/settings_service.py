@@ -8,9 +8,10 @@ from app.models.system_setting import SystemSetting
 
 DEFAULTS: dict[str, tuple[str, str, str]] = {
     "app.name": ("ClinicCore", "string", "نام داخلی سامانه"),
-    "app.title": ("کلینیک‌کور", "string", "عنوان نمایشی سامانه"),
+    "app.title": ("سامانه جامع سلامت", "string", "عنوان نمایشی سامانه"),
     "app.theme": ("system", "enum", "حالت نمایش: روشن، تاریک یا سیستم"),
     "app.density": ("comfortable", "enum", "تراکم نمایش: راحت یا فشرده"),
+    "app.primary_color": ("#176b67", "color", "رنگ اصلی رابط کاربری"),
     "clinic.name": ("", "string", "نام کلینیک"),
     "clinic.address": ("", "string", "آدرس کلینیک"),
     "clinic.phone": ("", "string", "تلفن کلینیک"),
@@ -40,12 +41,20 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "print.show_logo": ("true", "boolean", "نمایش لوگو در چاپ"),
     "print.show_header": ("true", "boolean", "نمایش سربرگ در چاپ"),
     "print.show_footer": ("true", "boolean", "نمایش پاورقی در چاپ"),
+    "print.title": ("", "string", "عنوان چاپ"),
+    "print.message": ("", "string", "پیام پایانی چاپ"),
+    "print.show_table_borders": ("true", "boolean", "نمایش خطوط جدول در چاپ"),
+    "print.show_lines": ("true", "boolean", "نمایش خطوط جداکننده در چاپ"),
+    "print.thermal_width": ("80", "enum", "عرض رول حرارتی به میلی‌متر"),
     "system.audit_enabled": ("true", "boolean", "فعال بودن ثبت رویدادهای سامانه"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
     "app.theme": {"light", "dark", "system"},
     "app.density": {"comfortable", "compact"},
+    "print.show_table_borders": {"true", "false"},
+    "print.show_lines": {"true", "false"},
+    "print.thermal_width": {"58", "80"},
     "datetime.calendar": {"jalali", "gregorian"},
     "datetime.date_format": {"YYYY/MM/DD", "YYYY-MM-DD", "DD/MM/YYYY", "DD-MM-YYYY"},
     "datetime.time_format": {"12", "24"},
@@ -87,6 +96,10 @@ class SettingsService:
             raise ValueError(f"Unknown setting: {key}")
         if key in ALLOWED_VALUES and value not in ALLOWED_VALUES[key]:
             raise ValueError(f"Invalid value for setting: {key}")
+        if key == "app.primary_color":
+            import re
+            if value is None or re.fullmatch(r"#[0-9a-fA-F]{6}", value) is None:
+                raise ValueError("Invalid primary color")
         if key.startswith("print.margin_"):
             try:
                 margin = int(value or "")
@@ -113,7 +126,7 @@ class SettingsService:
                 category=key.split(".", 1)[0],
                 description=description,
                 is_public=key in {
-                    "app.name", "app.title", "app.theme", "app.density",
+                    "app.name", "app.title", "app.theme", "app.density", "app.primary_color",
                     "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text",
                     "datetime.calendar", "datetime.timezone", "datetime.date_format",
                     "datetime.time_format", "datetime.show_seconds",
@@ -123,7 +136,8 @@ class SettingsService:
                     "contacts.enabled", "contacts.require_phone",
                     "print.paper_size", "print.margin_top", "print.margin_right",
                     "print.margin_bottom", "print.margin_left", "print.show_logo",
-                    "print.show_header", "print.show_footer",
+                    "print.show_header", "print.show_footer", "print.title", "print.message",
+                    "print.show_table_borders", "print.show_lines", "print.thermal_width",
                     "system.audit_enabled",
                 },
                 updated_by=user_id,

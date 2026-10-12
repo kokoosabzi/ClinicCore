@@ -41,6 +41,8 @@ def create_app() -> FastAPI:
                 "request": request,
                 "app_name": app_name,
                 "app_title": app_title,
+                "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
+                "clinic_logo": getattr(request.state, "clinic_logo", ""),
                 "user": current_user(request),
             },
         )

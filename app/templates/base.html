@@ -1,10 +1,22 @@
 <!doctype html>
-<html lang="fa" dir="rtl" data-theme="{{ app_theme or 'system' }}" data-density="{{ app_density or 'comfortable' }}" data-calendar="{{ datetime_calendar or 'jalali' }}" data-timezone="{{ datetime_timezone or 'Asia/Tehran' }}" data-date-format="{{ datetime_date_format or 'YYYY/MM/DD' }}" data-time-format="{{ datetime_time_format or '24' }}" data-show-seconds="{{ datetime_show_seconds or 'false' }}">
+<html lang="fa" dir="rtl" data-theme="{{ app_theme or 'system' }}" data-density="{{ app_density or 'comfortable' }}" data-calendar="{{ datetime_calendar or 'jalali' }}" data-timezone="{{ datetime_timezone or 'Asia/Tehran' }}" data-date-format="{{ datetime_date_format or 'YYYY/MM/DD' }}" data-time-format="{{ datetime_time_format or '24' }}" data-show-seconds="{{ datetime_show_seconds or 'false' }}" data-print-paper="{{ print_paper_size or 'A4' }}" data-thermal-width="{{ print_thermal_width or '80' }}" data-print-table-borders="{{ print_show_table_borders or 'true' }}" data-print-lines="{{ print_show_lines or 'true' }}" data-print-margin-top="{{ print_margin_top or '10' }}" data-print-margin-right="{{ print_margin_right or '10' }}" data-print-margin-bottom="{{ print_margin_bottom or '10' }}" data-print-margin-left="{{ print_margin_left or '10' }}" style="--color-primary: {{ app_primary_color or '#176b67' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or app_title or app_name or "ClinicCore" }}</title>
+  <title>{{ title or app_title or app_name or "سامانه جامع سلامت" }}</title>
   <link rel="stylesheet" href="/static/css/app.css">
+  <script>
+    window.addEventListener("beforeprint", function () {
+      const root = document.documentElement;
+      let rule = document.getElementById("dynamic-print-page");
+      if (!rule) { rule = document.createElement("style"); rule.id = "dynamic-print-page"; document.head.appendChild(rule); }
+      const paper = root.dataset.printPaper || "A4";
+      const width = root.dataset.thermalWidth === "58" ? "58mm" : "80mm";
+      const size = paper === "A5" ? "A5" : paper === "thermal" ? width + " auto" : "A4";
+      const margin = paper === "thermal" ? "2mm" : [root.dataset.printMarginTop, root.dataset.printMarginRight, root.dataset.printMarginBottom, root.dataset.printMarginLeft].map(value => (value || "10") + "mm").join(" ");
+      rule.textContent = "@page { size: " + size + "; margin: " + margin + "; }";
+    });
+  </script>
   <script src="/static/js/appointment-booking.js" defer></script>
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -31,7 +43,7 @@
 </head>
 <body>
   <header class="topbar">
-    <strong>{{ app_title or "کلینیک‌کور" }}</strong>
+    <strong class="brand-title">{% if clinic_logo %}<img class="brand-logo" src="{{ clinic_logo }}" alt="" onerror="this.hidden=true">{% endif %}{{ app_title or "سامانه جامع سلامت" }}</strong>
     {% if request.state.current_datetime %}<time class="header-datetime" datetime="{{ request.state.current_datetime.isoformat() if request.state.current_datetime.isoformat is defined else '' }}">{{ request.state.current_datetime }}</time>{% endif %}
     <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
     <nav id="main-nav">

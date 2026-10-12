@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="print-sheet">
-  <h1>رسید نوبت</h1>
-  <div class="print-grid">
-    <span>شناسه نوبت:</span><strong>{{ appointment.id if appointment else "" }}</strong>
-    <span>شناسه بیمار:</span><strong>{{ appointment.patient_id if appointment else "" }}</strong>
-    <span>زمان:</span><strong>{{ appointment.starts_at if appointment else "" }}</strong>
-    <span>وضعیت:</span><strong>{{ appointment.status if appointment else "" }}</strong>
-  </div>
-  <button class="no-print" onclick="window.print()">چاپ</button>
+<section class="print-sheet" data-print-document>
+  {% include "print/partials/brand_header.html" %}
+  <h2 class="print-document-title">{{ print_title or "رسید نوبت" }}</h2>
+  <table class="print-details"><tbody>
+    <tr><th>شناسه نوبت</th><td>{{ appointment.id if appointment else "" }}</td></tr>
+    <tr><th>شناسه بیمار</th><td>{{ appointment.patient_id if appointment else "" }}</td></tr>
+    <tr><th>تاریخ و ساعت</th><td>{{ appointment.starts_at if appointment else "" }}</td></tr>
+    <tr><th>وضعیت</th><td>{{ appointment.status if appointment else "" }}</td></tr>
+  </tbody></table>
+  {% if print_message %}<p class="print-message">{{ print_message }}</p>{% endif %}
+  {% include "print/partials/brand_footer.html" %}
+  <div class="print-meta"><span>چاپ: {{ request.state.current_datetime }}</span><button class="no-print" onclick="window.print()">چاپ</button></div>
 </section>
 {% endblock %}

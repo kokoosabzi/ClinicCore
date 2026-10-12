@@ -1,8 +1,11 @@
 from datetime import date, datetime, time, timedelta
+from pathlib import Path
+from uuid import uuid4
 from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from starlette.datastructures import UploadFile
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -37,6 +40,14 @@ def context(request: Request, title: str, **extra):
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
+        "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
+        "clinic_name": getattr(request.state, "clinic_name", ""),
+        "clinic_logo": getattr(request.state, "clinic_logo", ""),
+        "clinic_address": getattr(request.state, "clinic_address", ""),
+        "clinic_phone": getattr(request.state, "clinic_phone", ""),
+        "clinic_email": getattr(request.state, "clinic_email", ""),
+        "clinic_header_text": getattr(request.state, "clinic_header_text", ""),
+        "clinic_footer_text": getattr(request.state, "clinic_footer_text", ""),
         "datetime_calendar": getattr(request.state, "datetime_calendar", "jalali"),
         "datetime_timezone": getattr(request.state, "datetime_timezone", "Asia/Tehran"),
         "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
@@ -56,6 +67,11 @@ def context(request: Request, title: str, **extra):
         "print_show_logo": getattr(request.state, "print_show_logo", "true"),
         "print_show_header": getattr(request.state, "print_show_header", "true"),
         "print_show_footer": getattr(request.state, "print_show_footer", "true"),
+        "print_title": getattr(request.state, "print_title", ""),
+        "print_message": getattr(request.state, "print_message", ""),
+        "print_show_table_borders": getattr(request.state, "print_show_table_borders", "true"),
+        "print_show_lines": getattr(request.state, "print_show_lines", "true"),
+        "print_thermal_width": getattr(request.state, "print_thermal_width", "80"),
         "system_audit_enabled": getattr(request.state, "system_audit_enabled", "true"),
         **extra,
     }
@@ -96,18 +112,23 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
         saved=request.query_params.get("saved") == "1",
     )
 
 
 @router.post("/settings")
 async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
-    data = await form_data(request)
+    submitted = await request.form()
+    data = {key: value for key, value in submitted.items() if isinstance(value, str)}
+    logo_upload = submitted.get("clinic_logo_file")
     verify_csrf(request, data.get("csrf_token"))
     values = {
         "app.name": data.get("app_name", "").strip(),
         "app.title": data.get("app_title", "").strip(),
+        "app.primary_color": data.get("app_primary_color", "#176b67"),
+        "app.theme": data.get("app_theme", "system"),
+        "app.density": data.get("app_density", "comfortable"),
         "clinic.name": data.get("clinic_name", "").strip(),
         "clinic.address": data.get("clinic_address", "").strip(),
         "clinic.phone": data.get("clinic_phone", "").strip(),
@@ -137,6 +158,11 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "print.show_logo": data.get("print_show_logo", "true"),
         "print.show_header": data.get("print_show_header", "true"),
         "print.show_footer": data.get("print_show_footer", "true"),
+        "print.title": data.get("print_title", "").strip(),
+        "print.message": data.get("print_message", "").strip(),
+        "print.show_table_borders": data.get("print_show_table_borders", "true"),
+        "print.show_lines": data.get("print_show_lines", "true"),
+        "print.thermal_width": data.get("print_thermal_width", "80"),
         "system.audit_enabled": data.get("system_audit_enabled", "true"),
     }
     if not values["app.name"] or not values["app.title"]:
@@ -144,18 +170,47 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
+    service = SettingsService(db)
     try:
-        SettingsService(db).set_many(values)
+        for key, value in values.items():
+            service._validate(key, value)
+        if isinstance(logo_upload, UploadFile) and logo_upload.filename:
+            allowed_types = {
+                "image/png": ".png",
+                "image/jpeg": ".jpg",
+                "image/webp": ".webp",
+            }
+            extension = allowed_types.get(logo_upload.content_type or "")
+            if not extension:
+                raise ValueError("فرمت لوگو باید PNG، JPEG یا WebP باشد.")
+            image_bytes = await logo_upload.read(2 * 1024 * 1024 + 1)
+            if not image_bytes or len(image_bytes) > 2 * 1024 * 1024:
+                raise ValueError("حجم لوگو باید کمتر از ۲ مگابایت باشد.")
+            signatures = {
+                ".png": image_bytes.startswith(bytes([137]) + b"PNG" + bytes([13, 10, 26, 10])),
+                ".jpg": image_bytes.startswith(bytes([255, 216, 255])),
+                ".webp": image_bytes.startswith(b"RIFF") and image_bytes[8:12] == b"WEBP",
+            }
+            if not signatures[extension]:
+                raise ValueError("محتوای فایل با فرمت تصویر اعلام‌شده مطابقت ندارد.")
+            upload_dir = Path("app/static/uploads/clinic-logos")
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            filename = f"{uuid4().hex}{extension}"
+            (upload_dir / filename).write_bytes(image_bytes)
+            values["clinic.logo"] = f"/static/uploads/clinic-logos/{filename}"
+        service.set_many(values)
     except ValueError as error:
+        error_text = str(error)
+        error_message = error_text if any(0x0600 <= ord(char) <= 0x06FF for char in error_text) else "مقدار یکی از تنظیمات معتبر نیست."
         return render(
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
-            error="مقدار یکی از تنظیمات تاریخ و زمان معتبر نیست.",
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+            error=error_message,
         )
     request.state.app_name = values["app.name"]
     request.state.app_title = values["app.title"]
@@ -273,7 +328,8 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
             Appointment.starts_at < day_end,
         )
     ))
-    now = current_datetime(request.state.datetime_timezone).replace(tzinfo=None)
+    timezone_name = getattr(request.state, "datetime_timezone", "Asia/Tehran")
+    now = current_datetime(timezone_name).replace(tzinfo=None)
     slots = []
     for hour in range(9, 17):
         for minute in (0, 30):

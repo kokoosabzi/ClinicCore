@@ -280,3 +280,44 @@ input:focus, textarea:focus, select:focus { border-color: #56a9a0; box-shadow: 0
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Configurable institution branding and print templates */
+:root { --color-primary: #176b67; }
+.brand-title { display: inline-flex; align-items: center; gap: .65rem; }
+.brand-logo { display: inline-block; width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
+.settings-section { padding: 1.1rem; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.print-sheet { max-width: 900px; margin-inline: auto; background: #fff; color: #182b3a; }
+.print-brand { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 2px solid #dce6eb; }
+.print-brand img { max-width: 82px; max-height: 70px; object-fit: contain; }
+.print-brand-text { flex: 1; text-align: center; }
+.print-brand-text h1 { margin: 0; font-size: 1.35rem; }
+.print-brand-text p { margin: .2rem 0; color: #526675; }
+.print-document-title { text-align: center; margin: 1rem 0; font-size: 1.1rem; }
+.print-details { width: 100%; border-collapse: collapse; margin-block: 1rem; }
+.print-details th, .print-details td { border: 1px solid #cbd5dc; padding: .65rem; text-align: start; }
+:root[data-print-table-borders="false"] .print-details th,
+:root[data-print-table-borders="false"] .print-details td { border-color: transparent; }
+.print-footer { margin-top: 1.5rem; padding-top: .8rem; border-top: 1px solid #cbd5dc; text-align: center; white-space: pre-line; color: #526675; font-size: .88rem; }
+.print-message { margin-top: .8rem; text-align: center; font-weight: 700; }
+.print-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; color: #526675; font-size: .8rem; }
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .container { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .print-sheet { width: 100%; max-width: none; min-height: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .print-brand { break-inside: avoid; }
+  .print-details { break-inside: auto; }
+  .print-details tr { break-inside: avoid; }
+  :root[data-print-paper="thermal"] .print-sheet { width: 100%; font-size: 10pt; }
+  :root[data-print-paper="thermal"] .print-brand { gap: .35rem; padding-bottom: .35rem; margin-bottom: .35rem; }
+  :root[data-print-paper="thermal"] .print-brand img { max-width: 42px; max-height: 42px; }
+  :root[data-print-paper="thermal"] .print-brand-text h1 { font-size: 11pt; }
+  :root[data-print-paper="thermal"] .print-details th, :root[data-print-paper="thermal"] .print-details td { padding: .25rem .1rem; font-size: 9pt; }
+  :root[data-print-paper="thermal"] .print-footer { margin-top: .6rem; padding-top: .4rem; }
+}
+
+:root[data-print-lines="false"] .print-brand,
+:root[data-print-lines="false"] .print-footer { border: 0 !important; }
+.form > h2 { margin: .4rem 0 0; padding: .65rem .8rem; border-inline-start: 4px solid var(--color-primary); border-bottom: 1px solid var(--color-border); border-radius: 4px; background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface)); font-size: 1.05rem; }
+.form > h2:not(:first-of-type) { margin-top: .9rem; }
+.form input[type="color"] { width: 100%; min-height: 48px; padding: .3rem; cursor: pointer; }

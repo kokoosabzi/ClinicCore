@@ -44,6 +44,15 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.app_title = app_settings.get("app.title") or settings.app_name
         request.state.app_theme = app_settings.get("app.theme") or "system"
         request.state.app_density = app_settings.get("app.density") or "comfortable"
+        request.state.app_primary_color = app_settings.get("app.primary_color") or "#176b67"
+        clinic_settings = service.get_group("clinic")
+        request.state.clinic_name = clinic_settings.get("clinic.name") or ""
+        request.state.clinic_logo = clinic_settings.get("clinic.logo") or ""
+        request.state.clinic_address = clinic_settings.get("clinic.address") or ""
+        request.state.clinic_phone = clinic_settings.get("clinic.phone") or ""
+        request.state.clinic_email = clinic_settings.get("clinic.email") or ""
+        request.state.clinic_header_text = clinic_settings.get("clinic.header_text") or ""
+        request.state.clinic_footer_text = clinic_settings.get("clinic.footer_text") or ""
         request.state.datetime_calendar = datetime_settings.get("datetime.calendar") or "jalali"
         request.state.datetime_timezone = datetime_settings.get("datetime.timezone") or "Asia/Tehran"
         request.state.datetime_date_format = datetime_settings.get("datetime.date_format") or "YYYY/MM/DD"
@@ -72,6 +81,11 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.print_show_logo = print_settings.get("print.show_logo") or "true"
         request.state.print_show_header = print_settings.get("print.show_header") or "true"
         request.state.print_show_footer = print_settings.get("print.show_footer") or "true"
+        request.state.print_title = print_settings.get("print.title") or ""
+        request.state.print_message = print_settings.get("print.message") or ""
+        request.state.print_show_table_borders = print_settings.get("print.show_table_borders") or "true"
+        request.state.print_show_lines = print_settings.get("print.show_lines") or "true"
+        request.state.print_thermal_width = print_settings.get("print.thermal_width") or "80"
         system_settings = service.get_group("system")
         request.state.system_audit_enabled = system_settings.get("system.audit_enabled") or "true"
     except Exception:
@@ -79,6 +93,14 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.app_title = settings.app_name
         request.state.app_theme = "system"
         request.state.app_density = "comfortable"
+        request.state.app_primary_color = "#176b67"
+        request.state.clinic_name = ""
+        request.state.clinic_logo = ""
+        request.state.clinic_address = ""
+        request.state.clinic_phone = ""
+        request.state.clinic_email = ""
+        request.state.clinic_header_text = ""
+        request.state.clinic_footer_text = ""
         request.state.datetime_calendar = "jalali"
         request.state.datetime_timezone = "Asia/Tehran"
         request.state.datetime_date_format = "YYYY/MM/DD"
@@ -99,6 +121,11 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         request.state.print_show_logo = "true"
         request.state.print_show_header = "true"
         request.state.print_show_footer = "true"
+        request.state.print_title = ""
+        request.state.print_message = ""
+        request.state.print_show_table_borders = "true"
+        request.state.print_show_lines = "true"
+        request.state.print_thermal_width = "80"
         request.state.system_audit_enabled = "true"
     try:
         yield db

@@ -11,11 +11,11 @@ dependencies = [
     "alembic>=1.13",
     "fastapi>=0.111",
     "jinja2>=3.1",
-    "psycopg[binary]>=3.2",
     "pydantic-settings>=2.3",
     "sqlalchemy>=2.0",
     "uvicorn[standard]>=0.30",
     "itsdangerous>=2.2",
+    "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]
