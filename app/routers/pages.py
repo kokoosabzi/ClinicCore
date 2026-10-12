@@ -448,10 +448,34 @@ def print_patient(patient_id: int, request: Request, db: Session = Depends(get_d
 @router.get("/print/appointments/{appointment_id}", response_class=HTMLResponse)
 def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
     appointment = db.get(Appointment, appointment_id)
+    display_datetime = ""
+    status_labels = {
+        "booked": "ثبت شده",
+        "rescheduled": "تغییر زمان یافته",
+        "cancelled": "لغو شده",
+        "waiting": "در انتظار",
+        "no_show": "عدم مراجعه",
+        "completed": "انجام شده",
+    }
+    status_label = status_labels.get(str(appointment.status), str(appointment.status)) if appointment else ""
+    if appointment:
+        display_datetime = format_configured_datetime(
+            appointment.starts_at,
+            getattr(request.state, "datetime_calendar", "jalali"),
+            getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
+            getattr(request.state, "datetime_time_format", "24"),
+            getattr(request.state, "datetime_show_seconds", "false") == "true",
+        )
     return templates.TemplateResponse(
         request=request,
         name="print/appointment_receipt.html",
-        context=context(request, "چاپ رسید نوبت", appointment=appointment),
+        context=context(
+            request,
+            "چاپ رسید نوبت",
+            appointment=appointment,
+            appointment_display_datetime=display_datetime,
+            appointment_status_label=status_label,
+        ),
     )
 
 
