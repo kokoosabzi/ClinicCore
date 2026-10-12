@@ -328,7 +328,8 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
             Appointment.starts_at < day_end,
         )
     ))
-    now = current_datetime(request.state.datetime_timezone).replace(tzinfo=None)
+    timezone_name = getattr(request.state, "datetime_timezone", "Asia/Tehran")
+    now = current_datetime(timezone_name).replace(tzinfo=None)
     slots = []
     for hour in range(9, 17):
         for minute in (0, 30):
