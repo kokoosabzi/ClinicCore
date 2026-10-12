@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -21,7 +21,7 @@ from app.services.dashboard_service import DashboardService
 from app.services.appointment_service import AppointmentService, AppointmentSlotUnavailableError
 from app.services.patient_service import PatientService
 from app.services.settings_service import SettingsService
-from app.services.datetime_service import format_configured_datetime, parse_configured_datetime
+from app.services.datetime_service import current_datetime, format_configured_datetime, format_jalali, parse_configured_datetime
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory="app/templates")
@@ -241,7 +241,52 @@ def appointments_index(request: Request, db: Session = Depends(get_db), user=Dep
 
 @router.get("/appointments/new", response_class=HTMLResponse)
 def appointment_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
-    return render(request, "appointments/form.html", "ثبت نوبت")
+    patients = list(db.scalars(
+        select(Patient)
+        .where(Patient.is_deleted.is_(False))
+        .order_by(Patient.last_name, Patient.first_name)
+    ))
+    today = current_datetime(request.state.datetime_timezone)
+    return render(
+        request,
+        "appointments/form.html",
+        "ثبت نوبت",
+        patients=patients,
+        today_jalali=format_jalali(today),
+    )
+
+
+@router.get("/ui/appointments/availability")
+def appointment_availability(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+    date_text = request.query_params.get("date", "").strip()
+    try:
+        selected_day = parse_configured_datetime(f"{date_text} 00:00", "jalali").date()
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="تاریخ شمسی معتبر نیست.") from error
+
+    day_start = datetime.combine(selected_day, time.min)
+    day_end = day_start + timedelta(days=1)
+    occupied = set(db.scalars(
+        select(Appointment.starts_at).where(
+            Appointment.is_deleted.is_(False),
+            Appointment.starts_at >= day_start,
+            Appointment.starts_at < day_end,
+        )
+    ))
+    now = current_datetime(request.state.datetime_timezone).replace(tzinfo=None)
+    slots = []
+    for hour in range(9, 17):
+        for minute in (0, 30):
+            slot_time = time(hour, minute)
+            slot_datetime = datetime.combine(selected_day, slot_time)
+            if slot_datetime in occupied:
+                slot_status = "booked"
+            elif slot_datetime < now:
+                slot_status = "past"
+            else:
+                slot_status = "available"
+            slots.append({"time": slot_time.strftime("%H:%M"), "status": slot_status})
+    return {"date": date_text, "slot_minutes": 30, "slots": slots}
 
 
 @router.post("/ui/appointments")
@@ -253,7 +298,7 @@ async def create_appointment_from_form(request: Request, db: Session = Depends(g
             patient_id=int(data["patient_id"]),
             starts_at=parse_configured_datetime(
                 f"{data['starts_at_date']} {data['starts_at_time']}",
-                request.state.datetime_calendar,
+                "jalali",
             ),
             reason=data.get("reason") or None,
             notes=data.get("notes") or None,
