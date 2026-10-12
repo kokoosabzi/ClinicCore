@@ -37,6 +37,14 @@ def context(request: Request, title: str, **extra):
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
+        "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
+        "clinic_name": getattr(request.state, "clinic_name", ""),
+        "clinic_logo": getattr(request.state, "clinic_logo", ""),
+        "clinic_address": getattr(request.state, "clinic_address", ""),
+        "clinic_phone": getattr(request.state, "clinic_phone", ""),
+        "clinic_email": getattr(request.state, "clinic_email", ""),
+        "clinic_header_text": getattr(request.state, "clinic_header_text", ""),
+        "clinic_footer_text": getattr(request.state, "clinic_footer_text", ""),
         "datetime_calendar": getattr(request.state, "datetime_calendar", "jalali"),
         "datetime_timezone": getattr(request.state, "datetime_timezone", "Asia/Tehran"),
         "datetime_date_format": getattr(request.state, "datetime_date_format", "YYYY/MM/DD"),
@@ -56,6 +64,11 @@ def context(request: Request, title: str, **extra):
         "print_show_logo": getattr(request.state, "print_show_logo", "true"),
         "print_show_header": getattr(request.state, "print_show_header", "true"),
         "print_show_footer": getattr(request.state, "print_show_footer", "true"),
+        "print_title": getattr(request.state, "print_title", ""),
+        "print_message": getattr(request.state, "print_message", ""),
+        "print_show_table_borders": getattr(request.state, "print_show_table_borders", "true"),
+        "print_show_lines": getattr(request.state, "print_show_lines", "true"),
+        "print_thermal_width": getattr(request.state, "print_thermal_width", "80"),
         "system_audit_enabled": getattr(request.state, "system_audit_enabled", "true"),
         **extra,
     }
@@ -96,7 +109,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -108,6 +121,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
     values = {
         "app.name": data.get("app_name", "").strip(),
         "app.title": data.get("app_title", "").strip(),
+        "app.primary_color": data.get("app_primary_color", "#176b67"),
         "clinic.name": data.get("clinic_name", "").strip(),
         "clinic.address": data.get("clinic_address", "").strip(),
         "clinic.phone": data.get("clinic_phone", "").strip(),
@@ -137,6 +151,11 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "print.show_logo": data.get("print_show_logo", "true"),
         "print.show_header": data.get("print_show_header", "true"),
         "print.show_footer": data.get("print_show_footer", "true"),
+        "print.title": data.get("print_title", "").strip(),
+        "print.message": data.get("print_message", "").strip(),
+        "print.show_table_borders": data.get("print_show_table_borders", "true"),
+        "print.show_lines": data.get("print_show_lines", "true"),
+        "print.thermal_width": data.get("print_thermal_width", "80"),
         "system.audit_enabled": data.get("system_audit_enabled", "true"),
     }
     if not values["app.name"] or not values["app.title"]:
