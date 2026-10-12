@@ -109,7 +109,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -122,6 +122,8 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "app.name": data.get("app_name", "").strip(),
         "app.title": data.get("app_title", "").strip(),
         "app.primary_color": data.get("app_primary_color", "#176b67"),
+        "app.theme": data.get("app_theme", "system"),
+        "app.density": data.get("app_density", "comfortable"),
         "clinic.name": data.get("clinic_name", "").strip(),
         "clinic.address": data.get("clinic_address", "").strip(),
         "clinic.phone": data.get("clinic_phone", "").strip(),
@@ -163,7 +165,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
     try:
@@ -173,7 +175,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
             error="مقدار یکی از تنظیمات تاریخ و زمان معتبر نیست.",
         )
     request.state.app_name = values["app.name"]
