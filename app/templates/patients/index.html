@@ -3,6 +3,7 @@
 {% set page_title = "بیماران" %}
 {% set action_url = "/patients/new" %}
 {% set action_label = "بیمار جدید" %}
+{% set action_permission = "patients.create" %}
 {% include "partials/page_header.html" with context %}
 <form class="toolbar" method="get" action="/patients">
   <input name="q" value="{{ q }}" placeholder="جستجو نام، تلفن یا کد ملی">

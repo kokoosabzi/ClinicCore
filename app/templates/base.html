@@ -47,17 +47,30 @@
     {% if request.state.current_datetime %}<time class="header-datetime" datetime="{{ request.state.current_datetime.isoformat() if request.state.current_datetime.isoformat is defined else '' }}">{{ request.state.current_datetime }}</time>{% endif %}
     <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
     <nav id="main-nav">
+      {% if user and not request.state.must_change_password %}
       <a class="{% if request.url.path == '/dashboard' %}active{% endif %}" href="/dashboard">داشبورد</a>
+      {% endif %}
+      {% if "patients.view" in permissions %}
       <a class="{% if request.url.path.startswith('/patients') %}active{% endif %}" href="/patients">بیماران</a>
+      {% endif %}
+      {% if "appointments.view" in permissions %}
       <a class="{% if request.url.path.startswith('/appointments') %}active{% endif %}" href="/appointments">نوبت‌ها</a>
+      {% endif %}
+      {% if "financial.view" in permissions %}
       <a class="{% if request.url.path.startswith('/financial') %}active{% endif %}" href="/financial">مالی</a>
+      {% endif %}
+      {% if "messaging.view" in permissions %}
       <a class="{% if request.url.path.startswith('/messages') %}active{% endif %}" href="/messages">پیام‌ها</a>
-      {% if user and (user.role == "admin" or user["role"] == "admin") %}
+      {% endif %}
+      {% if "users.view" in permissions %}
+      <a class="{% if request.url.path.startswith('/users') %}active{% endif %}" href="/users/manage">کاربران</a>
+      {% endif %}
+      {% if "settings.view" in permissions %}
       <a class="{% if request.url.path.startswith('/settings') %}active{% endif %}" href="/settings">تنظیمات</a>
       {% endif %}
       <a href="/login">ورود</a>
       {% if user %}
-      <form method="post" action="/logout" class="logout-form"><button type="submit">خروج {{ user.username if user.username else user["username"] }}</button></form>
+      <form method="post" action="/logout" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token or '' }}"><button type="submit">خروج {{ user.username if user.username else user["username"] }}</button></form>
       {% endif %}
     </nav>
   </header>

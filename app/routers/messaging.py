@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_admin, require_user
+from app.core.auth import require_admin, require_permission
 from app.core.database import get_db
 from app.repositories.messaging_repository import MessageRepository
 from app.schemas.messaging import MessageCreate, MessageRead
@@ -15,12 +15,12 @@ def get_service(db: Session = Depends(get_db)) -> MessagingService:
 
 
 @router.get("/", response_model=list[MessageRead])
-def list_messages(user=Depends(require_user), service: MessagingService = Depends(get_service)):
+def list_messages(user=Depends(require_permission("messaging.view")), service: MessagingService = Depends(get_service)):
     return service.list_messages()
 
 
 @router.post("/", response_model=MessageRead, status_code=201)
-def queue_message(payload: MessageCreate, user=Depends(require_user), service: MessagingService = Depends(get_service)):
+def queue_message(payload: MessageCreate, user=Depends(require_permission("messaging.create")), service: MessagingService = Depends(get_service)):
     return service.queue_message(payload)
 
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_user
+from app.core.auth import require_permission
 from app.core.database import get_db
 from app.repositories.appointment_repository import AppointmentRepository
 from app.schemas.appointment import AppointmentCreate, AppointmentRead
@@ -15,12 +15,12 @@ def get_service(db: Session = Depends(get_db)) -> AppointmentService:
 
 
 @router.get("/", response_model=list[AppointmentRead])
-def list_appointments(user=Depends(require_user), service: AppointmentService = Depends(get_service)):
+def list_appointments(user=Depends(require_permission("appointments.view")), service: AppointmentService = Depends(get_service)):
     return service.list_appointments()
 
 
 @router.post("/", response_model=AppointmentRead, status_code=201)
-def book_appointment(payload: AppointmentCreate, user=Depends(require_user), service: AppointmentService = Depends(get_service)):
+def book_appointment(payload: AppointmentCreate, user=Depends(require_permission("appointments.create")), service: AppointmentService = Depends(get_service)):
     try:
         return service.book(payload)
     except AppointmentSlotUnavailableError as error:

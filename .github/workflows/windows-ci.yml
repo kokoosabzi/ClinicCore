@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - stabilization/windows-sqlite-runtime
+      - feature/user-management-rbac
   pull_request:
     branches:
       - main

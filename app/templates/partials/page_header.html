@@ -8,5 +8,5 @@
     <h1>{{ page_title }}</h1>
     {% if page_subtitle %}<p class="page-subtitle">{{ page_subtitle }}</p>{% endif %}
   </div>
-  {% if action_url and action_label %}<a class="button" href="{{ action_url }}">{{ action_label }}</a>{% endif %}
+  {% if action_url and action_label and (not action_permission or action_permission in permissions) %}<a class="button" href="{{ action_url }}">{{ action_label }}</a>{% endif %}
 </div>

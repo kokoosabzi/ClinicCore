@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from sqlalchemy import select
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,6 +10,9 @@ from app.core import audit as audit_module
 from app.core.audit import audit_request_middleware
 from app.core.database import get_db
 from app.core.auth import current_user
+from app.core.csrf import get_csrf_token
+from app.models.role import Role, RolePermission
+from app.models.user import User
 from app.services.settings_service import SettingsService
 from app.routers import appointments, auth, financial, health, messaging, pages, patients, users
 
@@ -70,6 +74,35 @@ async def load_app_settings(request: Request, call_next):
         }
         for attribute, key in state_mapping.items():
             setattr(request.state, attribute, keys.get(key))
+
+        username = request.session.get("username")
+        if username:
+            principal = db.scalar(
+                select(User).where(User.username == username, User.is_deleted.is_(False))
+            )
+            if principal is None:
+                request.session.clear()
+                request.state.current_user = None
+                request.state.permissions = set()
+                request.state.must_change_password = False
+            else:
+                request.state.current_user = {
+                    "id": principal.id,
+                    "username": principal.username,
+                    "role": principal.role.value,
+                }
+                request.state.must_change_password = principal.must_change_password
+                request.state.permissions = set() if principal.must_change_password else set(
+                    db.scalars(
+                        select(RolePermission.permission_code)
+                        .join(Role, Role.id == RolePermission.role_id)
+                        .where(Role.key == principal.role.value, Role.is_active.is_(True))
+                    )
+                )
+        else:
+            request.state.current_user = None
+            request.state.permissions = set()
+            request.state.must_change_password = False
     finally:
         db.close()
 
@@ -78,9 +111,11 @@ async def load_app_settings(request: Request, call_next):
 
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
-    app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax", https_only=False)
     app.middleware("http")(audit_request_middleware)
     app.middleware("http")(load_app_settings)
+    # SessionMiddleware must be outermost so request.session is available to
+    # both the settings loader and the audit middleware.
+    app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax", https_only=False)
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     app.include_router(health.router)
     app.include_router(auth.router)
@@ -104,7 +139,9 @@ def create_app() -> FastAPI:
                 "app_title": app_title,
                 "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
                 "clinic_logo": getattr(request.state, "clinic_logo", ""),
-                "user": current_user(request),
+                "user": getattr(request.state, "current_user", None) or current_user(request),
+                "permissions": getattr(request.state, "permissions", set()),
+                "csrf_token": get_csrf_token(request),
             },
         )
 

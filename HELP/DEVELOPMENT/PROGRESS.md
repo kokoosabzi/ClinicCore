@@ -1,81 +1,79 @@
 # ClinicCore — Development Progress
 
-> این فایل مرجع وضعیت واقعی مخزن است. تستی که اجرا نشده نباید Pass علامت بخورد.
+> این فایل وضعیت واقعی مخزن و شواهد تست را ثبت می‌کند. هیچ تست اجرا‌نشده‌ای نباید Pass علامت بخورد.
 
 Last updated: 2026-11-06
-Last updated by: ChatGPT — Windows CI diagnosis, remediation and verification
-Repository baseline inspected: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
-Working branch: `stabilization/windows-sqlite-runtime`
+Last updated by: ChatGPT — Sprint 1 user administration and RBAC implementation
+Repository baseline: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
+Sprint 0 branch: `stabilization/windows-sqlite-runtime`
+Sprint 1 branch: `feature/user-management-rbac`
+Sprint 1 head at last verified run: `25b881b6f8c672812cbe4ff7206cbb2287eac279`
 
-## 1. Current project phase
+## 1. Current delivery status
 
-**Sprint 0 — Project Stabilization & Windows Readiness**
+- **Sprint 0 — Windows & SQLite readiness:** hosted Windows CI passed; manual installation/runtime acceptance on the target PC is still pending. PR #14 remains Draft.
+- **Sprint 1 — User Administration & RBAC:** implementation is present on the dependent feature branch; hosted Windows CI run #93 passed. UI acceptance on the target PC and review are still pending. PR #15 remains Draft and targets the Sprint 0 branch.
+- Neither PR has been merged. `main` remains unchanged.
 
-## 2. Current task
+## 2. Existing application baseline
 
-**Task:** Align Windows installation/runtime and project documentation with the existing SQLite-only implementation.
+- FastAPI + SQLAlchemy 2 + Alembic + Jinja2, Persian RTL UI.
+- Windows local deployment uses file-backed SQLite at `data/cliniccore.db`.
+- Alembic remains the only schema creation/migration mechanism.
+- Existing modules include patients, appointments, financial records, messaging, settings and print views.
+- Existing roles were admin, doctor, secretary and accountant; Sprint 1 adds clinic_manager without rewriting existing user rows.
 
-**Status:** AUTOMATED CHECKS PASSED; MANUAL WINDOWS ACCEPTANCE PENDING. Keep PR #14 in Draft until the local Windows setup/start/stop and browser acceptance checklist is completed.
+## 3. Sprint 0 — completed implementation, manual acceptance pending
 
-## 3. Existing implementation confirmed by source inspection
+- Aligned documentation and local runtime with SQLite-only Windows delivery.
+- Added `setup.bat`, bootstrap of a private local `.env`, and start/stop scripts with PID/process identity checks.
+- Existing `.env` is not overwritten; no application database is deleted or reset.
+- Added Windows CI and fixed the PowerShell reserved-variable collision involving `$PID`.
+- Fixed missing Windows IANA timezone data by adding `tzdata`.
+- Corrected the homepage smoke test to use the isolated SQLite fixture.
+- Removed `Base.metadata.create_all` from the admin seed script so Alembic is the single schema source of truth.
 
-- FastAPI + SQLAlchemy 2 + Alembic + Jinja2 application.
-- SQLite is the only accepted database URL in `app/core/config.py`.
-- Default file-backed database path is `data/cliniccore.db`; the database module creates its parent directory.
-- Alembic head migration is `20261005_0005`; a file-backed SQLite migration test exists in `tests/test_sqlite_migrations.py`.
-- Current user roles: admin, doctor, secretary, accountant.
-- Passwords are hashed; seeded initial admin is marked `must_change_password`.
-- Settings, Jalali date/time formatting, appointment booking, print views and patient/financial modules exist in the repository.
-- Most application tests use in-memory SQLite; file-backed migration verification is a separate test.
+## 4. Sprint 1 — implementation completed on the feature branch
 
-## 4. Work in this branch
+- Added `Role`, `Permission`, and `RolePermission` models.
+- Added Alembic revision `20261106_0006` with five built-in roles and the initial permission matrix.
+- Added the clinic manager role while retaining legacy role keys and existing user/password data.
+- Added database-backed `require_permission` checks and refreshed effective user/permission state on every request.
+- Enforced permissions across patient, appointment, financial, messaging, settings and user routes.
+- Restricted dashboard totals and patient-chart sections according to effective permissions. Accountants do not receive clinical chart access by default; doctors/receptionists do not receive financial access by default.
+- Added Persian RTL user administration: list, create, update, deactivate/reactivate and one-time temporary password reset.
+- Added administrator-only role permission matrix for built-in non-admin roles; admin permissions are immutable.
+- Added protection against deactivating/demoting the last active administrator and against clinic managers modifying system-administrator accounts.
+- Added CSRF validation to login, logout, password-change, user-management and role-permission browser forms; successful login rotates the session.
+- Added RBAC integration tests and a migration regression test proving existing usernames, roles and password-hash values remain unchanged when upgrading a populated 0005 database.
 
-- Inspected the mainline implementation and identified stale PostgreSQL/Docker instructions.
-- Updated the primary README, agent rules, installation/run/authentication guides and master plan for SQLite-only Windows delivery.
-- Added a Windows bootstrap path to generate local credentials for a fresh installation without overwriting an existing `.env`.
-- Added setup/start/stop launch scripts using the project-local `.venv` and PID-verified process shutdown.
-- Added a Windows GitHub Actions workflow for compileall, pytest, and a clean SQLite Alembic migration.
-- Corrected a PowerShell shutdown bug: the local PID variable no longer conflicts with PowerShell's reserved `$PID`; shutdown now verifies process exit before deleting the PID file.
-- First Windows CI run #8 exposed two issues: missing IANA timezone data and a homepage smoke test that bypassed the isolated SQLite fixture.
-- Added `tzdata` as a runtime dependency so Windows installations can resolve configured IANA zones such as `Asia/Tehran`.
-- Updated `tests/test_app.py` to use the shared `client` fixture and its isolated in-memory SQLite database.
-- Rewrote stale PostgreSQL references in `tests/conftest.py` to describe the actual isolated SQLite test setup.
-- Removed `Base.metadata.create_all` from `scripts/seed_admin.py`; Alembic is the single schema creation/migration source of truth, while the seed script only creates the initial administrator record.
-- Updated the PR description, progress record and development changelog with the real CI failure, fixes and successful rerun.
+## 5. Verification evidence
 
-## 5. Not yet verified
+### Sprint 0
+- Windows CI run #23 on Windows Server 2025 / Python 3.12.10: compileall passed; pytest 29 passed / 0 failed; clean SQLite Alembic migration passed through `20261005_0005`.
+- Manual Windows acceptance on the user's PC: **not run**.
 
-- No real Windows desktop/local-clone acceptance has been performed by the user: `setup.bat`, `start.bat`, browser login, mandatory password change, persistence, and `stop.bat` remain to be tested on the target PC.
-- No existing user accounts or existing `.env` values were changed.
-- The successful CI run validates the updated source in a hosted Windows runner; it does not replace testing the user's actual PC, installed Python environment, browser, firewall/port availability, and filesystem permissions.
-
-## 6. Current blockers / risks
-
-- Manual Windows acceptance is the only Sprint 0 release gate still outstanding.
-- `get_db` catches broad exceptions while loading settings and falls back silently; review separately.
-- Fine-grained permissions and full user CRUD are not yet complete; they belong to the next product phase.
-- Active appointment uniqueness is global per `starts_at`; adding doctor/room scheduling requires a scoped migration and decision record.
-- CI emitted 81 warnings (primarily dependency deprecations); they did not fail the run and should be reviewed in a maintenance pass.
-
-## 7. Verification evidence
-
-- Workflow run #8: Windows Server 2025 / Python 3.12.10; compileall passed; pytest 24 passed / 5 failed; migration step skipped. This run exposed the issues listed above.
-- Workflow run #23 on the remediated branch: **success**.
-- `python -m pip install -e ".[dev]"`: passed.
+### Sprint 1
+- Windows CI run #93 on Windows Server 2025 / Python 3.12.10: **success**.
+- Dependency installation: passed.
 - `python -m compileall app tests main.py alembic scripts`: passed.
-- `python -m pytest -q`: **29 passed, 0 failed** (81 warnings).
-- `python -m alembic upgrade head`: passed on a fresh CI SQLite database through revision `20261005_0005`.
-- Manual Windows acceptance on the user's computer: pending.
+- `python -m pytest -q`: **40 passed, 0 failed** (81 dependency/deprecation warnings).
+- `python -m alembic upgrade head`: passed on a clean SQLite database through `20261106_0006`.
+- Dedicated populated-database upgrade regression: passed; the existing user's username, role and exact password-hash string were preserved while the five role rows and administrator grants were added.
+- Run: https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528
 
-## 8. Exact next action
+## 6. Remaining work / release gates
 
-On the target Windows PC, clone/sync branch `stabilization/windows-sqlite-runtime` and run:
+- On the target Windows PC, complete Sprint 0 setup/start/stop and persistence acceptance from AT-1101 through AT-1105.
+- After PR #14 is accepted and merged, update the Sprint 1 branch base as needed; do not merge PR #15 ahead of PR #14.
+- On Windows, manually inspect the user-management page, role-permission matrix, CSRF-protected forms, forced password change, role-specific navigation, and permission-denied behavior.
+- Review the 81 dependency/deprecation warnings separately; they did not fail CI.
+- Review existing appointment global-slot uniqueness before adding practitioner/room scheduling.
+- Fine-grained record ownership (e.g. doctor sees only assigned patients) is not implemented in this sprint; current permissions are module/action level.
 
-```powershell
-setup.bat
-start.bat
-```
+## 7. Next action
 
-Then verify `http://127.0.0.1:8000/health`, log in with the generated initial administrator credentials, complete the mandatory password change, inspect dashboard/patient/appointment/settings/print pages, create a test patient and appointment, stop and restart the app, and confirm the records persist. Run `stop.bat` and verify unrelated Python/Uvicorn processes remain running.
-
-Do not delete the `data` folder or overwrite an existing `.env`. Record any failure text and the Windows/Python versions. Only after this acceptance passes should PR #14 be marked ready for review and Sprint 0 be considered complete. No merge to `main` is requested yet.
+1. User performs the Sprint 0 Windows installation/runtime checklist without deleting `.env` or `data`.
+2. Review and merge PR #14 only after acceptance.
+3. Rebase/update PR #15 on the accepted Sprint 0 branch, run CI again, and complete manual Sprint 1 UI acceptance.
+4. Only then consider merging PR #15. No merge to `main` is authorized by this progress update.

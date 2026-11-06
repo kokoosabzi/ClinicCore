@@ -28,12 +28,14 @@ def login_form(request: Request):
     context={
         "request": request,
         "title": "ورود",
+        "csrf_token": get_csrf_token(request),
     },
 )
 
 @router.post("/login")
 async def login(request: Request, db: Session = Depends(get_db)):
     data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
     user = AuthService(UserRepository(db)).authenticate(data.get("username", ""), data.get("password", ""))
     if user is None:
        return templates.TemplateResponse(
@@ -43,9 +45,11 @@ async def login(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "title": "ورود",
         "error": "نام کاربری یا رمز عبور نادرست است.",
+        "csrf_token": get_csrf_token(request),
     },
     status_code=status.HTTP_401_UNAUTHORIZED,
 )
+    request.session.clear()
     request.session["username"] = user.username
     request.session["role"] = user.role.value
     if user.must_change_password:
@@ -54,7 +58,9 @@ async def login(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/logout")
-def logout(request: Request):
+async def logout(request: Request):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
 
@@ -67,6 +73,8 @@ def change_password_form(request: Request):
     context={
         "request": request,
         "title": "تغییر رمز",
+        "user": getattr(request.state, "current_user", None),
+        "permissions": getattr(request.state, "permissions", set()),
         "csrf_token": get_csrf_token(request),
     },
 )
@@ -84,7 +92,7 @@ async def change_password(request: Request, db: Session = Depends(get_db)):
     if password != confirm or len(password) < 8:
         return templates.TemplateResponse(
             "auth/change_password.html",
-            {"request": request, "title": "تغییر رمز", "csrf_token": get_csrf_token(request), "error": "رمز باید حداقل ۸ کاراکتر باشد و با تکرار آن یکسان باشد."},
+            {"request": request, "title": "تغییر رمز", "user": getattr(request.state, "current_user", None), "permissions": getattr(request.state, "permissions", set()), "csrf_token": get_csrf_token(request), "error": "رمز باید حداقل ۸ کاراکتر باشد و با تکرار آن یکسان باشد."},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     user = UserRepository(db).get_by_username(username)

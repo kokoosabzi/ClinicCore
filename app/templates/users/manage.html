@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <h1>مدیریت کاربران</h1>
+    <p class="muted">ایجاد حساب، تعیین نقش، تغییر وضعیت و بازنشانی رمز عبور</p>
+  </div>
+  {% if 'roles.manage' in permissions %}<a class="button secondary" href="/users/roles">مدیریت مجوز نقش‌ها</a>{% endif %}
+</section>
+
+{% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
+{% if notice %}<p class="alert success" role="status">{{ notice }}</p>{% endif %}
+{% if temporary_password %}
+<section class="card" aria-live="polite">
+  <h2>رمز موقت — فقط همین یک‌بار نمایش داده می‌شود</h2>
+  <p><code dir="ltr">{{ temporary_password }}</code></p>
+  <p class="muted">رمز را به‌صورت امن به کاربر تحویل دهید. در اولین ورود، تغییر رمز الزامی است.</p>
+</section>
+{% endif %}
+
+{% if can_create %}
+<section class="card">
+  <h2>ایجاد کاربر جدید</h2>
+  <form method="post" action="/users/ui/create" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>نام و نام خانوادگی
+      <input name="full_name" minlength="1" maxlength="120" required>
+    </label>
+    <label>نام کاربری
+      <input name="username" minlength="3" maxlength="80" pattern="[A-Za-z0-9_.-]+" autocomplete="off" required>
+    </label>
+    <label>رمز اولیه
+      <input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+    </label>
+    {% if can_assign_role %}
+    <label>نقش
+      <select name="role">
+        {% for role in roles %}
+        <option value="{{ role.value }}">{{ role_labels[role.value] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    {% else %}
+    <input type="hidden" name="role" value="secretary">
+    <p class="muted">کاربر جدید با نقش پذیرش ساخته می‌شود. تخصیص نقش‌های دیگر نیازمند مجوز مدیر سیستم است.</p>
+    {% endif %}
+    <button type="submit">ایجاد حساب کاربری</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>فهرست کاربران</h2>
+  {% if users %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>نام</th>
+          <th>نام کاربری</th>
+          <th>نقش</th>
+          <th>وضعیت</th>
+          <th>اقدامات</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in users %}
+        <tr>
+          <td>{{ item.full_name }}</td>
+          <td dir="ltr">{{ item.username }}</td>
+          <td>{{ role_labels[item.role.value] }}</td>
+          <td>
+            {% if item.is_deleted %}<span class="badge">غیرفعال</span>
+            {% elif item.must_change_password %}<span class="badge">در انتظار تغییر رمز</span>
+            {% else %}<span class="badge">فعال</span>{% endif %}
+          </td>
+          <td>
+            {% if not item.is_deleted and can_update %}
+            <details>
+              <summary>ویرایش</summary>
+              <form method="post" action="/users/ui/{{ item.id }}/update" class="form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <label>نام کامل<input name="full_name" value="{{ item.full_name }}" maxlength="120" required></label>
+                {% if can_assign_role %}
+                <label>نقش
+                  <select name="role">
+                    {% for role in roles %}
+                    <option value="{{ role.value }}" {% if role == item.role %}selected{% endif %}>{{ role_labels[role.value] }}</option>
+                    {% endfor %}
+                  </select>
+                </label>
+                {% else %}
+                <input type="hidden" name="role" value="{{ item.role.value }}">
+                {% endif %}
+                <button type="submit">ذخیره تغییرات</button>
+              </form>
+            </details>
+            {% endif %}
+
+            {% if not item.is_deleted and can_reset_password and (item.role.value != 'admin' or user.role == 'admin') %}
+            <form method="post" action="/users/ui/{{ item.id }}/reset-password" class="inline-form" onsubmit="return confirm('رمز این کاربر بازنشانی شود؟');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="secondary">بازنشانی رمز</button>
+            </form>
+            {% endif %}
+
+            {% if not item.is_deleted and can_deactivate and item.id != actor_id and (item.role.value != 'admin' or user.role == 'admin') %}
+            <form method="post" action="/users/ui/{{ item.id }}/deactivate" class="inline-form" onsubmit="return confirm('این حساب غیرفعال شود؟');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="danger">غیرفعال‌سازی</button>
+            </form>
+            {% elif item.is_deleted and can_deactivate %}
+            <form method="post" action="/users/ui/{{ item.id }}/reactivate" class="inline-form" onsubmit="return confirm('این حساب دوباره فعال شود؟');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="secondary">فعال‌سازی مجدد</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">هنوز کاربری ثبت نشده است.</p>
+  {% endif %}
+</section>
+{% endblock %}

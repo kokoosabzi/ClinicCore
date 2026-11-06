@@ -239,3 +239,51 @@ Release زمانی قابل قبول است که:
 ### AT-1105 — Windows regression
 - Login, mandatory password change, dashboard, patient workflow, appointment workflow, financial pages, settings, receipt print, and logout are manually checked in a browser.
 - Record the Windows version, Python version, test result, and any failure in PROGRESS.md.
+
+
+## 16. User Administration & RBAC (Sprint 1)
+
+### AT-1201 — Additive role migration
+- Upgrade an existing 0005 database to the RBAC head revision without deleting users or changing existing password hashes.
+- Built-in roles and permission grants are seeded exactly once.
+- Alembic remains the only schema creation/migration path.
+
+### AT-1202 — User lifecycle
+- System administrator can create, edit, deactivate/reactivate and reset passwords for user accounts.
+- New users receive only a password hash and must change the initial password at first login.
+- Duplicate usernames are rejected.
+- Inactive users cannot authenticate; an already-open session is rejected on the next protected request.
+- User responses never include password hashes or plaintext passwords except the one-time reset result.
+
+### AT-1203 — Role permissions
+- Default roles are system administrator, clinic manager, doctor, secretary and accountant.
+- The administrator can edit built-in non-admin role permissions.
+- Administrator permissions are immutable and always include all permission codes.
+- A non-administrator cannot grant the role-management permission to itself or another role.
+- A clinic manager cannot create/promote, modify, deactivate or reset the password of a system administrator.
+
+### AT-1204 — Server-side route enforcement
+- Unauthenticated access to protected HTML/API routes is rejected.
+- Authenticated users lacking a permission receive HTTP 403.
+- Permissions are reloaded from the database, so role/permission changes take effect without a server restart.
+- Hiding a menu item is not considered sufficient authorization.
+
+### AT-1205 — Least-privilege data visibility
+- Doctors and receptionists cannot access financial pages, API endpoints, or financial dashboard totals by default.
+- Accountants cannot access clinical patient charts by default.
+- Patient detail pages show appointments and payment history only when the corresponding permissions are present.
+- Dashboard cards and create shortcuts are filtered by effective permissions.
+
+### AT-1206 — Forced password change and session behavior
+- A user marked for password change cannot access dashboard or domain pages until changing the password.
+- Successful login rotates the session.
+- Deactivated users and changed role permissions take effect on the next request.
+
+### AT-1207 — CSRF protection
+- Login, logout, password-change, user-management, and role-permission browser forms reject missing or invalid CSRF tokens.
+
+### AT-1208 — Administrator safety
+- The last active system administrator cannot be deactivated or demoted.
+- A user cannot deactivate their own account.
+- Password reset secrets are never written to audit details or ordinary user listings.
+

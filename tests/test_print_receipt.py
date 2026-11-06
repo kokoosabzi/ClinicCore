@@ -1,12 +1,11 @@
 from datetime import datetime
 
-from app.core.auth import require_user
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.patient import Patient
 
 
-def test_appointment_receipt_uses_light_theme_and_persian_fields(client, db_session_factory):
-    client.app.dependency_overrides[require_user] = lambda: {"username": "tester", "role": "admin"}
+def test_appointment_receipt_uses_light_theme_and_persian_fields(admin_client, db_session_factory):
+    client = admin_client
     with db_session_factory() as db:
         patient = Patient(first_name="آزمایش", last_name="بیمار")
         db.add(patient)

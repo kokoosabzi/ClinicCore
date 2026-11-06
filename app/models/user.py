@@ -9,6 +9,7 @@ from app.models.mixins import SoftDeleteMixin, TimestampMixin
 
 class UserRole(StrEnum):
     admin = "admin"
+    clinic_manager = "clinic_manager"
     doctor = "doctor"
     secretary = "secretary"
     accountant = "accountant"

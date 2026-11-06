@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.auth import current_user, require_admin, require_user
+from app.core.auth import current_user, has_permission, require_admin, require_permission, require_user
 from app.core.csrf import get_csrf_token, verify_csrf
 from app.core.database import get_db
 from app.models.appointment import Appointment
@@ -36,7 +36,8 @@ def context(request: Request, title: str, **extra):
         "title": title,
         "app_name": getattr(request.state, "app_name", "ClinicCore"),
         "app_title": getattr(request.state, "app_title", "ClinicCore"),
-        "user": current_user(request),
+        "user": getattr(request.state, "current_user", None) or current_user(request),
+        "permissions": getattr(request.state, "permissions", set()),
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
@@ -219,22 +220,28 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
 
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
-    return render(request, "dashboard.html", "داشبورد", summary=DashboardService(db).summary())
+    role = user["role"]
+    summary = DashboardService(db).summary(
+        include_patients=has_permission(db, role, "patients.view"),
+        include_appointments=has_permission(db, role, "appointments.view"),
+        include_financial=has_permission(db, role, "financial.view"),
+    )
+    return render(request, "dashboard.html", "داشبورد", summary=summary)
 
 
 @router.get("/patients", response_class=HTMLResponse)
-def patients_index(request: Request, q: str | None = None, db: Session = Depends(get_db), user=Depends(require_user)):
+def patients_index(request: Request, q: str | None = None, db: Session = Depends(get_db), user=Depends(require_permission("patients.view"))):
     patients = PatientService(PatientRepository(db)).list_patients(search=q)
     return render(request, "patients/index.html", "بیماران", patients=patients, q=q or "")
 
 
 @router.get("/patients/new", response_class=HTMLResponse)
-def patient_form(request: Request, user=Depends(require_user)):
+def patient_form(request: Request, user=Depends(require_permission("patients.create"))):
     return render(request, "patients/form.html", "ثبت بیمار", patient=None, action="/ui/patients")
 
 
 @router.post("/ui/patients")
-async def create_patient_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def create_patient_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.create"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     patient = Patient(**patient_payload(data))
@@ -245,17 +252,36 @@ async def create_patient_from_form(request: Request, db: Session = Depends(get_d
 
 
 @router.get("/patients/{patient_id}", response_class=HTMLResponse)
-def patient_detail(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def patient_detail(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.view"))):
     patient = db.get(Patient, patient_id)
     if patient is None or patient.is_deleted:
         raise HTTPException(status_code=404, detail="Patient not found")
-    appointments = list(db.scalars(select(Appointment).where(Appointment.patient_id == patient_id, Appointment.is_deleted.is_(False))))
-    payments = list(db.scalars(select(Payment).where(Payment.patient_id == patient_id, Payment.is_deleted.is_(False))))
-    return render(request, "patients/detail.html", "پرونده بیمار", patient=patient, appointments=appointments, payments=payments)
+    can_view_appointments = has_permission(db, user["role"], "appointments.view")
+    can_view_financial = has_permission(db, user["role"], "financial.view")
+    appointments = (
+        list(db.scalars(select(Appointment).where(Appointment.patient_id == patient_id, Appointment.is_deleted.is_(False))))
+        if can_view_appointments else []
+    )
+    payments = (
+        list(db.scalars(select(Payment).where(Payment.patient_id == patient_id, Payment.is_deleted.is_(False))))
+        if can_view_financial else []
+    )
+    return render(
+        request,
+        "patients/detail.html",
+        "پرونده بیمار",
+        patient=patient,
+        appointments=appointments,
+        payments=payments,
+        can_update=has_permission(db, user["role"], "patients.update"),
+        can_archive=has_permission(db, user["role"], "patients.archive"),
+        can_view_appointments=can_view_appointments,
+        can_view_financial=can_view_financial,
+    )
 
 
 @router.get("/patients/{patient_id}/edit", response_class=HTMLResponse)
-def patient_edit(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def patient_edit(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.update"))):
     patient = db.get(Patient, patient_id)
     if patient is None or patient.is_deleted:
         raise HTTPException(status_code=404, detail="Patient not found")
@@ -263,7 +289,7 @@ def patient_edit(patient_id: int, request: Request, db: Session = Depends(get_db
 
 
 @router.post("/ui/patients/{patient_id}")
-async def update_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def update_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.update"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     patient = db.get(Patient, patient_id)
@@ -276,7 +302,7 @@ async def update_patient_from_form(patient_id: int, request: Request, db: Sessio
 
 
 @router.post("/ui/patients/{patient_id}/delete")
-async def delete_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+async def delete_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.archive"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     patient = db.get(Patient, patient_id)
@@ -288,14 +314,14 @@ async def delete_patient_from_form(patient_id: int, request: Request, db: Sessio
 
 
 @router.get("/appointments", response_class=HTMLResponse)
-def appointments_index(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def appointments_index(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("appointments.view"))):
     appointments = list(db.scalars(select(Appointment).where(Appointment.is_deleted.is_(False)).order_by(Appointment.starts_at.desc())))
     display_times = {item.id: format_configured_datetime(item.starts_at, request.state.datetime_calendar, request.state.datetime_date_format, request.state.datetime_time_format, request.state.datetime_show_seconds == "true") for item in appointments}
     return render(request, "appointments/index.html", "تقویم نوبت‌ها", appointments=appointments, display_times=display_times)
 
 
 @router.get("/appointments/new", response_class=HTMLResponse)
-def appointment_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def appointment_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("appointments.create"))):
     patients = list(db.scalars(
         select(Patient)
         .where(Patient.is_deleted.is_(False))
@@ -312,7 +338,7 @@ def appointment_form(request: Request, db: Session = Depends(get_db), user=Depen
 
 
 @router.get("/ui/appointments/availability")
-def appointment_availability(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def appointment_availability(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("appointments.view"))):
     date_text = request.query_params.get("date", "").strip()
     try:
         selected_day = parse_configured_datetime(f"{date_text} 00:00", "jalali").date()
@@ -346,7 +372,7 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
 
 
 @router.post("/ui/appointments")
-async def create_appointment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def create_appointment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("appointments.create"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     try:
@@ -369,19 +395,19 @@ async def create_appointment_from_form(request: Request, db: Session = Depends(g
 
 
 @router.get("/financial", response_class=HTMLResponse)
-def financial_index(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def financial_index(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("financial.view"))):
     payments = list(db.scalars(select(Payment).where(Payment.is_deleted.is_(False)).order_by(Payment.paid_at.desc())))
     expenses = list(db.scalars(select(Expense).where(Expense.is_deleted.is_(False)).order_by(Expense.spent_at.desc())))
     return render(request, "financial/index.html", "مالی", payments=payments, expenses=expenses)
 
 
 @router.get("/financial/payments/new", response_class=HTMLResponse)
-def payment_form(request: Request, user=Depends(require_user)):
+def payment_form(request: Request, user=Depends(require_permission("financial.create"))):
     return render(request, "financial/payment_form.html", "ثبت پرداخت")
 
 
 @router.post("/ui/financial/payments")
-async def create_payment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def create_payment_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("financial.create"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     return save_and_redirect(
@@ -392,12 +418,12 @@ async def create_payment_from_form(request: Request, db: Session = Depends(get_d
 
 
 @router.get("/financial/expenses/new", response_class=HTMLResponse)
-def expense_form(request: Request, user=Depends(require_user)):
+def expense_form(request: Request, user=Depends(require_permission("financial.create"))):
     return render(request, "financial/expense_form.html", "ثبت هزینه")
 
 
 @router.post("/ui/financial/expenses")
-async def create_expense_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def create_expense_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("financial.create"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     return save_and_redirect(
@@ -414,18 +440,18 @@ async def create_expense_from_form(request: Request, db: Session = Depends(get_d
 
 
 @router.get("/messages", response_class=HTMLResponse)
-def messages_index(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def messages_index(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("messaging.view"))):
     messages = list(db.scalars(select(Message).order_by(Message.id.desc())))
     return render(request, "messages/index.html", "پیام‌ها", messages=messages)
 
 
 @router.get("/messages/new", response_class=HTMLResponse)
-def message_form(request: Request, user=Depends(require_user)):
+def message_form(request: Request, user=Depends(require_permission("messaging.create"))):
     return render(request, "messages/form.html", "ارسال پیام")
 
 
 @router.post("/ui/messages")
-async def create_message_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+async def create_message_from_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("messaging.create"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     return save_and_redirect(
@@ -436,7 +462,7 @@ async def create_message_from_form(request: Request, db: Session = Depends(get_d
 
 
 @router.get("/print/patients/{patient_id}", response_class=HTMLResponse)
-def print_patient(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def print_patient(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.view"))):
     patient = db.get(Patient, patient_id)
     return templates.TemplateResponse(
         request=request,
@@ -446,7 +472,7 @@ def print_patient(patient_id: int, request: Request, db: Session = Depends(get_d
 
 
 @router.get("/print/appointments/{appointment_id}", response_class=HTMLResponse)
-def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def print_appointment(appointment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("appointments.view"))):
     appointment = db.get(Appointment, appointment_id)
     display_datetime = ""
     status_labels = {
@@ -480,7 +506,7 @@ def print_appointment(appointment_id: int, request: Request, db: Session = Depen
 
 
 @router.get("/print/payments/{payment_id}", response_class=HTMLResponse)
-def print_payment(payment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
+def print_payment(payment_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("financial.view"))):
     payment = db.get(Payment, payment_id)
     return templates.TemplateResponse(
         request=request,
