@@ -73,3 +73,12 @@
 - Verified run #105: dependency installation, compileall, pytest, and clean SQLite migration all passed.
 - Corrected the project progress document to reflect actual merged state and to keep manual Windows/browser acceptance explicitly pending.
 - No claim is made that the application has been installed or visually accepted on the user's local Windows machine.
+
+
+## 2026-11-06 — Jalali date/time validation hardening
+
+- Reconciled README and architecture status with the merged RBAC, SQLite, themes and Jalali appointment implementation.
+- Reconciled the master plan with completed Sprint 0/1 and remaining phases.
+- Tightened configured date/time parsing to require a complete minute-precision value, validate the selected calendar explicitly, and reject trailing or malformed input.
+- Added automated cases for Persian digits, Jalali leap-day/year boundaries, invalid dates and invalid time values.
+- Windows CI verification is required before treating this change as complete.
