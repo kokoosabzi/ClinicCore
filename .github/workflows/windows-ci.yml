@@ -6,10 +6,12 @@ on:
       - main
       - stabilization/windows-sqlite-runtime
       - feature/user-management-rbac
+      - feature/dynamic-ui-themes
   pull_request:
     branches:
       - main
       - stabilization/windows-sqlite-runtime
+      - feature/user-management-rbac
   workflow_dispatch:
 
 permissions:
