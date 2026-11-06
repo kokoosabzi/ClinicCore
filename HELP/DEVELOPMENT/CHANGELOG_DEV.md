@@ -5,7 +5,8 @@
 - Phase/Task: Sprint 0 / Windows readiness
 - Commit: implementation/documentation commit series on `stabilization/windows-sqlite-runtime`
 - Summary: Aligned installation and runtime documentation with the existing SQLite-only implementation. Added secure first-install credential bootstrap and dedicated setup/start/stop scripts. Updated progress and Windows acceptance criteria.
-- Verification: GitHub source inspection only. No local Python test suite, Alembic command, or Windows manual test was run.
+- Follow-up review: Added Windows GitHub Actions checks; fixed a PowerShell `$PID` reserved-variable collision in the stop script and made PID cleanup conditional on verified process exit; corrected stale PostgreSQL fixture comments.
+- Verification: GitHub source inspection only. The new workflow has not completed yet; no local Python test suite, Alembic command, or Windows manual test was run.
 
 ---
 
