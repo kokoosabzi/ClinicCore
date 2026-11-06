@@ -134,3 +134,7 @@
   --color-muted: #526675 !important;
   --color-border: #dce6eb !important;
 }
+
+
+/* Apply the selected font scale to rem-based UI dimensions and text. */
+:root { font-size: var(--font-size-base); }
