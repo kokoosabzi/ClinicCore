@@ -40,6 +40,8 @@ def context(request: Request, title: str, **extra):
         "permissions": getattr(request.state, "permissions", set()),
         "csrf_token": get_csrf_token(request),
         "app_theme": getattr(request.state, "app_theme", "system"),
+        "app_style": getattr(request.state, "app_style", "clinical-light"),
+        "app_font_scale": getattr(request.state, "app_font_scale", "normal"),
         "app_density": getattr(request.state, "app_density", "comfortable"),
         "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
         "clinic_name": getattr(request.state, "clinic_name", ""),
