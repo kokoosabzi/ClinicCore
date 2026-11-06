@@ -79,6 +79,37 @@
     </select>
   </label>
 
+  <h2>برنامه کاری و نوبت‌دهی</h2>
+  <p class="muted">این برنامه فعلاً برای کل کلینیک مشترک است. تخصیص ساعت و مدت مستقل به هر پزشک در مرحله بعد توسعه می‌یابد.</p>
+  <div class="grid">
+    <label>شروع ساعت کاری
+      <input type="time" name="appointments_workday_start" value="{{ settings['appointments.workday_start'] or '09:00' }}" required>
+    </label>
+    <label>پایان ساعت کاری
+      <input type="time" name="appointments_workday_end" value="{{ settings['appointments.workday_end'] or '17:00' }}" required>
+    </label>
+    <label>مدت هر نوبت
+      <select name="appointments_slot_minutes">
+        {% for minutes in ["15", "20", "30", "45", "60"] %}
+        <option value="{{ minutes }}" {% if settings['appointments.slot_minutes'] == minutes %}selected{% endif %}>{{ minutes }} دقیقه</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  {% set selected_working_days = (settings['appointments.working_days'] or '1,2,3,4,6,7').split(',') %}
+  <fieldset class="working-days-fieldset">
+    <legend>روزهای کاری کلینیک</legend>
+    <input type="hidden" name="appointments_working_days" value="">
+    <div class="working-days-grid">
+      {% for day, label in [("6", "شنبه"), ("7", "یکشنبه"), ("1", "دوشنبه"), ("2", "سه‌شنبه"), ("3", "چهارشنبه"), ("4", "پنجشنبه"), ("5", "جمعه")] %}
+      <label class="working-day-option">
+        <input type="checkbox" name="appointments_working_days" value="{{ day }}" {% if day in selected_working_days %}checked{% endif %}>
+        <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
   <h2>گزارش‌ها</h2>
   <label>لوگوی گزارش<input name="reports_logo" value="{{ settings['reports.logo'] or '' }}" maxlength="4000"></label>
   <label>سربرگ گزارش<textarea name="reports_header" maxlength="4000">{{ settings['reports.header'] or '' }}</textarea></label>
