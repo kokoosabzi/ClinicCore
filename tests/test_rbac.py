@@ -194,3 +194,85 @@ def test_inactive_user_cannot_login(client, db_session):
         follow_redirects=False,
     )
     assert response.status_code == 401
+
+
+def test_admin_can_change_builtin_role_permissions(client, db_session):
+    seed_rbac(db_session)
+    db_session.add(
+        User(
+            full_name="مدیر",
+            username="rbac.admin",
+            password_hash=hash_password("test-password-123"),
+            role=UserRole.admin,
+            must_change_password=False,
+        )
+    )
+    db_session.commit()
+    assert login(client, "rbac.admin").status_code == 200
+
+    import re
+    page = client.get("/users/roles")
+    assert page.status_code == 200
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', page.text).group(1)
+    response = client.post(
+        "/users/roles/secretary",
+        data={"csrf_token": csrf_token, "permissions": ["patients.view"]},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+
+    from app.core.auth import has_permission
+    assert has_permission(db_session, UserRole.secretary, "patients.view")
+    assert not has_permission(db_session, UserRole.secretary, "appointments.view")
+
+
+def test_admin_role_permissions_cannot_be_changed(client, db_session):
+    seed_rbac(db_session)
+    db_session.add(
+        User(
+            full_name="مدیر",
+            username="immutable.admin",
+            password_hash=hash_password("test-password-123"),
+            role=UserRole.admin,
+            must_change_password=False,
+        )
+    )
+    db_session.commit()
+    assert login(client, "immutable.admin").status_code == 200
+
+    import re
+    page = client.get("/users/roles")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', page.text).group(1)
+    response = client.post(
+        "/users/roles/admin",
+        data={"csrf_token": csrf_token, "permissions": ["patients.view"]},
+        follow_redirects=False,
+    )
+    assert response.status_code == 409
+
+
+def test_last_active_admin_cannot_be_deactivated(db_session):
+    import pytest
+
+    from app.repositories.user_repository import UserRepository
+    from app.services.user_service import UserManagementError, UserService
+
+    seed_rbac(db_session)
+    admin = User(
+        full_name="مدیر",
+        username="only.admin",
+        password_hash=hash_password("test-password-123"),
+        role=UserRole.admin,
+        must_change_password=False,
+    )
+    db_session.add(admin)
+    db_session.commit()
+
+    service = UserService(UserRepository(db_session))
+    with pytest.raises(UserManagementError, match="آخرین مدیر"):
+        service.set_active(
+            admin.id,
+            active=False,
+            actor_id=999,
+            actor_role=UserRole.admin,
+        )
