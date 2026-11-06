@@ -1,118 +1,28 @@
 # ClinicCore — Development Changelog (Redesign Phase)
 
+## 2026-11-06 — Sprint 0: Windows CI diagnosis and remediation
+
+- Phase/Task: Sprint 0 / Windows readiness and CI hardening
+- Branch: `stabilization/windows-sqlite-runtime`
+- CI evidence: Windows workflow run #8 completed on Windows Server 2025 / Python 3.12.10. Compileall passed; pytest reported 24 passed and 5 failed; the Alembic step was skipped because pytest failed.
+- Root causes found in the run logs:
+  - Windows had no IANA timezone database available to Python `zoneinfo`; tests using `Asia/Tehran` failed, and settings submissions returned validation errors.
+  - `tests/test_app.py` created a bare `TestClient(create_app())`, bypassing the shared isolated SQLite test fixture; the homepage request therefore had no `system_settings` table.
+- Remediation committed:
+  - Added `tzdata>=2024.1` as an application runtime dependency for Windows timezone support.
+  - Changed the application smoke tests to use the shared fixture, which overrides the database and audit session with isolated SQLite.
+  - Rewrote obsolete PostgreSQL-specific fixture documentation to reflect the current SQLite-only setup.
+- Verification after remediation: pending. No successful run against the updated branch head is yet visible. No manual Windows installation/runtime test has been performed.
+- Safety: no merge to `main`, no database deletion, and no user data changes.
+
+---
+
 ## 2026-11-06 — Sprint 0: Windows and SQLite runtime stabilization
 
 - Phase/Task: Sprint 0 / Windows readiness
 - Commit: implementation/documentation commit series on `stabilization/windows-sqlite-runtime`
 - Summary: Aligned installation and runtime documentation with the existing SQLite-only implementation. Added secure first-install credential bootstrap and dedicated setup/start/stop scripts. Updated progress and Windows acceptance criteria.
-- Follow-up review: Added Windows GitHub Actions checks; fixed a PowerShell `$PID` reserved-variable collision in the stop script and made PID cleanup conditional on verified process exit; corrected stale PostgreSQL fixture comments.
-- Verification: GitHub source inspection only. The new workflow has not completed yet; no local Python test suite, Alembic command, or Windows manual test was run.
+- Follow-up review: Added Windows GitHub Actions checks; fixed a PowerShell `$PID` reserved-variable collision in the stop script and made PID cleanup conditional on verified process exit.
+- Verification: The first CI run was not successful; see the remediation entry above. No local Python test suite, Alembic command, or Windows manual test was run in the development environment.
 
 ---
-
-## 2026-10-06 — Phase D1: Jalali date service
-
-- Phase/Task: Phase D / D1
-- Commit: implementation commits on branch codex-d1-jalali
-- Summary: Added focused Gregorian/Jalali conversion, formatting, and parsing helpers under app/services/datetime_service.py. Added unit coverage for known conversions, round-trip conversion, datetime display, and invalid input. Appointment storage semantics were left unchanged.
-- Verification: Repository implementation inspection completed. No fresh local compileall/pytest run was available in this GitHub-only session.
-
-## 2026-10-05 — Phase C2: design tokens and shared UI primitives
-- Phase/Task: Phase C / C2
-- Commit: `dbc25789b7ae8e316f671fb4cd4d8f36946b965c`
-- Summary: Extracted the global color, typography, spacing, radius, shadow, and semantic state values into reusable CSS design tokens. Added shared focus, card, button, and status primitives without changing application behavior.
-- Verification: Repository implementation inspection completed. No fresh local compileall/pytest or browser smoke test was available in this GitHub-only session.
-
-# ClinicCore — Development Changelog (Redesign Phase)
-
-Concise, chronological log of development milestones and commits made
-during the current redesign effort (Phase A onward, per `MASTER_PLAN.md`).
-
-This is separate from `HELP/CHANGELOG.txt` (the original Sprint 1–4
-changelog, which is not superseded — keep reading both) and from
-`HELP/DEVELOPMENT/DECISIONS.md` (why something was decided, not what/when
-changed).
-
-**Format per entry:**
-
-```
-## YYYY-MM-DD — <short title>
-- Phase/Task: <e.g. Phase A / A2>
-- Commit: <short hash, once committed>
-- Summary: <1-3 sentences, what changed>
-- Verification: <what was run/checked>
-```
-
-Add the newest entry at the top.
-
-## 2026-10-05 — Phase B4: system settings
-
-- Phase/Task: Phase B / B4 (System settings)
-- Commit: implementation series immediately preceding this continuity update
-- Summary: Added a persistent administrator-controlled audit logging setting under the System category. The audit middleware now respects the setting without exposing database URLs, secrets, or credentials through the Settings UI.
-- Verification: Repository-level implementation and focused test inspection completed. No fresh local compileall/pytest run was available in this GitHub-only session.
-
-
-
----
-
-## 2026-10-05 — Phase B3: date and time settings
-
-- Phase/Task: Phase B / B3
-- Commit: implementation series immediately preceding this continuity update
-- Summary: Added persistent calendar, timezone, date-format, time-format, and seconds-display settings under the existing settings subsystem. Added timezone/enum validation, admin UI controls, and propagated the preferences through the shared layout without changing stored business datetime semantics.
-- Verification: Repository-level implementation and focused test inspection completed. No fresh local `compileall`/pytest run was available in this GitHub-only session.
-
-## 2026-10-05 — Phase B1: persistent application identity settings
-
-- Phase/Task: Phase B / B1
-- Commit: `720ef4a` implementation series (latest application change before continuity update)
-- Summary: Added persistent `system_settings` storage, a central `SettingsService`, admin-only `/settings` UI for application and clinic identity, and dynamic application identity in shared/home/auth UI. Added Alembic revision `20261005_0005` and focused settings tests.
-- Verification: Repository-level implementation and test inspection completed. No fresh local `compileall`/pytest run was available in this GitHub-only session. B2 is the next scoped task.
-
-## 2026-10-05 — Phase A4: default admin credential warning
-
-- Phase/Task: Phase A / A4
-- Commit: `7afed422fd60c6764d4eb01f25237a0fd56ea556` (documentation/run-guide update; implementation commits immediately before this continuity update include `8ab5517`, `893c754`, and `4218d8d`)
-- Summary: The admin seed command now prints a security warning when the insecure `admin` fallback password is used. Authentication, implementation, and run guides now clearly identify the fallback as development-only and require production credentials to be configured before seeding.
-- Verification: Repository/code inspection completed; A4 changes are limited to the admin bootstrap warning and related documentation. No fresh local `pytest` or `compileall` run was available in this GitHub-only session.
-
-## 2026-10-05 — Phase A3 merged to main and continuity state synchronized
-
-- Phase/Task: Phase A / A3 (appointment booking integrity)
-- Commit: `427e9157057ea0daa64e2c176316a0ef9b723061` (merge commit)
-- Summary: Merged PR #3 into `main`, bringing the centralized active-slot booking validation, partial unique index migration, unified HTML/JSON booking flow, and appointment conflict scenarios into the final branch. Synchronized `HELP/DEVELOPMENT/PROGRESS.md` so it now identifies A4 as the next unfinished task.
-- Verification: Merge completed successfully on GitHub. The A3 verification recorded before merge passed for `python -m compileall app tests alembic`, fresh SQLite Alembic upgrade through `20261002_0004`, and direct duplicate/soft-delete slot scenarios. A post-merge full `pytest` run was not performed in this documentation-only update.
-
-## 2026-10-02 — Phase A3: appointment booking integrity
-
-- Phase/Task: Phase A / A3 (reconcile duplicate appointment booking rule)
-- Commit: `184d9edf82e06cb1ac00c508a0386c35d1d73b0d` (PR #3 head; merged to `main` as `427e915`)
-- Summary: Moved active-slot validation from the HTML page router into `AppointmentService`, routed JSON and HTML booking through that service, and added a partial unique index migration that excludes soft-deleted appointments. Added duplicate-slot and released-slot API scenarios.
-- Verification: `python -m compileall app tests alembic` — PASS. Fresh SQLite Alembic upgrade through `20261002_0004` — PASS. Direct in-memory duplicate-slot rejection and soft-deleted slot release — PASS. Full `pytest` was blocked before collection because `httpx` was not installed; installing dev dependencies from PyPI failed with HTTP 403.
-
-## 2026-09-27 — Phase A2: Alembic reads database URL from application settings
-
-- Phase/Task: Phase A / A2 (Alembic database URL)
-- Commit: (recorded at commit time — see `git log`)
-- Summary: `alembic/env.py` now sets Alembic's `sqlalchemy.url` from `settings.database_url`, making application settings the authoritative source. The hardcoded `sqlalchemy.url` entry was removed from `alembic.ini`. No models, routers, services, templates, static assets, or migration files were changed.
-- Verification:
-  - `python -m compileall app tests alembic` — PASS
-  - `python -m pytest -q` — PASS, 7 tests passed
-  - Alembic database URL resolution — PASS, `MATCH = True`
-  - A real `alembic upgrade head` was intentionally not used as an A2 acceptance test because the existing PostgreSQL database has a separate pre-existing `appointmentstatus` duplicate-object migration issue.
-- Status: COMPLETE
-
-## 2026-09-27 — Phase A1: database test fixture
-
-- Phase/Task: Phase A / A1 (Database Test Fixture)
-- Commit: (recorded at commit time — see `git log`)
-- Summary: Added `tests/conftest.py` (`db_engine`, `db_session_factory`, `db_session`, `client` fixtures — isolated in-memory SQLite per test, via `Base.metadata.create_all`, not Alembic) and `tests/test_db_fixture.py` (4 smoke tests: model persistence, test isolation, full HTTP CRUD round-trip, existing auth guard unaffected). No application code changed; see DDR-004 in `DECISIONS.md` for why the audit middleware required a monkeypatch rather than a refactor.
-- Verification: `python -m compileall app` clean; `python -m pytest -q` — 7 passed (3 pre-existing + 4 new), 0 failed.
-
-## 2026-09-27 — Development continuity system established
-
-- Phase/Task: Phase 0 (pre-Phase-A) / continuity-system setup
-- Commit: (recorded at commit time — see `git log`)
-- Summary: Created `HELP/DEVELOPMENT/PROGRESS.md`, `HELP/DEVELOPMENT/DECISIONS.md`, `HELP/DEVELOPMENT/CHANGELOG_DEV.md`, and `HELP/CONTINUE_DEVELOPMENT.txt`; updated `HELP/DEVELOPMENT/AGENT_WORKFLOW.md` to reference the continuity system. No application code, migrations, templates, or tests changed.
-- Verification: `python -m compileall app` and `python -m pytest -q` both pass (3/3 tests), matching the state already recorded in the Gap Analysis for commit `e46d5c24`. `git status`/`git diff` reviewed to confirm only `HELP/**` files are staged.
