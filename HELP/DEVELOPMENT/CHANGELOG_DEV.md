@@ -91,3 +91,14 @@
 - Gregorian calendar preference continues to use the browser-native date input.
 - Added integration tests for form rendering and payment/expense date persistence.
 - Windows CI run #128 passed: **53 passed, 0 failed**, compileall passed and clean SQLite migration reached `20261106_0006`. Manual browser acceptance remains outstanding.
+
+
+## 2026-11-07 — Appointment lifecycle and rescheduling
+
+- Added controlled appointment status transitions and terminal-state validation.
+- Added cancellation and rescheduling endpoints and browser actions with server-side RBAC and CSRF enforcement.
+- Cancelled appointments remain in history and release the slot through a new SQLite-safe partial unique index migration (\`20261107_0007\`).
+- Rescheduling uses the existing Jalali date/time booking interface, preserves patient details, checks conflicts and records audit events.
+- Added integration coverage for lifecycle transitions, cancellation/rebooking, rescheduling conflicts and audit history.
+- Windows CI run #150: **58 passed, 0 failed**; Python compile, JavaScript syntax checks and clean SQLite migration passed.
+- Manual Windows/browser acceptance remains pending.
