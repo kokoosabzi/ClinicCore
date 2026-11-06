@@ -16,6 +16,14 @@ class AppointmentCreate(AppointmentBase):
     pass
 
 
+class AppointmentStatusUpdate(BaseModel):
+    status: AppointmentStatus
+
+
+class AppointmentReschedule(BaseModel):
+    starts_at: datetime
+
+
 class AppointmentRead(AppointmentBase):
     id: int
     status: AppointmentStatus
