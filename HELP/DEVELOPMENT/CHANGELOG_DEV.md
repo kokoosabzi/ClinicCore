@@ -7,11 +7,12 @@
 - CI evidence: Windows workflow run #8 completed on Windows Server 2025 / Python 3.12.10. Compileall passed; pytest reported 24 passed and 5 failed; the Alembic step was skipped because pytest failed.
 - Root causes found in the run logs:
   - Windows had no IANA timezone database available to Python `zoneinfo`; tests using `Asia/Tehran` failed, and settings submissions returned validation errors.
-  - `tests/test_app.py` created a bare `TestClient(create_app())`, bypassing the shared isolated SQLite test fixture; the homepage request therefore had no `system_settings` table.
+  - `tests/test_app.py` used a bare TestClient and bypassed the shared isolated SQLite test fixture; the homepage request therefore had no `system_settings` table.
 - Remediation committed:
   - Added `tzdata>=2024.1` as an application runtime dependency for Windows timezone support.
   - Changed the application smoke tests to use the shared fixture, which overrides the database and audit session with isolated SQLite.
-  - Rewrote obsolete PostgreSQL-specific fixture documentation to reflect the current SQLite-only setup.
+  - Rewrote obsolete PostgreSQL-specific fixture documentation.
+  - Removed `Base.metadata.create_all` from `scripts/seed_admin.py`; Alembic is now the only schema creation/migration path, and the seed script is limited to creating the initial admin record after migration.
 - Verification after remediation: pending. No successful run against the updated branch head is yet visible. No manual Windows installation/runtime test has been performed.
 - Safety: no merge to `main`, no database deletion, and no user data changes.
 
