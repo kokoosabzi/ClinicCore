@@ -118,7 +118,7 @@ class SettingsService:
                 raise ValueError("Invalid print margin")
         if key in {"appointments.workday_start", "appointments.workday_end"}:
             import re
-            if value is None or re.fullmatch(r"(?:[01]\\d|2[0-3]):[0-5]\\d", value) is None:
+            if value is None or re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", value) is None:
                 raise ValueError("ساعت شروع یا پایان معتبر نیست.")
         if key == "appointments.working_days":
             from app.services.appointment_schedule_service import parse_working_days
