@@ -31,7 +31,6 @@ def test_appointment_availability_marks_occupied_slots(admin_client, db_session)
 
 def test_appointment_availability_rejects_invalid_jalali_date(admin_client) -> None:
     client = admin_client
-    client.app.dependency_overrides[require_user] = lambda: {"username": "test-admin", "role": "admin"}
 
     response = client.get("/ui/appointments/availability", params={"date": "1405/13/01"})
 
