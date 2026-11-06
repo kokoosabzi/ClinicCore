@@ -9,7 +9,7 @@
   {% if summary.expenses is not none %}<div class="card"><span>هزینه</span><strong>{{ summary.expenses }} ریال</strong></div>{% endif %}
 </div>
 <div class="grid">
-  {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary", "accountant"] %}
+  {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
   <a class="card" href="/patients/new">ثبت بیمار جدید</a>
   {% endif %}
   {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
