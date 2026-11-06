@@ -5,6 +5,7 @@
     <h1>مدیریت کاربران</h1>
     <p class="muted">ایجاد حساب، تعیین نقش، تغییر وضعیت و بازنشانی رمز عبور</p>
   </div>
+  {% if user and user.role == 'admin' %}<a class="button secondary" href="/users/roles">مدیریت مجوز نقش‌ها</a>{% endif %}
 </section>
 
 {% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
