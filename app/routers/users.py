@@ -116,7 +116,8 @@ async def update_role_permissions(
             context={
                 "request": request,
                 "title": "مدیریت نقش‌ها و مجوزها",
-                "user": current_user(request),
+                "user": getattr(request.state, "current_user", None) or current_user(request),
+                "permissions": getattr(request.state, "permissions", set()),
                 "csrf_token": get_csrf_token(request),
                 "roles_data": service.list_roles(),
                 "error": str(error),
