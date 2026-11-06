@@ -38,12 +38,15 @@ class UserService:
         data: UserUpdate,
         *,
         actor_role: UserRole,
+        can_assign_role: bool,
     ) -> User:
         user = self.repository.get_by_id(user_id)
         if user is None:
             raise UserManagementError("کاربر موردنظر پیدا نشد.")
         if actor_role != UserRole.admin and user.role == UserRole.admin:
             raise UserManagementError("مدیر کلینیک اجازه تغییر حساب مدیر سیستم را ندارد.")
+        if data.role != user.role and not can_assign_role:
+            raise UserManagementError("تغییر نقش برای حساب شما مجاز نیست.")
         if not self.repository.role_exists(data.role):
             raise UserManagementError("نقش انتخاب‌شده معتبر یا فعال نیست.")
         if user.role == UserRole.admin and data.role != UserRole.admin:
