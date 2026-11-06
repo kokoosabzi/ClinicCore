@@ -91,6 +91,15 @@ Application
 - تولید امن تنظیمات و رمز اولیه مدیر در نصب تازه
 - تست migration و مسیر نصب تازه بدون حذف داده موجود
 
+
+### Sprint 1 — User Administration & Role-Based Access Control
+- Add built-in roles: system administrator, clinic manager, doctor, secretary and accountant.
+- Add a normalized role/permission catalog with additive Alembic migration.
+- Complete user lifecycle management and one-time temporary password reset.
+- Enforce permissions at server routes and data presentation boundaries.
+- Add a Persian RTL user page and administrator-only role-permission matrix.
+- Preserve existing accounts and password hashes; do not reset or replace the local SQLite database.
+
 ### Phase 0 — Baseline & Specification
 - تثبیت تست‌ها
 - تعریف قراردادهای معماری
