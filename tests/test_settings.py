@@ -28,6 +28,8 @@ def test_admin_can_save_and_reload_settings(client):
             "app_title": "سامانه آزمایشی",
             "app_primary_color": "#2255aa",
             "app_theme": "dark",
+            "app_style": "modern-dark",
+            "app_font_scale": "large",
             "app_density": "compact",
             "print_title": "رسید اختصاصی",
             "print_message": "از مراجعه شما سپاسگزاریم",
@@ -74,6 +76,10 @@ def test_admin_can_save_and_reload_settings(client):
     assert saved.status_code == 200
     assert "ClinicCore Test" in saved.text
     assert 'data-theme="dark"' in saved.text
+    assert 'data-style="modern-dark"' in saved.text
+    assert 'data-font-scale="large"' in saved.text
+    assert 'option value="modern-dark" selected' in saved.text
+    assert 'option value="large" selected' in saved.text
     assert 'data-density="compact"' in saved.text
     assert 'style="--color-primary: #2255aa"' in saved.text
     assert 'value="#2255aa"' in saved.text
@@ -197,3 +203,22 @@ def test_admin_can_upload_institution_logo(client, monkeypatch, tmp_path):
     saved = client.get("/settings")
     assert "/static/uploads/clinic-logos/" in saved.text
     assert len(list((tmp_path / "clinic-logos").glob("*.png"))) == 1
+
+
+def test_invalid_appearance_style_is_rejected(client):
+    client.app.dependency_overrides[require_admin] = lambda: {"username": "admin", "role": "admin"}
+
+    form = client.get("/settings")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', form.text).group(1)
+    response = client.post(
+        "/settings",
+        data={
+            "csrf_token": csrf_token,
+            "app_name": "ClinicCore",
+            "app_title": "کلینیک‌کور",
+            "app_style": "untrusted-style",
+            "app_font_scale": "normal",
+        },
+    )
+    assert response.status_code == 200
+    assert "معتبر نیست" in response.text
