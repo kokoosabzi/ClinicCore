@@ -131,9 +131,16 @@ def admin_client(client, db_session, rbac_catalog):
         )
     )
     db_session.commit()
+    import re
+    login_page = client.get("/login")
+    csrf_token = re.search(r'name="csrf_token" value="([^"]+)"', login_page.text).group(1)
     response = client.post(
         "/login",
-        data={"username": "test-admin", "password": "test-password-123"},
+        data={
+            "username": "test-admin",
+            "password": "test-password-123",
+            "csrf_token": csrf_token,
+        },
     )
     assert response.status_code == 200
     return client
