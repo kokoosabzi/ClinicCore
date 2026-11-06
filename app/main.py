@@ -84,13 +84,15 @@ async def load_app_settings(request: Request, call_next):
                 request.session.clear()
                 request.state.current_user = None
                 request.state.permissions = set()
+                request.state.must_change_password = False
             else:
                 request.state.current_user = {
                     "id": principal.id,
                     "username": principal.username,
                     "role": principal.role.value,
                 }
-                request.state.permissions = set(
+                request.state.must_change_password = principal.must_change_password
+                request.state.permissions = set() if principal.must_change_password else set(
                     db.scalars(
                         select(RolePermission.permission_code)
                         .join(Role, Role.id == RolePermission.role_id)
@@ -100,6 +102,7 @@ async def load_app_settings(request: Request, call_next):
         else:
             request.state.current_user = None
             request.state.permissions = set()
+            request.state.must_change_password = False
     finally:
         db.close()
 
