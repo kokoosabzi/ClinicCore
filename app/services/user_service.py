@@ -42,6 +42,8 @@ class UserService:
         user = self.repository.get_by_id(user_id)
         if user is None:
             raise UserManagementError("کاربر موردنظر پیدا نشد.")
+        if actor_role != UserRole.admin and user.role == UserRole.admin:
+            raise UserManagementError("مدیر کلینیک اجازه تغییر حساب مدیر سیستم را ندارد.")
         if not self.repository.role_exists(data.role):
             raise UserManagementError("نقش انتخاب‌شده معتبر یا فعال نیست.")
         if user.role == UserRole.admin and data.role != UserRole.admin:
@@ -55,12 +57,21 @@ class UserService:
         self.repository.db.refresh(user)
         return user
 
-    def set_active(self, user_id: int, *, active: bool, actor_id: int) -> User:
-        user = self.repository.get_by_id(user_id)
+    def set_active(
+        self,
+        user_id: int,
+        *,
+        active: bool,
+        actor_id: int,
+        actor_role: UserRole,
+    ) -> User:
+        user = self.repository.get_by_id(user_id, include_deleted=active)
         if user is None:
             raise UserManagementError("کاربر موردنظر پیدا نشد.")
         if user.id == actor_id and not active:
             raise UserManagementError("غیرفعال‌سازی حساب کاربری خودتان مجاز نیست.")
+        if actor_role != UserRole.admin and user.role == UserRole.admin:
+            raise UserManagementError("مدیر کلینیک اجازه تغییر وضعیت مدیر سیستم را ندارد.")
         if user.role == UserRole.admin and not active and self.repository.active_admin_count() <= 1:
             raise UserManagementError("غیرفعال‌سازی آخرین مدیر سیستم مجاز نیست.")
         user.is_deleted = not active
@@ -68,10 +79,17 @@ class UserService:
         self.repository.db.refresh(user)
         return user
 
-    def reset_password(self, user_id: int) -> tuple[User, str]:
+    def reset_password(
+        self,
+        user_id: int,
+        *,
+        actor_role: UserRole,
+    ) -> tuple[User, str]:
         user = self.repository.get_by_id(user_id)
         if user is None:
             raise UserManagementError("کاربر موردنظر پیدا نشد.")
+        if actor_role != UserRole.admin and user.role == UserRole.admin:
+            raise UserManagementError("مدیر کلینیک اجازه بازنشانی رمز مدیر سیستم را ندارد.")
         temporary_password = token_urlsafe(12)
         user.password_hash = hash_password(temporary_password)
         user.must_change_password = True
