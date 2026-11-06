@@ -139,3 +139,13 @@ Template for new entries — copy this block for each new decision:
 - **Alternatives considered:** Retain dual SQLite/PostgreSQL runtime support. Deferred because the current configuration and tests already define SQLite-only behavior and dual-dialect compatibility would expand the release surface.
 - **Safety constraint:** This decision does not authorize deleting or modifying any pre-existing PostgreSQL database, Docker container, or volume outside this repository.
 - **Status:** Active for the current local delivery phase.
+
+
+## DDR-007 — Database-backed role and permission catalog
+
+- **Date:** 2026-11-06
+- **Decision:** Use normalized `roles`, `permissions`, and `role_permissions` tables with an additive Alembic migration. Keep the existing user role column and role keys for compatibility; add `clinic_manager` as a supported built-in role. The system administrator role is immutable and always retains all permissions. The administrator may adjust grants for other built-in roles.
+- **Rationale:** This provides configurable least-privilege access without replacing the existing user model, rewriting account records, or introducing a complex policy engine. Resolving effective grants from the database on each protected request makes role and permission changes take effect without a server restart.
+- **Alternatives considered:** Hard-coded permission dictionaries (rejected because administrators could not adjust grants); storing a JSON permission map in general settings (rejected because normalized constraints and queries are clearer); replacing the existing user role column with a new role foreign key (deferred to avoid a risky rewrite of existing accounts).
+- **Safety constraints:** The migration must not modify existing usernames or password hashes. Only the system administrator may edit the permission matrix or grant the administrator role. The last active administrator cannot be demoted or deactivated. Alembic remains the only schema migration mechanism.
+- **Status:** Active.
