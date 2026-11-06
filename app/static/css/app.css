@@ -375,7 +375,7 @@ input:focus, textarea:focus, select:focus { border-color: #56a9a0; box-shadow: 0
   display: inline-flex; width: auto; margin: .15rem .1rem;
   padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent;
 }
-.appointment-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; }
+.appointment-actions { white-space: normal; line-height: 2.4; }
 .appointment-actions .button,
 .appointment-actions button { width: auto; padding: .35rem .55rem; font-size: .82rem; white-space: nowrap; }
 .button-small { font-size: .82rem; padding: .35rem .6rem; }
