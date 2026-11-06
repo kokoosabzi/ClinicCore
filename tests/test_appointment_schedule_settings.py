@@ -77,7 +77,7 @@ def test_availability_endpoint_uses_saved_clinic_schedule(admin_client, db_sessi
 def test_availability_endpoint_returns_no_slots_on_closed_weekday(admin_client):
     response = admin_client.get(
         "/ui/appointments/availability",
-        params={"date": "1408/10/28"},
+        params={"date": "1408/10/29"},
     )
     assert response.status_code == 200
     assert response.json()["slots"] == []
