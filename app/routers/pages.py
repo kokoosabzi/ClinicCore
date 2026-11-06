@@ -129,6 +129,8 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "app.title": data.get("app_title", "").strip(),
         "app.primary_color": data.get("app_primary_color", "#176b67"),
         "app.theme": data.get("app_theme", "system"),
+        "app.style": data.get("app_style", "clinical-light"),
+        "app.font_scale": data.get("app_font_scale", "normal"),
         "app.density": data.get("app_density", "comfortable"),
         "clinic.name": data.get("clinic_name", "").strip(),
         "clinic.address": data.get("clinic_address", "").strip(),
