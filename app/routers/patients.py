@@ -20,5 +20,5 @@ def list_patients(user=Depends(require_permission("patients.view")), service: Pa
 
 
 @router.post("/", response_model=PatientRead, status_code=201)
-def create_patient(payload: PatientCreate, user=Depends(require_user), service: PatientService = Depends(get_service)):
+def create_patient(payload: PatientCreate, user=Depends(require_permission("patients.create")), service: PatientService = Depends(get_service)):
     return service.create_patient(payload)
