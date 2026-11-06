@@ -6,7 +6,10 @@ DEFAULT_WORKING_DAYS = "1,2,3,4,6,7"
 
 def parse_working_days(value: str) -> set[int]:
     try:
-        days = {int(part) for part in value.split(",") if part}
+        parts = [part.strip() for part in value.split(",")]
+        if not parts or any(not part for part in parts):
+            raise ValueError
+        days = {int(part) for part in parts}
     except (AttributeError, TypeError, ValueError) as error:
         raise ValueError("روزهای کاری معتبر نیستند.") from error
     if not days or not days.issubset(set(range(1, 8))):
