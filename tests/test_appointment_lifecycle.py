@@ -50,6 +50,7 @@ def test_appointment_state_machine_rejects_terminal_transition(admin_client, db_
         json={"status": "waiting"},
     )
     assert invalid.status_code == 422
+    db_session.expire_all()
     assert db_session.get(Appointment, appointment.id).status == AppointmentStatus.completed
 
 
