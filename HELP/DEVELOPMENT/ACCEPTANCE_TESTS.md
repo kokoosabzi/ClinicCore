@@ -58,6 +58,13 @@ Admin theme را تغییر می‌دهد.
 ### AT-203 — Dark mode
 Dark mode در صفحات اصلی readable باشد.
 
+### AT-204 — Visual presets and live preview
+- Administrator can select Clinical Light, Modern Dark, Soft Neutral, or High Contrast.
+- Settings form updates its preview immediately without submitting.
+- Invalid preset/font-scale values are rejected server-side.
+- Selected preset, accent color, font scale, and density persist after refresh/restart.
+- Print views remain light and readable regardless of the selected application preset.
+
 ## 5. Navigation
 
 ### AT-301 — Back button
