@@ -118,4 +118,6 @@ Repository: `main`
 - Payment and expense forms now honor the configured calendar: Jalali picker for Jalali mode, native browser date picker for Gregorian mode.
 - Picker selection submits a Gregorian ISO date; persistence remains Gregorian `date` and does not depend on browser locale.
 - Added integration tests for picker rendering and persisted payment/expense dates.
-- Windows CI run #128 is in progress; do not mark this increment complete until it passes.
+- Windows CI run #128 passed: **53 passed, 0 failed**, compileall passed and clean SQLite migration reached `20261106_0006`. Manual browser acceptance remains outstanding.
+
+- Evidence: [Windows CI run #128](https://github.com/kokoosabzi/ClinicCore/actions/runs/42287251826) — **53 passed, 0 failed**.
