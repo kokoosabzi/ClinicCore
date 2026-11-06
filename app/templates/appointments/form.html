@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-{% set page_title = "رزرو نوبت" %}
+{% set page_title = "تغییر زمان نوبت" if reschedule|default(false) else "رزرو نوبت" %}
 {% include "partials/page_header.html" with context %}
 
 <section class="appointment-booking" data-appointment-calendar data-today="{{ today_jalali }}">
   <div class="booking-intro">
     <div>
       <span class="eyebrow">مدیریت زمان کلینیک</span>
-      <h2>برای مراجعه، زمان مناسب را انتخاب کنید</h2>
-      <p>ابتدا بیمار و روز مراجعه را مشخص کنید؛ ساعت‌های آزاد به‌صورت زنده نمایش داده می‌شوند.</p>
+      <h2>{{ "زمان جدید را انتخاب کنید" if reschedule|default(false) else "برای مراجعه، زمان مناسب را انتخاب کنید" }}</h2>
+      <p>{{ "بیمار و جزئیات نوبت حفظ می‌شود؛ فقط زمان مراجعه را تغییر دهید." if reschedule|default(false) else "ابتدا بیمار و روز مراجعه را مشخص کنید؛ ساعت‌های آزاد به‌صورت زنده نمایش داده می‌شوند." }}</p>
     </div>
     <div class="booking-legend" aria-label="راهنمای وضعیت نوبت‌ها">
       <span><i class="legend-dot available"></i> آزاد</span>
@@ -17,11 +17,21 @@
     </div>
   </div>
 
-  <form method="post" action="/ui/appointments" class="form appointment-form">
+  <form method="post" action="{{ form_action|default('/ui/appointments') }}" class="form appointment-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="starts_at_date" value="">
     <input type="hidden" name="starts_at_time" value="">
 
+    {% if reschedule|default(false) %}
+    <div class="booking-patient-fields">
+      <div class="field-label">بیمار
+        <strong>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</strong>
+      </div>
+      <div class="field-label">زمان فعلی
+        <strong>{{ appointment.starts_at.strftime("%Y-%m-%d %H:%M") }}</strong>
+      </div>
+    </div>
+    {% else %}
     <div class="booking-patient-fields">
       <label class="field-label">بیمار
         <select name="patient_id" required>
@@ -35,9 +45,9 @@
         <input name="reason" maxlength="200" placeholder="مثلاً ویزیت اولیه">
       </label>
     </div>
-
     {% if not patients %}
     <div class="alert info">هنوز بیماری ثبت نشده است. ابتدا از بخش بیماران، پرونده بیمار را ایجاد کنید.</div>
+    {% endif %}
     {% endif %}
 
     <div class="booking-workspace">
@@ -75,12 +85,14 @@
       </section>
     </div>
 
+    {% if not reschedule|default(false) %}
     <label class="field-label notes-field">یادداشت پرونده <span class="optional-label">اختیاری</span>
       <textarea name="notes" rows="3" placeholder="نکته‌ای که لازم است هنگام مراجعه بدانیم…"></textarea>
     </label>
+    {% endif %}
     <div class="booking-submit-row">
       <p>ثبت نهایی پس از بررسی دوباره آزادبودن ساعت انجام می‌شود.</p>
-      <button type="submit" class="booking-submit" {% if not patients %}disabled{% endif %}>ثبت نوبت <span aria-hidden="true">←</span></button>
+      <button type="submit" class="booking-submit" {% if not reschedule|default(false) and not patients %}disabled{% endif %}>{{ "ثبت زمان جدید" if reschedule|default(false) else "ثبت نوبت" }} <span aria-hidden="true">←</span></button>
     </div>
   </form>
   <p class="schedule-note">بازه اولیه نمایش ساعت‌ها ۰۹:۰۰ تا ۱۷:۰۰ با فاصله‌های ۳۰ دقیقه‌ای است؛ تنظیم ساعات کاری و مدت نوبت برای هر پزشک، مرحله بعدی توسعه خواهد بود.</p>
