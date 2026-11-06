@@ -3,7 +3,7 @@
 > این فایل مرجع وضعیت واقعی مخزن است. تستی که اجرا نشده نباید Pass علامت بخورد.
 
 Last updated: 2026-11-06
-Last updated by: ChatGPT — Windows CI failure analysis and remediation
+Last updated by: ChatGPT — Windows CI diagnosis, remediation and verification
 Repository baseline inspected: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
 Working branch: `stabilization/windows-sqlite-runtime`
 
@@ -15,7 +15,7 @@ Working branch: `stabilization/windows-sqlite-runtime`
 
 **Task:** Align Windows installation/runtime and project documentation with the existing SQLite-only implementation.
 
-**Status:** IN_PROGRESS. The first Windows CI run exposed test/dependency gaps. Fixes have been committed, but a run against the updated head is still pending; manual Windows acceptance is also pending.
+**Status:** AUTOMATED CHECKS PASSED; MANUAL WINDOWS ACCEPTANCE PENDING. Keep PR #14 in Draft until the local Windows setup/start/stop and browser acceptance checklist is completed.
 
 ## 3. Existing implementation confirmed by source inspection
 
@@ -36,50 +36,46 @@ Working branch: `stabilization/windows-sqlite-runtime`
 - Added setup/start/stop launch scripts using the project-local `.venv` and PID-verified process shutdown.
 - Added a Windows GitHub Actions workflow for compileall, pytest, and a clean SQLite Alembic migration.
 - Corrected a PowerShell shutdown bug: the local PID variable no longer conflicts with PowerShell's reserved `$PID`; shutdown now verifies process exit before deleting the PID file.
-- First Windows CI run #8 completed: compileall passed; pytest reported **24 passed, 5 failed**. The migration step was skipped because pytest failed.
-- CI failure analysis identified two root causes: Windows lacked the IANA timezone database package (`tzdata`), and `tests/test_app.py` bypassed the shared isolated-SQLite fixture for the homepage request.
+- First Windows CI run #8 exposed two issues: missing IANA timezone data and a homepage smoke test that bypassed the isolated SQLite fixture.
 - Added `tzdata` as a runtime dependency so Windows installations can resolve configured IANA zones such as `Asia/Tehran`.
 - Updated `tests/test_app.py` to use the shared `client` fixture and its isolated in-memory SQLite database.
 - Rewrote stale PostgreSQL references in `tests/conftest.py` to describe the actual isolated SQLite test setup.
-- Removed `Base.metadata.create_all` from `scripts/seed_admin.py`; the setup flow now relies on the already-run Alembic migrations as the single schema source of truth, while the seed script only creates the administrator record.
-- Updated this progress record and development changelog with the observed CI result and remediation.
+- Removed `Base.metadata.create_all` from `scripts/seed_admin.py`; Alembic is the single schema creation/migration source of truth, while the seed script only creates the initial administrator record.
+- Updated the PR description, progress record and development changelog with the real CI failure, fixes and successful rerun.
 
 ## 5. Not yet verified
 
-- The remediation commits are on the branch, but no workflow run against the new head is visible yet.
-- The prior CI run's compileall step passed; its pytest step failed (24 passed, 5 failed); its Alembic migration step was skipped.
-- No fresh pytest run, clean-database Alembic run, or local PowerShell execution has been performed after the fixes.
-- No real Windows runtime is available in this execution environment; setup/start/stop, browser login and shutdown have not been manually executed.
-- Existing user accounts and existing `.env` values were not changed.
+- No real Windows desktop/local-clone acceptance has been performed by the user: `setup.bat`, `start.bat`, browser login, mandatory password change, persistence, and `stop.bat` remain to be tested on the target PC.
+- No existing user accounts or existing `.env` values were changed.
+- The successful CI run validates the updated source in a hosted Windows runner; it does not replace testing the user's actual PC, installed Python environment, browser, firewall/port availability, and filesystem permissions.
 
 ## 6. Current blockers / risks
 
-- Updated-head CI verification remains outstanding.
+- Manual Windows acceptance is the only Sprint 0 release gate still outstanding.
 - `get_db` catches broad exceptions while loading settings and falls back silently; review separately.
-- The seed script no longer creates ORM tables; Alembic is the schema source of truth. This change is awaiting updated-head CI verification.
-- Fine-grained permissions and full user CRUD are not yet complete.
+- Fine-grained permissions and full user CRUD are not yet complete; they belong to the next product phase.
 - Active appointment uniqueness is global per `starts_at`; adding doctor/room scheduling requires a scoped migration and decision record.
+- CI emitted 81 warnings (primarily dependency deprecations); they did not fail the run and should be reviewed in a maintenance pass.
 
 ## 7. Verification evidence
 
-- Workflow run #8: Windows Server 2025, Python 3.12.10.
+- Workflow run #8: Windows Server 2025 / Python 3.12.10; compileall passed; pytest 24 passed / 5 failed; migration step skipped. This run exposed the issues listed above.
+- Workflow run #23 on the remediated branch: **success**.
+- `python -m pip install -e ".[dev]"`: passed.
 - `python -m compileall app tests main.py alembic scripts`: passed.
-- `python -m pytest -q`: failed — 24 passed, 5 failed.
-- Failure groups: missing `tzdata` for IANA zones (3 affected tests including two settings submissions), and homepage test bypassing the database fixture (1 affected test).
-- Alembic migration step: skipped due to earlier pytest failure.
-- Updated-head workflow result: not yet available.
-- Manual Windows acceptance: not run.
+- `python -m pytest -q`: **29 passed, 0 failed** (81 warnings).
+- `python -m alembic upgrade head`: passed on a fresh CI SQLite database through revision `20261005_0005`.
+- Manual Windows acceptance on the user's computer: pending.
 
 ## 8. Exact next action
 
-Obtain a fresh Windows CI run for the current head of `stabilization/windows-sqlite-runtime`. Confirm pytest, then confirm the clean SQLite Alembic migration. If GitHub does not automatically schedule a run, trigger/re-enable it through repository Actions or an authorized workflow dispatch.
+On the target Windows PC, clone/sync branch `stabilization/windows-sqlite-runtime` and run:
 
-After CI passes, run on a clean Windows clone:
 ```powershell
-python -m compileall app tests main.py alembic scripts
-python -m pytest -q
-python -m alembic upgrade head
+setup.bat
+start.bat
 ```
-Then test `setup.bat`, generated administrator login and mandatory password change, dashboard, patient/appointment pages, persistence after restart, `stop.bat`, and confirm unrelated Python processes remain running.
 
-Only after automated checks and manual Windows acceptance pass should Sprint 0 be marked complete. Next product task: Phase 1 — User Administration & Access Control.
+Then verify `http://127.0.0.1:8000/health`, log in with the generated initial administrator credentials, complete the mandatory password change, inspect dashboard/patient/appointment/settings/print pages, create a test patient and appointment, stop and restart the app, and confirm the records persist. Run `stop.bat` and verify unrelated Python/Uvicorn processes remain running.
+
+Do not delete the `data` folder or overwrite an existing `.env`. Record any failure text and the Windows/Python versions. Only after this acceptance passes should PR #14 be marked ready for review and Sprint 0 be considered complete. No merge to `main` is requested yet.
