@@ -10,6 +10,7 @@ from app.core import audit as audit_module
 from app.core.audit import audit_request_middleware
 from app.core.database import get_db
 from app.core.auth import current_user
+from app.core.csrf import get_csrf_token
 from app.models.role import Role, RolePermission
 from app.models.user import User
 from app.services.settings_service import SettingsService
@@ -135,6 +136,7 @@ def create_app() -> FastAPI:
                 "clinic_logo": getattr(request.state, "clinic_logo", ""),
                 "user": getattr(request.state, "current_user", None) or current_user(request),
                 "permissions": getattr(request.state, "permissions", set()),
+                "csrf_token": get_csrf_token(request),
             },
         )
 
