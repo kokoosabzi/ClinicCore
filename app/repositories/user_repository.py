@@ -17,6 +17,9 @@ class UserRepository(Repository[User]):
             statement = statement.where(User.is_deleted.is_(False))
         return self.db.scalar(statement)
 
+    def list_all(self) -> list[User]:
+        return list(self.db.scalars(select(User).order_by(User.id)))
+
     def username_exists(self, username: str, *, excluding_id: int | None = None) -> bool:
         statement = select(User.id).where(User.username == username)
         if excluding_id is not None:
