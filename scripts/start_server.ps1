@@ -31,7 +31,9 @@ if ($null -ne $listener) {
 }
 
 $arguments = @("-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000")
-$process = Start-Process -FilePath $python -ArgumentList $arguments -WorkingDirectory $root -PassThru -WindowStyle Hidden
+$stdoutLog = Join-Path $dataDir "cliniccore-server.log"
+$stderrLog = Join-Path $dataDir "cliniccore-server-error.log"
+$process = Start-Process -FilePath $python -ArgumentList $arguments -WorkingDirectory $root -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog
 Set-Content -LiteralPath $pidFile -Value $process.Id -Encoding ascii
 
 $healthy = $false
@@ -40,7 +42,7 @@ for ($i = 0; $i -lt 20; $i++) {
     $process.Refresh()
     if ($process.HasExited) {
         Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
-        throw "ClinicCore exited during startup. Check the application logs/console output."
+        throw "ClinicCore exited during startup. Check data\cliniccore-server-error.log."
     }
     try {
         $response = Invoke-WebRequest -Uri "http://127.0.0.1:8000/health" -UseBasicParsing -TimeoutSec 2
