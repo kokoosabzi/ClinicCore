@@ -1,0 +1,5 @@
+# Template only. Run setup.bat on a fresh Windows installation; do not copy this file directly.
+DATABASE_URL=sqlite:///./data/cliniccore.db
+SECRET_KEY=GENERATE_WITH_SETUP_BAT
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=GENERATE_WITH_SETUP_BAT
