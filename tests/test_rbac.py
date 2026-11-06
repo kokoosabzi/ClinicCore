@@ -61,7 +61,13 @@ def seed_rbac(db_session):
 
 
 def login(client, username, password="test-password-123"):
-    return client.post("/login", data={"username": username, "password": password})
+    import re
+    page = client.get("/login")
+    token = re.search(r'name="csrf_token" value="([^"]+)"', page.text).group(1)
+    return client.post(
+        "/login",
+        data={"username": username, "password": password, "csrf_token": token},
+    )
 
 
 def test_doctor_has_patient_access_but_not_financial_access(client, db_session):
@@ -188,9 +194,16 @@ def test_inactive_user_cannot_login(client, db_session):
     )
     db_session.commit()
 
+    import re
+    page = client.get("/login")
+    token = re.search(r'name="csrf_token" value="([^"]+)"', page.text).group(1)
     response = client.post(
         "/login",
-        data={"username": "inactive.user", "password": "test-password-123"},
+        data={
+            "username": "inactive.user",
+            "password": "test-password-123",
+            "csrf_token": token,
+        },
         follow_redirects=False,
     )
     assert response.status_code == 401
