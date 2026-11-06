@@ -37,6 +37,8 @@ async def load_app_settings(request: Request, call_next):
             "app_name": "app.name",
             "app_title": "app.title",
             "app_theme": "app.theme",
+            "app_style": "app.style",
+            "app_font_scale": "app.font_scale",
             "app_density": "app.density",
             "app_primary_color": "app.primary_color",
             "clinic_name": "clinic.name",
