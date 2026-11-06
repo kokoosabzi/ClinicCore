@@ -2,15 +2,48 @@
 
 ## 1. هدف
 
-تبدیل ClinicCore به سامانه مدیریت کلینیک سبک، پایدار، فارسی و قابل نصب روی Windows؛ با تنظیمات مرکزی، رابط RTL، تقویم شمسی، نوبت‌دهی، پرونده بیمار، گزارش و چاپ، احراز هویت و کنترل دسترسی متناسب با نیاز کلینیک.
+این سند برنامه مرجع فاز بازطراحی و توسعه ClinicCore است. هدف، تبدیل وضعیت فعلی پروژه به یک سامانه مدیریت کلینیک با:
+
+- تنظیمات مرکزی و قابل مدیریت از UI
+- نام و هویت قابل تنظیم سامانه/کلینیک
+- Design System و Theme پویا
+- UX یکپارچه و RTL
+- تقویم و نمایش تاریخ/زمان هجری شمسی
+- Dashboard و Reporting
+- Messaging و Contacts
+- Print Layout قابل تنظیم
+- اجرای Local با SQLite به‌عنوان گزینه deployment نهایی
+- معماری قابل نگهداری و مناسب برای توسعه توسط AI Agent
+
+این سند برای Codex/AI Agent نوشته شده و باید همراه با `REQUIREMENTS.md`، `SETTINGS_SPEC.md`، `UX_UI_SPEC.md`، `AGENT_WORKFLOW.md` و `ACCEPTANCE_TESTS.md` خوانده شود.
 
 ## 2. وضعیت مبنا
 
-پروژه از FastAPI، SQLAlchemy 2، Alembic، Jinja2، HTMX/Alpine.js و SQLite استفاده می‌کند. کد فعلی شامل ماژول‌های بیماران، نوبت‌ها، امور مالی، پیام‌رسانی، کاربران، تنظیمات، چاپ و تاریخ شمسی است.
+Repository فعلی یک پروژه Python/FastAPI است و ساختار فعلی شامل بخش‌های زیر است:
 
-پیش از هر تغییر، کد و تست‌های موجود را مرجع رفتار فعلی قرار دهید. این برنامه مجوز بازنویسی گسترده قابلیت‌های سالم نیست.
+- `app/core`
+- `app/models`
+- `app/plugins`
+- `app/providers`
+- `app/repositories`
+- `app/routers`
+- `app/schemas`
+- `app/services`
+- `app/static`
+- `app/templates`
+- `alembic`
+- `tests`
+- `HELP`
+
+در فاز فعلی، برنامه اجرا شده و مسیرهای اصلی UI تست شده‌اند. اصلاحات اخیر شامل سازگار کردن `TemplateResponse` با نسخه فعلی Starlette و اضافه شدن `start.bat` بوده است.
+
+**اصل مهم:** Agent باید کد فعلی را قبل از تغییر بررسی کند و قابلیت‌های سالم را بدون دلیل بازنویسی نکند.
 
 ## 3. اصول معماری
+
+### 3.1 لایه‌بندی
+
+الگوی فعلی لایه‌ای حفظ شود:
 
 ```text
 Router -> Service -> Repository -> Model/DB
@@ -18,83 +51,163 @@ Router -> Service -> Repository -> Model/DB
             Schema
 ```
 
-- Router مسئول HTTP و کنترل دسترسی است.
-- Service منطق دامنه را نگه می‌دارد.
-- Repository دسترسی داده را مدیریت می‌کند.
-- Template فقط مسئول نمایش است.
-- تغییر schema فقط از طریق migration انجام می‌شود.
-- از abstraction یا dependency جدید بدون نیاز واقعی اجتناب شود.
+قواعد:
 
-## 4. مسیر اجرایی
+- Router محل منطق تجاری اصلی نیست.
+- Service محل منطق دامنه است.
+- Repository مسئول دسترسی داده است.
+- Template نباید منطق تجاری داشته باشد.
+- تنظیمات از یک Settings Service مرکزی خوانده شوند.
+- قابلیت‌های cross-cutting مانند تاریخ، theme، print و messaging سرویس/abstraction مستقل داشته باشند.
 
-### Phase 0 — Stabilization & Windows Readiness
-- همسان‌سازی مستندات با کد واقعی
-- SQLite file-backed و migration chain
-- نصب اولیه Windows با محیط مجازی محلی
-- اجرای امن و توقف کنترل‌شده برنامه
-- تنظیم اولیه امن مدیر و secret
-- تست نصب تازه و حفظ دیتابیس موجود
+### 3.2 سازگاری با آینده
 
-### Phase 1 — User Administration & Access Control
-- تکمیل فهرست، ایجاد، ویرایش و غیرفعال‌سازی کاربران
-- نقش‌های admin، doctor، secretary و accountant
-- تعریف ماتریس دسترسی قابل فهم و آزمون‌پذیر
-- جلوگیری از حذف/غیرفعال‌سازی آخرین مدیر فعال
-- ثبت فعالیت‌های مدیریتی مهم
+هر قابلیت جدید باید تا حد امکان مستقل از provider و database باشد.
 
-### Phase 2 — Appointment Workflow
-- تکمیل DatePicker شمسی و اعتبارسنجی
-- ساعات کاری و مدت نوبت قابل تنظیم
-- کنترل تداخل و رفتار لغو/جابجایی
-- روشن کردن دامنه یکتایی slot در صورت افزودن پزشک/اتاق
+نمونه:
 
-### Phase 3 — Patient & Clinical Workflow
-- تکمیل پروفایل و سابقه بیمار
-- پیوند نوبت، ویزیت، پرونده و نسخه در صورت وجود دامنه مورد نیاز
-- اعتبارسنجی و audit عملیات حساس
+```text
+MessagingService
+    -> MessagingProvider
+        -> SMSProvider
+        -> TelegramProvider
+        -> ...
+```
+
+و:
+
+```text
+Application
+    -> SQLAlchemy
+        -> SQLite
+        -> PostgreSQL
+```
+
+## 4. ترتیب فازها
+
+### Sprint 0 — Project Stabilization & Windows Readiness
+- همسان‌سازی مستندات با کد واقعی و SQLite-only
+- تثبیت نصب، اجرا و توقف در Windows
+- تولید امن تنظیمات و رمز اولیه مدیر در نصب تازه
+- تست migration و مسیر نصب تازه بدون حذف داده موجود
+
+### Phase 0 — Baseline & Specification
+- تثبیت تست‌ها
+- تعریف قراردادهای معماری
+- ایجاد اسناد توسعه
+- ایجاد Acceptance Tests
+
+### Phase 1 — Settings & Application Identity
+- مدل Settings
+- Settings Service/Repository
+- UI تنظیمات
+- نام سامانه، عنوان، اطلاعات کلینیک، لوگو
+
+### Phase 2 — Design System & UX
+- Layout مشترک
+- Header/Sidebar
+- Back
+- Breadcrumb
+- Theme
+- Typography
+- Light/Dark
+- responsive behavior
+
+### Phase 3 — Calendar & Date/Time
+- Calendar Service
+- Jalali/Gregorian conversion
+- timezone
+- نمایش تاریخ/زمان در Header
+- DatePicker مناسب نوبت‌گذاری
 
 ### Phase 4 — Dashboard & Reporting
-- KPIهای مبتنی بر داده واقعی
-- گزارش‌های بیماران، نوبت‌ها، مالی و audit
-- خروجی و چاپ با تاریخ شمسی
+- KPI cards
+- Charts
+- گزارش‌های اصلی
+- export/print
 
 ### Phase 5 — Messaging & Contacts
-- CRUD مخاطبان
-- abstraction ارائه‌دهنده پیام
-- تاریخچه و نتیجه ارسال
+- provider abstraction
+- contacts
+- templates
+- message history
+- delivery status
 
-### Phase 6 — Printing & Documents
-- سربرگ/پاورقی و هویت کلینیک
-- چاپ رسیدها و گزارش‌ها
-- بررسی واقعی قالب‌های A4/A5 و حرارتی
+### Phase 6 — Printing
+- print design system
+- قبض
+- گزارش
+- سربرگ/پاورقی
+- تنظیمات چاپ
 
-### Phase 7 — Final QA & Windows Release
-- regression و تست پذیرش
+### Phase 7 — Local Database
+- database abstraction verification
+- SQLite deployment
+- migration strategy
 - backup/restore
-- تست نصب تازه روی Windows
-- راهنمای کاربر و بسته تحویل
 
-## 5. معیارهای تحویل هر مرحله
+### Phase 8 — Final QA
+- regression
+- security
+- permissions
+- accessibility
+- print
+- backup
+- deployment
 
-1. پیاده‌سازی محدود به یک task منسجم باشد.
-2. تست مرتبط اضافه یا اجرا شود.
-3. Migration در صورت تغییر schema وجود داشته باشد.
-4. تست فقط وقتی Pass ثبت شود که واقعاً اجرا شده باشد.
-5. مستندات و PROGRESS با وضعیت واقعی همسان شوند.
-6. diff بازبینی شود و هیچ secret یا فایل runtime وارد Git نشود.
+## 5. معیارهای معماری
+
+قبل از تکمیل هر فاز:
+
+1. تست‌های مرتبط سبز باشند.
+2. هیچ secret در repository قرار نگیرد.
+3. migrationها قابل تکرار باشند.
+4. UI از hard-code کردن نام/عنوان سامانه پرهیز کند.
+5. تنظیمات در یک نقطه مدیریت شوند.
+6. تغییر Theme نیازمند تغییر templateهای متعدد نباشد.
+7. قابلیت‌های provider-specific در abstraction پنهان شوند.
+8. قابلیت جدید مستند شود.
 
 ## 6. تصمیم پایگاه داده و استقرار
 
-برای نسخه محلی فعلی، **SQLite تنها دیتابیس پشتیبانی‌شده** است و مسیر تحویل، Windows local است. PostgreSQL و Docker پیش‌نیاز نصب نیستند. این تصمیم به معنی مجوز حذف یا تغییر دیتابیس‌ها و volumeهای قدیمی بیرون از مخزن نیست.
+در نسخه محلی فعلی، **SQLite تنها دیتابیس پشتیبانی‌شده** است و مسیر تحویل، Windows local است. PostgreSQL و Docker پیش‌نیاز نصب نیستند. این تصمیم به معنی مجوز حذف یا تغییر دیتابیس‌ها و volumeهای قدیمی بیرون از مخزن نیست.
 
 مسیر پیش‌فرض:
 - فایل دیتابیس: `data/cliniccore.db`
-- تنظیمات: `.env` محلی و خارج از Git
+- تنظیمات محرمانه: `.env` محلی و خارج از Git
 - محیط مجازی: `.venv`
 - Migration: Alembic
 
 هرگونه بازگشت به PostgreSQL یا استقرار چندکاربره شبکه‌ای نیازمند تصمیم معماری و آزمون مستقل خواهد بود.
 
-## 7. محدودیت دامنه محصول
+## 7. خروجی مورد انتظار
 
-ClinicCore برای کلینیک کوچک/متوسط طراحی می‌شود، نه HIS بیمارستانی یا ERP مالی. برنامه در تراکنش بانکی دخالت نمی‌کند؛ ثبت‌های مالی در حد عملیات کلینیک باقی می‌مانند. پیچیدگی زیرساختی بدون نیاز واقعی اضافه نشود.
+در پایان فاز:
+
+- Settings کامل و قابل استفاده
+- UI/UX یکپارچه
+- Theme پویا
+- Jalali
+- Dashboard
+- Reports
+- Messaging
+- Contacts
+- Print
+- Local SQLite
+- Backup/Restore
+- تست‌های پذیرش
+- مستندات به‌روز
+
+## 8. قانون مهم برای Agent
+
+هیچ فاز بزرگی در یک commit انجام نشود.
+
+هر قابلیت منطقی:
+1. plan
+2. implementation
+3. test
+4. manual verification
+5. documentation
+6. commit
+
+باشد.
