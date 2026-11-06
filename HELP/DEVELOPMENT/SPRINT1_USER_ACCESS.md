@@ -36,13 +36,13 @@ Permissions are domain/action pairs, checked on the server:
 - `financial.view`, `financial.create`, `financial.update`, `financial.void`
 - `messaging.view`, `messaging.create`
 - `reports.view`, `reports.financial`
-- `settings.view`, `settings.update`
+- `settings.view`, `settings.update` (system administrator only)
 - `audit.view`
 
 ## 4. Initial default role matrix
 
 - **admin:** all permissions.
-- **clinic_manager:** all operational patient, appointment, financial, messaging, reporting, settings-view and audit-view permissions; can manage ordinary staff accounts, but cannot create/promote another system administrator or change the permission matrix.
+- **clinic_manager:** all operational patient, appointment, financial, messaging, reporting, audit-view permissions; can manage ordinary staff accounts, but cannot create/promote another system administrator or change the permission matrix.
 - **doctor:** patient view/create/update; appointment view/create/update/cancel; messaging view/create.
 - **secretary:** patient view/create/update; appointment view/create/update/cancel; messaging view/create.
 - **accountant:** patient view (minimum identity needed for billing); financial view/create/update; financial reports.
