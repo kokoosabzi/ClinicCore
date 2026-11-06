@@ -121,3 +121,14 @@ Repository: `main`
 - Windows CI run #128 passed: **53 passed, 0 failed**, compileall passed and clean SQLite migration reached `20261106_0006`. Manual browser acceptance remains outstanding.
 
 - Evidence: [Windows CI run #128](https://github.com/kokoosabzi/ClinicCore/actions/runs/42287251826) — **53 passed, 0 failed**.
+
+
+### 2026-11-07 — Appointment lifecycle and rescheduling
+- Added server-side appointment transition rules for booked, rescheduled, waiting, completed, no-show and cancelled states.
+- Added status update, cancellation and rescheduling API/form routes with permission checks and CSRF on browser forms.
+- Cancellation keeps the historical appointment row but releases its slot; the availability endpoint and partial unique index both exclude cancelled appointments.
+- Rescheduling reuses the Jalali booking calendar, preserves the patient and other booking details, checks slot conflicts and records an audit event.
+- Status transitions and rescheduling record actor and before/after values in the existing audit log.
+- Added lifecycle integration tests for valid/invalid transitions, cancellation slot reuse, reschedule conflict and audit events.
+- Windows CI run #150 passed: **58 passed, 0 failed**, compileall, JavaScript syntax validation and clean SQLite migration to \`20261107_0007\` all passed.
+- Manual Windows/browser acceptance remains outstanding; practitioner-specific schedules and configurable slot duration are not implemented yet.
