@@ -143,17 +143,27 @@ def parse_jalali(value: str, separator: str = "/") -> date:
 
 
 def parse_configured_datetime(value: str, calendar: str = "jalali") -> datetime:
-    """Parse a local date/time entered in the configured calendar into Gregorian datetime."""
-    value = value.strip()
+    """Parse a strict local date/time value into a Gregorian datetime.
+
+    Accepted input is YYYY/MM/DD HH:MM (or YYYY-MM-DDTHH:MM). Persian
+    decimal digits are accepted by Python's integer parser. Seconds and
+    trailing text are intentionally rejected because appointment slots
+    have minute precision.
+    """
+    import re
+
+    if calendar not in {"jalali", "gregorian"}:
+        raise ValueError("Invalid configured date/time")
     try:
-        date_text, time_text = value.replace("T", " ").split(None, 1)
-        hour, minute = (int(part) for part in time_text[:5].split(":"))
+        match = re.fullmatch(
+            r"\s*(\d{4})[/-](\d{1,2})[/-](\d{1,2})[ T](\d{2}):(\d{2})\s*",
+            value,
+        )
+        if match is None:
+            raise ValueError
+        year, month, day, hour, minute = (int(part) for part in match.groups())
         if not 0 <= hour <= 23 or not 0 <= minute <= 59:
             raise ValueError
-        parts = date_text.replace("-", "/").split("/")
-        if len(parts) != 3:
-            raise ValueError
-        year, month, day = (int(part) for part in parts)
         if calendar == "jalali":
             converted = jalali_to_gregorian(year, month, day)
         else:
