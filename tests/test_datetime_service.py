@@ -55,3 +55,42 @@ def test_format_configured_datetime_12_hour_seconds_order():
 
     value = datetime(2026, 3, 21, 13, 5, 9)
     assert format_configured_datetime(value, "gregorian", "YYYY/MM/DD", "12", True) == "۲۰۲۶/۰۳/۲۱ ۰۱:۰۵:۰۹ ب.ظ"
+
+
+def test_jalali_year_boundary_and_leap_day_round_trip():
+    assert jalali_to_gregorian(1403, 12, 30) == date(2025, 3, 20)
+    assert gregorian_to_jalali(date(2025, 3, 20)) == (1403, 12, 30)
+    assert gregorian_to_jalali(date(2025, 3, 21)) == (1404, 1, 1)
+    assert gregorian_to_jalali(date(2026, 3, 20)) == (1404, 12, 29)
+    assert gregorian_to_jalali(date(2026, 3, 21)) == (1405, 1, 1)
+
+
+def test_parse_configured_datetime_accepts_persian_digits_and_iso_separator():
+    from app.services.datetime_service import parse_configured_datetime
+
+    assert parse_configured_datetime("۱۴۰۵-۰۱-۰۱T۱۲:۳۰", "jalali").isoformat() == "2026-03-21T12:30:00"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "1405/01/01 12:30garbage",
+        "1405/01/01 12:30:00",
+        "1405/01/01 24:00",
+        "1405/01/01 12:60",
+        "1405/13/01 12:30",
+        "1405/01/32 12:30",
+    ],
+)
+def test_parse_configured_datetime_rejects_malformed_or_out_of_range_values(value):
+    from app.services.datetime_service import parse_configured_datetime
+
+    with pytest.raises(ValueError):
+        parse_configured_datetime(value, "jalali")
+
+
+def test_parse_configured_datetime_rejects_unknown_calendar():
+    from app.services.datetime_service import parse_configured_datetime
+
+    with pytest.raises(ValueError):
+        parse_configured_datetime("2026/03/21 12:30", "automatic")
