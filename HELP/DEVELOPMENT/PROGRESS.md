@@ -111,3 +111,11 @@ Repository: `main`
 - هر مرحله شامل تغییر محدود، تست مرتبط، به‌روزرسانی مستندات و گزارش commit باشد.
 - ادغام یا حذف شاخه در آینده بدون مجوز صریح کاربر انجام نشود.
 - هیچ‌یک از دروازه‌های پذیرش دستی تا زمان اجرای واقعی روی Windows کاربر Pass اعلام نشود.
+
+
+### 2026-11-06 — Shared date picker for financial forms
+- Added a reusable Jalali calendar widget for date-only form fields.
+- Payment and expense forms now honor the configured calendar: Jalali picker for Jalali mode, native browser date picker for Gregorian mode.
+- Picker selection submits a Gregorian ISO date; persistence remains Gregorian `date` and does not depend on browser locale.
+- Added integration tests for picker rendering and persisted payment/expense dates.
+- Windows CI run #128 is in progress; do not mark this increment complete until it passes.
