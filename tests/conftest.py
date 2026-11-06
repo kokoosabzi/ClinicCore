@@ -75,3 +75,65 @@ def client(db_session_factory, monkeypatch) -> Generator[TestClient, None, None]
     with TestClient(test_app) as test_client:
         yield test_client
     test_app.dependency_overrides.clear()
+
+
+@pytest.fixture()
+def rbac_catalog(db_session):
+    """Seed the built-in role/permission catalog for authorization integration tests."""
+    from app.models.role import Permission, Role, RolePermission
+
+    labels = {
+        "admin": "مدیر سیستم",
+        "clinic_manager": "مدیر کلینیک",
+        "doctor": "پزشک",
+        "secretary": "پذیرش",
+        "accountant": "حسابدار",
+    }
+    roles = {}
+    for key, label in labels.items():
+        role = Role(key=key, label=label, is_system=True, is_active=True)
+        db_session.add(role)
+        roles[key] = role
+
+    codes = [
+        "users.view", "users.create", "users.update", "users.deactivate",
+        "users.reset_password", "users.assign_role", "roles.manage",
+        "patients.view", "patients.create", "patients.update", "patients.archive",
+        "appointments.view", "appointments.create", "appointments.update", "appointments.cancel",
+        "financial.view", "financial.create", "financial.update", "financial.void",
+        "messaging.view", "messaging.create", "reports.view", "reports.financial",
+        "settings.view", "settings.update", "audit.view",
+    ]
+    db_session.add_all(
+        Permission(code=code, label=code, category=code.split(".", 1)[0])
+        for code in codes
+    )
+    db_session.flush()
+    for code in codes:
+        db_session.add(RolePermission(role_id=roles["admin"].id, permission_code=code))
+    db_session.commit()
+    return roles
+
+
+@pytest.fixture()
+def admin_client(client, db_session, rbac_catalog):
+    """Return a TestClient authenticated as an administrator with seeded RBAC."""
+    from app.core.security import hash_password
+    from app.models.user import User, UserRole
+
+    db_session.add(
+        User(
+            full_name="مدیر آزمایشی",
+            username="test-admin",
+            password_hash=hash_password("test-password-123"),
+            role=UserRole.admin,
+            must_change_password=False,
+        )
+    )
+    db_session.commit()
+    response = client.post(
+        "/login",
+        data={"username": "test-admin", "password": "test-password-123"},
+    )
+    assert response.status_code == 200
+    return client
