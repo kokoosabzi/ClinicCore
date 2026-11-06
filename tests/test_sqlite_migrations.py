@@ -58,7 +58,7 @@ def test_alembic_migrations_create_file_backed_sqlite_schema(tmp_path: Path) -> 
         version = connection.execute(
             "SELECT version_num FROM alembic_version"
         ).fetchone()
-        assert version == ("20261106_0006",)
+        assert version == ("20261107_0007",)
 
 
 def test_rbac_migration_preserves_existing_users_and_password_hashes(tmp_path: Path) -> None:
