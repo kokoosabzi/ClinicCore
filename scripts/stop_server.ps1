@@ -10,12 +10,12 @@ if (-not (Test-Path -LiteralPath $pidFile)) {
 }
 
 $pidText = (Get-Content -LiteralPath $pidFile -Raw).Trim()
-$processId = 0
-if (-not [int]::TryParse($pidText, [ref]$processId)) {
+$clinicPid = 0
+if (-not [int]::TryParse($pidText, [ref]$clinicPid)) {
     throw "Invalid PID file. No process was stopped; inspect data\cliniccore.pid."
 }
 
-$processInfo = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction SilentlyContinue
+$processInfo = Get-CimInstance Win32_Process -Filter "ProcessId = $clinicPid" -ErrorAction SilentlyContinue
 if ($null -eq $processInfo) {
     Remove-Item -LiteralPath $pidFile -Force
     Write-Host "The recorded process has already exited. Removed stale PID file."
@@ -26,7 +26,15 @@ if (($processInfo.ExecutablePath -ine $python) -or ($processInfo.CommandLine -no
     throw "The saved PID does not identify the ClinicCore server. No process was stopped."
 }
 
-Stop-Process -Id $processId -ErrorAction Stop
-Wait-Process -Id $processId -Timeout 10 -ErrorAction SilentlyContinue
+Stop-Process -Id $clinicPid -ErrorAction Stop
+try {
+    Wait-Process -Id $clinicPid -Timeout 10 -ErrorAction Stop
+} catch {
+    # Verify below rather than assuming a timeout means the process exited.
+}
+$stillRunning = Get-CimInstance Win32_Process -Filter "ProcessId = $clinicPid" -ErrorAction SilentlyContinue
+if ($null -ne $stillRunning) {
+    throw "ClinicCore process did not exit. PID file was retained so stop can be retried."
+}
 Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
-Write-Host "ClinicCore process $processId stopped."
+Write-Host "ClinicCore process $clinicPid stopped."
