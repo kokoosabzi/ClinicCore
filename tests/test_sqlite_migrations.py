@@ -44,6 +44,9 @@ def test_alembic_migrations_create_file_backed_sqlite_schema(tmp_path: Path) -> 
             "messages",
             "audit_logs",
             "system_settings",
+            "roles",
+            "permissions",
+            "role_permissions",
         }.issubset(tables)
 
         indexes = {
@@ -55,4 +58,4 @@ def test_alembic_migrations_create_file_backed_sqlite_schema(tmp_path: Path) -> 
         version = connection.execute(
             "SELECT version_num FROM alembic_version"
         ).fetchone()
-        assert version == ("20261005_0005",)
+        assert version == ("20261106_0006",)
