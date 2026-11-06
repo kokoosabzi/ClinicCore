@@ -45,7 +45,7 @@ PERMISSIONS = [
 ]
 
 ALL = {item[0] for item in PERMISSIONS}
-MANAGER = ALL - {"users.assign_role", "roles.manage", "settings.update"}
+MANAGER = ALL - {"users.assign_role", "roles.manage", "settings.view", "settings.update"}
 DOCTOR_SECRETARY = {
     "patients.view", "patients.create", "patients.update",
     "appointments.view", "appointments.create", "appointments.update", "appointments.cancel",
