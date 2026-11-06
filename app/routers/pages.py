@@ -407,7 +407,11 @@ def financial_index(request: Request, db: Session = Depends(get_db), user=Depend
 
 @router.get("/financial/payments/new", response_class=HTMLResponse)
 def payment_form(request: Request, user=Depends(require_permission("financial.create"))):
-    return render(request, "financial/payment_form.html", "ثبت پرداخت")
+    today = current_datetime(request.state.datetime_timezone)
+    return render(
+        request, "financial/payment_form.html", "ثبت پرداخت",
+        today_gregorian=today.date().isoformat(), today_jalali=format_jalali(today),
+    )
 
 
 @router.post("/ui/financial/payments")
@@ -423,7 +427,11 @@ async def create_payment_from_form(request: Request, db: Session = Depends(get_d
 
 @router.get("/financial/expenses/new", response_class=HTMLResponse)
 def expense_form(request: Request, user=Depends(require_permission("financial.create"))):
-    return render(request, "financial/expense_form.html", "ثبت هزینه")
+    today = current_datetime(request.state.datetime_timezone)
+    return render(
+        request, "financial/expense_form.html", "ثبت هزینه",
+        today_gregorian=today.date().isoformat(), today_jalali=format_jalali(today),
+    )
 
 
 @router.post("/ui/financial/expenses")
