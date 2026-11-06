@@ -7,16 +7,17 @@ __pycache__/
 venv/
 env/
 
-# Environment
+# Environment and secrets
 .env
 
 # IDE
 .vscode/
 .idea/
 
-# Database
+# Database and runtime process files
 *.sqlite3
 *.db
+*.pid
 
 # Logs
 *.log
