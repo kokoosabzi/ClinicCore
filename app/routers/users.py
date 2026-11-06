@@ -11,6 +11,7 @@ from app.core.database import get_db
 from app.models.user import UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreate, UserRead, UserResetPasswordResult, UserUpdate
+from app.services.role_service import RoleManagementError, RoleService
 from app.services.user_service import UserManagementError, UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -69,6 +70,59 @@ def render_manage(
         status_code=status_code,
     )
 
+
+
+@router.get("/roles", response_class=HTMLResponse)
+def manage_roles(
+    request: Request,
+    user=Depends(require_permission("roles.manage")),
+    db: Session = Depends(get_db),
+):
+    service = RoleService(db)
+    return templates.TemplateResponse(
+        request=request,
+        name="users/roles.html",
+        context={
+            "request": request,
+            "title": "مدیریت نقش‌ها و مجوزها",
+            "user": current_user(request),
+            "csrf_token": get_csrf_token(request),
+            "roles_data": service.list_roles(),
+            "error": None,
+            "notice": None,
+        },
+    )
+
+
+@router.post("/roles/{role_key}", response_class=HTMLResponse)
+async def update_role_permissions(
+    role_key: str,
+    request: Request,
+    user=Depends(require_permission("roles.manage")),
+    db: Session = Depends(get_db),
+):
+    form = await request.form()
+    verify_csrf(request, form.get("csrf_token"))
+    permission_codes = set(form.getlist("permissions"))
+    service = RoleService(db)
+    try:
+        service.update_permissions(role_key, permission_codes)
+    except RoleManagementError as error:
+        return templates.TemplateResponse(
+            request=request,
+            name="users/roles.html",
+            context={
+                "request": request,
+                "title": "مدیریت نقش‌ها و مجوزها",
+                "user": current_user(request),
+                "csrf_token": get_csrf_token(request),
+                "roles_data": service.list_roles(),
+                "error": str(error),
+                "notice": None,
+            },
+            status_code=409,
+        )
+    return RedirectResponse(url="/users/roles?saved=1", status_code=303)
 
 @router.get("/", response_model=list[UserRead])
 def list_users(
