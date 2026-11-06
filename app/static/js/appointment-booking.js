@@ -121,9 +121,11 @@
         }
         slots.append(button);
       });
-      slotMessage.textContent = payload.slots.some(slot => slot.status === "available")
-        ? "یک ساعت آزاد را انتخاب کنید."
-        : "برای این روز ساعت آزادی باقی نمانده است.";
+      slotMessage.textContent = payload.working_day === false
+        ? "کلینیک در این روز تعطیل است."
+        : payload.slots.some(slot => slot.status === "available")
+          ? "یک ساعت آزاد را انتخاب کنید."
+          : "برای این روز ساعت آزادی باقی نمانده است.";
       slotMessage.hidden = false;
     } catch {
       if (sequence !== requestSequence) return;
