@@ -45,7 +45,7 @@ Permissions are domain/action pairs, checked on the server:
 - **clinic_manager:** all operational patient, appointment, financial, messaging, reporting, audit-view permissions; can manage ordinary staff accounts, but cannot create/promote another system administrator or change the permission matrix.
 - **doctor:** patient view/create/update; appointment view/create/update/cancel; messaging view/create.
 - **secretary:** patient view/create/update; appointment view/create/update/cancel; messaging view/create.
-- **accountant:** patient view (minimum identity needed for billing); financial view/create/update; financial reports.
+- **accountant:** financial view/create/update and financial reports. Patient clinical records are not directly accessible; billing screens can use the patient reference without exposing the clinical chart.
 
 These are least-privilege starting defaults. The system administrator can adjust permissions for built-in non-admin roles in the role-permission screen. The `admin` role remains immutable and always retains all permissions.
 
