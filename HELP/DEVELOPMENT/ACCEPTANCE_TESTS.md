@@ -319,3 +319,14 @@ Release زمانی قابل قبول است که:
 - Cancelled appointments remain in history but release their time slot for a new booking.
 - Status changes and reschedules create audit events with actor and before/after values.
 - HTML forms include CSRF protection and rescheduling reuses the Jalali calendar and live availability endpoint.
+
+
+### AT-408 — Configurable clinic-wide appointment schedule
+- Admin can configure opening and closing times using native time controls.
+- Admin can choose a slot duration of 15, 20, 30, 45 or 60 minutes.
+- Admin can select one or more working weekdays; Friday is excluded by the default schedule.
+- Invalid times, empty/invalid weekday selections and a workday duration not divisible by the slot duration are rejected.
+- Availability returns only slots fully contained in the configured workday, with occupied and past slots marked correctly.
+- Closed weekdays return no slots and the booking UI clearly reports that the clinic is closed.
+- Settings persist after reload/restart without a database schema migration.
+- Existing default behavior remains 09:00–17:00 with 30-minute slots.
