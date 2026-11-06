@@ -20,7 +20,7 @@ def list_messages(user=Depends(require_permission("messaging.view")), service: M
 
 
 @router.post("/", response_model=MessageRead, status_code=201)
-def queue_message(payload: MessageCreate, user=Depends(require_user), service: MessagingService = Depends(get_service)):
+def queue_message(payload: MessageCreate, user=Depends(require_permission("messaging.create")), service: MessagingService = Depends(get_service)):
     return service.queue_message(payload)
 
 
