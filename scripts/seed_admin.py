@@ -1,13 +1,14 @@
+"""Seed the initial administrator after database migrations have run."""
+
 from sqlalchemy import select
 
 from app.core.config import settings
-from app.core.database import Base, SessionLocal, engine
+from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models import User, UserRole
 
 
 def main() -> None:
-    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         existing = db.scalar(select(User).where(User.username == settings.admin_username))

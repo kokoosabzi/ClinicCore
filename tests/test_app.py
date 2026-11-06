@@ -1,18 +1,13 @@
-from fastapi.testclient import TestClient
-
 from app.core.security import hash_password, verify_password
-from app.main import create_app
 
 
-def test_health_endpoint() -> None:
-    client = TestClient(create_app())
+def test_health_endpoint(client) -> None:
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
-def test_home_is_persian_rtl() -> None:
-    client = TestClient(create_app())
+def test_home_is_persian_rtl(client) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert 'lang="fa"' in response.text

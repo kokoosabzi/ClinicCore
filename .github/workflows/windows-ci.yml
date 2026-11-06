@@ -1,0 +1,55 @@
+name: ClinicCore Windows CI
+
+on:
+  push:
+    branches:
+      - main
+      - stabilization/windows-sqlite-runtime
+  pull_request:
+    branches:
+      - main
+      - stabilization/windows-sqlite-runtime
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-tests:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: sqlite:///./data/cliniccore-ci.db
+      SECRET_KEY: cliniccore-ci-only-secret-key-not-for-production
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ci-only-not-for-production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project and test dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Compile application and tests
+        run: python -m compileall app tests main.py alembic scripts
+
+      - name: Run test suite
+        run: python -m pytest -q
+
+      - name: Verify clean SQLite migration
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path data | Out-Null
+          if (Test-Path data/cliniccore-ci.db) {
+            Remove-Item data/cliniccore-ci.db -Force
+          }
+          python -m alembic upgrade head
+          if (-not (Test-Path data/cliniccore-ci.db)) {
+            throw "Alembic did not create the expected SQLite database."
+          }

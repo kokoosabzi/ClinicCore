@@ -129,3 +129,13 @@ Template for new entries — copy this block for each new decision:
 - **Alternatives considered:** <what else was weighed, and why rejected>
 - **Status:** Active | Superseded by DDR-0YY | Reverted
 -->
+
+
+## DDR-006 — SQLite-only local runtime for the current Windows delivery phase
+
+- **Date:** 2026-11-06
+- **Decision:** The supported local installation target is Windows with file-backed SQLite at `data/cliniccore.db`. PostgreSQL and Docker are not prerequisites or supported runtime options in this phase.
+- **Rationale:** Keep installation and operation simple for a local clinic environment. The current application configuration rejects non-SQLite `DATABASE_URL` values and a file-backed migration test exists.
+- **Alternatives considered:** Retain dual SQLite/PostgreSQL runtime support. Deferred because the current configuration and tests already define SQLite-only behavior and dual-dialect compatibility would expand the release surface.
+- **Safety constraint:** This decision does not authorize deleting or modifying any pre-existing PostgreSQL database, Docker container, or volume outside this repository.
+- **Status:** Active for the current local delivery phase.

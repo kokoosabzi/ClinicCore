@@ -212,3 +212,30 @@ Release زمانی قابل قبول است که:
 - print output بررسی شده باشد.
 - هیچ secret یا فایل موقت commit نشده باشد.
 - `git status` و `git diff` بررسی شده باشند.
+
+
+## 15. Windows Local Installation & Runtime (Sprint 0)
+
+### AT-1101 — Fresh setup
+- On a clean Windows clone, `setup.bat` creates `.venv`, installs dependencies, bootstraps a private `.env`, applies Alembic migrations, and creates the initial admin.
+- The generated admin password is unique and printed once; first login requires a password change.
+- An existing `.env` is never overwritten.
+
+### AT-1102 — SQLite-only configuration
+- A fresh file-backed SQLite database is created at `data/cliniccore.db`.
+- Non-SQLite `DATABASE_URL` values fail with a clear error.
+- No PostgreSQL database, Docker container, or volume is deleted or modified.
+
+### AT-1103 — Start and stop
+- `start.bat` starts the application on `127.0.0.1:8000` and verifies `/health`.
+- A second start does not create a duplicate server.
+- `stop.bat` stops only the process recorded by the ClinicCore PID file and verifies its executable/command line.
+- Unrelated Python/Uvicorn processes remain running.
+
+### AT-1104 — Persistence
+- Create a patient and appointment, stop the app, restart it, and verify that records remain.
+- No setup/start operation replaces or deletes an existing database file.
+
+### AT-1105 — Windows regression
+- Login, mandatory password change, dashboard, patient workflow, appointment workflow, financial pages, settings, receipt print, and logout are manually checked in a browser.
+- Record the Windows version, Python version, test result, and any failure in PROGRESS.md.

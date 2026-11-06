@@ -1,49 +1,42 @@
-# Authentication Guide
+# راهنمای احراز هویت و مدیر اولیه
 
-## Initial admin user
+## ایجاد مدیر در نصب تازه
 
-The seed script creates the first admin account and marks it for a mandatory password change on first login.
+در اجرای `setup.bat`، اگر `.env` وجود نداشته باشد، اسکریپت bootstrap:
+- یک `SECRET_KEY` تصادفی و طولانی تولید می‌کند.
+- یک رمز تصادفی برای مدیر اولیه تولید می‌کند.
+- مقادیر را در `.env` محلی ذخیره می‌کند.
+- رمز اولیه را فقط در خروجی همان اجرا نمایش می‌دهد.
 
-**Security warning:** \`admin\` / \`admin\` is a development-only fallback. Never use the fallback password in a production deployment. Set a unique \`ADMIN_USERNAME\` and a strong \`ADMIN_PASSWORD\` in \`.env\` **before** running the seed script.
+نام کاربری پیش‌فرض `admin` است. رمز اولیه را امن نگهداری کنید و در اولین ورود تغییر دهید.
 
-\`\`\`env
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=replace-with-a-strong-unique-password
-SECRET_KEY=replace-with-long-random-secret
-\`\`\`
+## رفتار حساب مدیر
 
-If the admin user has already been created with the fallback password, change it immediately at first login or with:
+اسکریپت `scripts/seed_admin.py` حساب مدیر را با password hash ایجاد می‌کند و `must_change_password=True` را تنظیم می‌کند. اگر کاربر از قبل وجود داشته باشد، رمز و حساب موجود را بازنویسی نمی‌کند.
 
-\`\`\`bash
+## نقش‌های فعلی
+
+مدل فعلی شامل نقش‌های زیر است:
+- admin
+- doctor
+- secretary
+- accountant
+
+وجود نقش‌ها به معنی پیاده‌سازی مجوزهای ریزدانه برای تمام عملیات نیست. تکمیل پنل مدیریت کاربران و ماتریس مجوزها باید در یک Sprint مستقل انجام شود.
+
+## نشست و امنیت
+
+- رمز عبور به‌صورت hash ذخیره می‌شود.
+- صفحات و عملیات محافظت‌شده به احراز هویت و کنترل نقش متکی هستند.
+- فرم‌های حساس باید CSRF token را حفظ کنند.
+- برای اجرای شبکه‌ای یا دسترسی خارج از همین رایانه، HTTPS و تنظیمات امن نشست باید جداگانه پیکربندی و ارزیابی شوند.
+
+## تغییر رمز
+
+کاربر مدیر می‌تواند رمز را پس از ورود از مسیر تغییر رمز اجباری اولیه عوض کند. ابزار خط فرمان موجود:
+```powershell
+.\.venv\Scripts\Activate.ps1
 python scripts/change_admin_password.py
-\`\`\`
+```
 
-## Create admin
-
-After migrations and database configuration:
-
-\`\`\`bash
-python scripts/seed_admin.py
-\`\`\`
-
-The seed command is idempotent: if the configured admin username already exists, it does not overwrite the existing account.
-
-## Login
-
-Open:
-
-\`\`\`text
-http://127.0.0.1:8000/login
-\`\`\`
-
-Sessions use Starlette \`SessionMiddleware\`. Production deployments must set a strong \`SECRET_KEY\` and HTTPS settings.
-
-## Change admin password
-
-\`\`\`bash
-python scripts/change_admin_password.py
-\`\`\`
-
-HTML pages and JSON API endpoints are protected with session/RBAC dependencies. UI write forms include CSRF tokens.
-
-Seeded admin users are marked for mandatory password change on first login.
+هرگز رمز واقعی یا فایل `.env` را در مخزن Git قرار ندهید.

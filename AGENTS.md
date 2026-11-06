@@ -90,7 +90,7 @@ FastAPI
 
 Database:
 
-PostgreSQL
+SQLite (file-backed; current supported runtime)
 
 ORM:
 
@@ -110,6 +110,10 @@ Bootstrap RTL
 Language:
 
 Python 3.12+
+
+Supported delivery target:
+
+Windows local installation using `.venv` and SQLite
 
 ---
 
@@ -200,10 +204,13 @@ Use:
 
 - SQLAlchemy models
 - Alembic migrations
+- SQLite file-backed database at `data/cliniccore.db` for the current Windows delivery phase
 
 Never modify database manually.
 
 Every database change requires migration.
+
+PostgreSQL and Docker are not prerequisites for the current supported local installation. Never delete or modify external database files, containers, or volumes as part of repository work.
 
 Use:
 
@@ -401,3 +408,10 @@ A developer should be able to:
 
 
 The repository must always be understandable without external explanation.
+
+## Windows Runtime (current delivery target)
+
+- Use `setup.bat` for first-time setup, `start.bat` to run, and `stop.bat` to stop the tracked ClinicCore process.
+- Use the project-local `.venv`; do not rely on a globally activated environment.
+- Do not kill unrelated Python/Uvicorn processes.
+- Keep runtime data and secrets out of Git.

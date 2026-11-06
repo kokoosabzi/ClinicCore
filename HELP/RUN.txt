@@ -1,34 +1,42 @@
-# Run Guide
+# راهنمای اجرا و توقف ClinicCore در Windows
 
-## Local database (SQLite; no Docker required)
+## اجرای روزمره
 
-The default database is `data/cliniccore.db`, relative to the project directory.
-The application creates the `data` directory when needed. The PostgreSQL
-database and Docker volume are not touched by this workflow.
+از ریشه مخزن، فایل `start.bat` را اجرا کنید. این فایل:
+- وجود محیط مجازی و تنظیمات را بررسی می‌کند.
+- Migrationهای جدید را بدون حذف داده اجرا می‌کند.
+- سرور را روی `127.0.0.1:8000` راه‌اندازی می‌کند.
+- شناسه فرایند متعلق به همین اجرا را برای توقف کنترل‌شده ثبت می‌کند.
 
-From the project root, with the virtual environment activated:
+سپس مرورگر را باز کنید:
+- برنامه: http://127.0.0.1:8000/
+- ورود: http://127.0.0.1:8000/login
+- سلامت: http://127.0.0.1:8000/health
+- مستندات API: http://127.0.0.1:8000/docs
 
+## توقف
+
+فایل `stop.bat` را اجرا کنید. این ابزار فقط فرایندی را متوقف می‌کند که PID آن توسط launcher ثبت شده و خط فرمان آن با اجرای ClinicCore مطابقت دارد. فرایندهای نامرتبط Python یا Uvicorn نباید متوقف شوند.
+
+## پایگاه داده
+
+پایگاه داده پیش‌فرض:
+`data/cliniccore.db`
+
+این نسخه از SQLite محلی استفاده می‌کند و به PostgreSQL یا Docker نیاز ندارد. Migrationها هنگام اجرای `start.bat` با دستور زیر اعمال می‌شوند:
 ```powershell
 python -m alembic upgrade head
-python -m uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/`. To check the health endpoint, open
-`http://127.0.0.1:8000/health`.
-
-## Optional: use PostgreSQL intentionally
-
-Set `DATABASE_URL` in your local `.env` file to a PostgreSQL URL. This is
-an explicit override; do not change or remove the existing PostgreSQL volume
-when switching to SQLite.
-
-## Seed first admin
+## اجرای دستی در PowerShell
 
 ```powershell
-python scripts/seed_admin.py
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-**Security warning:** the development fallback credentials are `admin` / `admin`.
-For deployments beyond local development, set a unique `ADMIN_USERNAME` and
-strong `ADMIN_PASSWORD` in `.env` before seeding. The seeded admin must
-change its password on first login.
+برای توقف اجرای دستی، در همان پنجره `Ctrl+C` را بزنید.
+
+## پشتیبان‌گیری
+
+برای تهیه نسخه پشتیبان ساده و سازگار، ابتدا برنامه را متوقف کنید، سپس کل پوشه `data` را در محل امن کپی کنید. هنگام اجرای SQLite از کپی کردن فایل دیتابیس در حالی که برنامه در حال نوشتن است خودداری کنید.
