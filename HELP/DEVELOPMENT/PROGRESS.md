@@ -24,7 +24,7 @@ Repository: `main`
 | Windows + SQLite runtime | پیاده‌سازی ادغام‌شده | CI ویندوز موفق؛ پذیرش دستی روی رایانه کاربر باقی است |
 | Login / User Administration / RBAC | پیاده‌سازی ادغام‌شده | CI ویندوز و تست‌های RBAC موفق؛ پذیرش دستی UI باقی است |
 | Dynamic UI Themes | پیاده‌سازی ادغام‌شده | CI ویندوز روی شاخه ادغام‌شده موفق؛ بازبینی بصری دستی باقی است |
-| Jalali calendar/date handling | قابلیت‌های موجود قبلی | تاریخ‌ورودی واقعی در تمام فرم‌ها باید جداگانه بررسی شود |
+| Jalali calendar/date handling | تقویم اختصاصی رزرو نوبت و تبدیل تاریخ پیاده‌سازی شده | اعتبارسنجی strict ورودی تاریخ/زمان و آزمون مرز سال/کبیسه اضافه شده؛ یکپارچگی سایر فرم‌ها هنوز باقی است |
 | Manual Windows installation | تأییدنشده | هنوز روی رایانه کاربر اجرا نشده است |
 
 ## 3. مبنای فنی فعلی
@@ -88,6 +88,8 @@ Repository: `main`
 - Sprint 0: [Windows CI run #103](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192657181) — بعد از ادغام PR #14 روی main
 - Sprint 1: [Windows CI run #93](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
 - Dynamic UI Themes (consolidated): [Windows CI run #105](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192980523)
+
+- اعتبارسنجی strict ورودی تاریخ/زمان و آزمون تاریخ‌های مرزی جلالی به `datetime_service` اضافه شد؛ نتیجه CI این تغییر باید پیش از اعلام تکمیل بررسی شود.
 
 ## 8. کارهای باقیمانده و دروازه انتشار
 
