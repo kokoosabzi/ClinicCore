@@ -28,10 +28,10 @@ jobs:
       ADMIN_PASSWORD: ci-only-not-for-production
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -41,6 +41,13 @@ jobs:
 
       - name: Compile application and tests
         run: python -m compileall app tests main.py alembic scripts
+
+      - name: Validate JavaScript syntax
+        shell: pwsh
+        run: |
+          node --check app/static/js/appearance.js
+          node --check app/static/js/appointment-booking.js
+          node --check app/static/js/jalali-date-picker.js
 
       - name: Run test suite
         run: python -m pytest -q
