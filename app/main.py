@@ -111,9 +111,11 @@ async def load_app_settings(request: Request, call_next):
 
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
-    app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax", https_only=False)
     app.middleware("http")(audit_request_middleware)
     app.middleware("http")(load_app_settings)
+    # SessionMiddleware must be outermost so request.session is available to
+    # both the settings loader and the audit middleware.
+    app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax", https_only=False)
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     app.include_router(health.router)
     app.include_router(auth.router)
