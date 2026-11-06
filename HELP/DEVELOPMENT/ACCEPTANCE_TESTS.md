@@ -294,3 +294,9 @@ Release زمانی قابل قبول است که:
 - A user cannot deactivate their own account.
 - Password reset secrets are never written to audit details or ordinary user listings.
 
+
+
+### AT-405 — Strict Jalali date/time parsing
+- Valid Jalali leap-day and year-boundary values convert to the expected Gregorian date.
+- Persian digits are accepted in date/time values.
+- Malformed values, trailing text, seconds when minute precision is expected, invalid times, invalid calendar names and out-of-range dates are rejected.
