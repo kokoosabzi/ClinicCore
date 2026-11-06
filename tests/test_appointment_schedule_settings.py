@@ -80,4 +80,5 @@ def test_availability_endpoint_returns_no_slots_on_closed_weekday(admin_client):
         params={"date": "1408/10/29"},
     )
     assert response.status_code == 200
+    assert response.json()["working_day"] is False
     assert response.json()["slots"] == []
