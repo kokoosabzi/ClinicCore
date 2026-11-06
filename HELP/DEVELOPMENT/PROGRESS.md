@@ -85,7 +85,7 @@ Current main commit: `c3c3e07847d3e31e2981b606268da4fcc46f05c9`
 
 ## 7. شواهد CI
 
-- Sprint 0: [Windows CI run #23](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
+- Sprint 0: [Windows CI run #103](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192657181) — بعد از ادغام PR #14 روی main
 - Sprint 1: [Windows CI run #93](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
 - Dynamic UI Themes (consolidated): [Windows CI run #105](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192980523)
 
