@@ -5,7 +5,27 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <label>شناسه بیمار<input name="patient_id" type="number" min="1" required></label>
   <label>مبلغ ریال<input name="amount" type="number" min="1" required></label>
-  <label>تاریخ پرداخت<input name="paid_at" type="date" required></label>
+  <label>تاریخ پرداخت
+    {% if datetime_calendar == "jalali" %}
+    <div class="jalali-date-picker" data-jalali-picker data-today="{{ today_jalali }}" data-initial="{{ today_jalali }}">
+      <input type="hidden" name="paid_at" value="{{ today_gregorian }}" data-jalali-value required>
+      <button type="button" class="jalali-date-trigger" data-jalali-trigger aria-expanded="false" aria-controls="payment-date-calendar">
+        <span data-jalali-label>{{ today_jalali }}</span><span aria-hidden="true">▦</span>
+      </button>
+      <div class="jalali-date-panel" id="payment-date-calendar" data-jalali-panel hidden>
+        <div class="jalali-date-heading">
+          <button type="button" class="icon-button" data-jalali-prev aria-label="ماه قبل">‹</button>
+          <strong data-jalali-month></strong>
+          <button type="button" class="icon-button" data-jalali-next aria-label="ماه بعد">›</button>
+        </div>
+        <div class="calendar-grid jalali-date-grid" data-jalali-grid aria-label="انتخاب تاریخ شمسی"></div>
+        <button type="button" class="jalali-date-close" data-jalali-close>بستن تقویم</button>
+      </div>
+    </div>
+    {% else %}
+    <input name="paid_at" type="date" value="{{ today_gregorian }}" required>
+    {% endif %}
+  </label>
   <label>توضیحات<textarea name="description"></textarea></label>
   <button type="submit">ثبت پرداخت</button>
 </form>
