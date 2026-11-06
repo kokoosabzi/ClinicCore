@@ -34,13 +34,16 @@ Working branch: `stabilization/windows-sqlite-runtime`
 - Updated the primary README, agent rules, installation/run/authentication guides and master plan for SQLite-only Windows delivery.
 - Added a Windows bootstrap path to generate local credentials for a fresh installation without overwriting an existing `.env`.
 - Added setup/start/stop launch scripts using the project-local `.venv` and PID-verified process shutdown.
+- Added a Windows GitHub Actions workflow for compileall, pytest, and a clean SQLite Alembic migration.
+- Corrected a PowerShell shutdown bug: the local PID variable no longer conflicts with PowerShell's reserved `$PID`; shutdown now verifies process exit before deleting the PID file.
+- Removed stale PostgreSQL wording from the shared test fixture documentation.
 - Updated Git ignore rules for runtime PID files.
 - Updated this progress record and development changelog.
 
 ## 5. Not yet verified
 
 - No Windows runtime is available in this execution environment; setup/start/stop, browser login and shutdown have not been manually executed.
-- No fresh `pytest`, `compileall` or clean-database Alembic run has been executed in this turn.
+- No fresh `pytest`, `compileall` or clean-database Alembic run has been executed in this turn. The newly added Windows Actions workflow has not yet completed.
 - Existing tests and migrations were inspected but not run.
 - Existing user accounts and existing `.env` values were not changed.
 
