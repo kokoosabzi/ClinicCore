@@ -308,3 +308,14 @@ Release زمانی قابل قبول است که:
 - When the configured calendar is Gregorian, the browser-native date picker remains available.
 - Payment and expense POST handlers persist the selected Gregorian date without shifting the calendar day.
 - Keyboard focus, open/close state and small-screen layout remain usable.
+
+
+### AT-407 — Appointment lifecycle and rescheduling
+- New bookings start in \`booked\`.
+- Allowed transitions: \`booked/rescheduled -> waiting | completed | no_show | cancelled\`; \`waiting -> completed | no_show | cancelled\`.
+- \`completed\`, \`no_show\`, and \`cancelled\` are terminal states; invalid transitions are rejected server-side.
+- Cancellation requires \`appointments.cancel\`; other status changes and rescheduling require \`appointments.update\`.
+- Rescheduling is allowed only for booked/rescheduled appointments, preserves the patient and other booking details, and rejects occupied time slots.
+- Cancelled appointments remain in history but release their time slot for a new booking.
+- Status changes and reschedules create audit events with actor and before/after values.
+- HTML forms include CSRF protection and rescheduling reuses the Jalali calendar and live availability endpoint.
