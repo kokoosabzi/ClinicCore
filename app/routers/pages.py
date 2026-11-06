@@ -107,7 +107,7 @@ def patient_payload(data: dict[str, str]) -> dict[str, str | None]:
 
 
 @router.get("/settings", response_class=HTMLResponse)
-def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("settings.view"))):
+def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
     return render(
         request,
         "settings.html",
@@ -118,7 +118,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
 
 
 @router.post("/settings")
-async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("settings.update"))):
+async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
     submitted = await request.form()
     data = {key: value for key, value in submitted.items() if isinstance(value, str)}
     logo_upload = submitted.get("clinic_logo_file")
