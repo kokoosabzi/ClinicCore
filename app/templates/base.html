@@ -68,7 +68,7 @@
       {% endif %}
       <a href="/login">ورود</a>
       {% if user %}
-      <form method="post" action="/logout" class="logout-form"><button type="submit">خروج {{ user.username if user.username else user["username"] }}</button></form>
+      <form method="post" action="/logout" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token or '' }}"><button type="submit">خروج {{ user.username if user.username else user["username"] }}</button></form>
       {% endif %}
     </nav>
   </header>
