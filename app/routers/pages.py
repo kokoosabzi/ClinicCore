@@ -107,7 +107,7 @@ def patient_payload(data: dict[str, str]) -> dict[str, str | None]:
 
 
 @router.get("/settings", response_class=HTMLResponse)
-def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("settings.view"))):
     return render(
         request,
         "settings.html",
@@ -118,7 +118,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
 
 
 @router.post("/settings")
-async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+async def save_settings(request: Request, db: Session = Depends(get_db), user=Depends(require_permission("settings.update"))):
     submitted = await request.form()
     data = {key: value for key, value in submitted.items() if isinstance(value, str)}
     logo_upload = submitted.get("clinic_logo_file")
@@ -276,7 +276,7 @@ async def update_patient_from_form(patient_id: int, request: Request, db: Sessio
 
 
 @router.post("/ui/patients/{patient_id}/delete")
-async def delete_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_admin)):
+async def delete_patient_from_form(patient_id: int, request: Request, db: Session = Depends(get_db), user=Depends(require_permission("patients.archive"))):
     data = await form_data(request)
     verify_csrf(request, data.get("csrf_token"))
     patient = db.get(Patient, patient_id)
