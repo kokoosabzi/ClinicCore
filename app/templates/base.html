@@ -47,7 +47,9 @@
     {% if request.state.current_datetime %}<time class="header-datetime" datetime="{{ request.state.current_datetime.isoformat() if request.state.current_datetime.isoformat is defined else '' }}">{{ request.state.current_datetime }}</time>{% endif %}
     <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
     <nav id="main-nav">
+      {% if user and not request.state.must_change_password %}
       <a class="{% if request.url.path == '/dashboard' %}active{% endif %}" href="/dashboard">داشبورد</a>
+      {% endif %}
       {% if "patients.view" in permissions %}
       <a class="{% if request.url.path.startswith('/patients') %}active{% endif %}" href="/patients">بیماران</a>
       {% endif %}
