@@ -46,6 +46,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
     },
     status_code=status.HTTP_401_UNAUTHORIZED,
 )
+    request.session.clear()
     request.session["username"] = user.username
     request.session["role"] = user.role.value
     if user.must_change_password:
