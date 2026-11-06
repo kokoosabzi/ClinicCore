@@ -215,3 +215,19 @@ Settings حساس فقط برای نقش مجاز قابل تغییر باشد.
 - restart برنامه settings را حفظ کند.
 - کاربر غیرمجاز نتواند settings حساس را تغییر دهد.
 - secret در source/template/log ظاهر نشود.
+
+
+## 8A. Clinic-wide Appointment Schedule
+
+The current appointment module supports these settings in the existing \`system_settings\` store; no new table or migration is required:
+
+| Key | Default | Contract |
+|---|---|---|
+| \`appointments.workday_start\` | \`09:00\` | Local clinic opening time, 24-hour \`HH:MM\` |
+| \`appointments.workday_end\` | \`17:00\` | Local clinic closing time, 24-hour \`HH:MM\` |
+| \`appointments.slot_minutes\` | \`30\` | One of 15, 20, 30, 45 or 60 minutes |
+| \`appointments.working_days\` | \`1,2,3,4,6,7\` | Comma-separated ISO weekdays (Monday=1 … Sunday=7); Friday=5 is closed by default |
+
+The workday must start before it ends, at least one weekday must be selected, and the workday duration must divide evenly by the selected slot duration. Availability returns only slots fully contained in the workday. Cancelled appointments do not occupy slots; completed/no-show appointments remain historical occupied slots.
+
+This configuration is clinic-wide in the current phase. Practitioner-specific schedules, exceptions for holidays/leave, rooms and resource-scoped slot uniqueness require a separate domain design and migration.
