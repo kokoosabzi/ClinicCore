@@ -21,7 +21,7 @@ from app.repositories.appointment_repository import AppointmentRepository
 from app.repositories.patient_repository import PatientRepository
 from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
-from app.services.appointment_schedule_service import build_daily_slots
+from app.services.appointment_schedule_service import build_daily_slots, parse_working_days
 from app.services.appointment_service import (
     AppointmentNotFoundError, AppointmentService, AppointmentSlotUnavailableError,
     InvalidAppointmentTransitionError,
@@ -493,7 +493,8 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
         )
     except ValueError as error:
         raise HTTPException(status_code=500, detail="تنظیمات برنامه کاری معتبر نیست.") from error
-    return {"date": date_text, "slot_minutes": slot_minutes, "slots": slots}
+    working_day = selected_day.isoweekday() in parse_working_days(schedule["appointments.working_days"])
+    return {"date": date_text, "slot_minutes": slot_minutes, "working_day": working_day, "slots": slots}
 
 
 @router.post("/ui/appointments")
