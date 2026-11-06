@@ -6,7 +6,6 @@ Last updated: 2026-11-06
 Last updated by: ChatGPT — Windows CI failure analysis and remediation
 Repository baseline inspected: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
 Working branch: `stabilization/windows-sqlite-runtime`
-Current branch head: `0ba8226a125e81d9600e7a0d812cb0b2adbc1850`
 
 ## 1. Current project phase
 
@@ -73,7 +72,7 @@ Current branch head: `0ba8226a125e81d9600e7a0d812cb0b2adbc1850`
 
 ## 8. Exact next action
 
-Obtain a fresh Windows CI run for current branch head `0ba8226a125e81d9600e7a0d812cb0b2adbc1850`. Confirm pytest, then confirm the clean SQLite Alembic migration. If GitHub does not automatically schedule a run, trigger/re-enable it through repository Actions or an authorized workflow dispatch.
+Obtain a fresh Windows CI run for the current head of `stabilization/windows-sqlite-runtime`. Confirm pytest, then confirm the clean SQLite Alembic migration. If GitHub does not automatically schedule a run, trigger/re-enable it through repository Actions or an authorized workflow dispatch.
 
 After CI passes, run on a clean Windows clone:
 ```powershell
