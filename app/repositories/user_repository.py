@@ -11,8 +11,11 @@ class UserRepository(Repository[User]):
     def get_by_username(self, username: str) -> User | None:
         return self.db.scalar(select(User).where(User.username == username, User.is_deleted.is_(False)))
 
-    def get_by_id(self, user_id: int) -> User | None:
-        return self.db.scalar(select(User).where(User.id == user_id, User.is_deleted.is_(False)))
+    def get_by_id(self, user_id: int, *, include_deleted: bool = False) -> User | None:
+        statement = select(User).where(User.id == user_id)
+        if not include_deleted:
+            statement = statement.where(User.is_deleted.is_(False))
+        return self.db.scalar(statement)
 
     def username_exists(self, username: str, *, excluding_id: int | None = None) -> bool:
         statement = select(User.id).where(User.username == username)
