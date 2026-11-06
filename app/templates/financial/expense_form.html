@@ -5,7 +5,27 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <label>عنوان<input name="title" maxlength="120" required></label>
   <label>مبلغ ریال<input name="amount" type="number" min="1" required></label>
-  <label>تاریخ هزینه<input name="spent_at" type="date" required></label>
+  <label>تاریخ هزینه
+    {% if datetime_calendar == "jalali" %}
+    <div class="jalali-date-picker" data-jalali-picker data-today="{{ today_jalali }}" data-initial="{{ today_jalali }}">
+      <input type="hidden" name="spent_at" value="{{ today_gregorian }}" data-jalali-value required>
+      <button type="button" class="jalali-date-trigger" data-jalali-trigger aria-expanded="false" aria-controls="expense-date-calendar">
+        <span data-jalali-label>{{ today_jalali }}</span><span aria-hidden="true">▦</span>
+      </button>
+      <div class="jalali-date-panel" id="expense-date-calendar" data-jalali-panel hidden>
+        <div class="jalali-date-heading">
+          <button type="button" class="icon-button" data-jalali-prev aria-label="ماه قبل">‹</button>
+          <strong data-jalali-month></strong>
+          <button type="button" class="icon-button" data-jalali-next aria-label="ماه بعد">›</button>
+        </div>
+        <div class="calendar-grid jalali-date-grid" data-jalali-grid aria-label="انتخاب تاریخ شمسی"></div>
+        <button type="button" class="jalali-date-close" data-jalali-close>بستن تقویم</button>
+      </div>
+    </div>
+    {% else %}
+    <input name="spent_at" type="date" value="{{ today_gregorian }}" required>
+    {% endif %}
+  </label>
   <label>دسته‌بندی<select name="category"><option value="rent">اجاره</option><option value="salary">حقوق</option><option value="supplies">ملزومات</option><option value="utilities">خدمات</option><option value="other">سایر</option></select></label>
   <label>توضیحات<textarea name="description"></textarea></label>
   <button type="submit">ثبت هزینه</button>
