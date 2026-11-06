@@ -17,7 +17,30 @@
       <option value="dark" {% if settings['app.theme'] == 'dark' %}selected{% endif %}>تاریک</option>
     </select>
   </label>
-  <label>رنگ اصلی سامانه<input type="color" name="app_primary_color" value="{{ settings['app.primary_color'] or '#176b67' }}"></label>
+  <label>سبک بصری
+    <select name="app_style" data-appearance-control="style">
+      <option value="clinical-light" {% if settings['app.style'] == 'clinical-light' %}selected{% endif %}>Clinical Light — درمانی و حرفه‌ای</option>
+      <option value="modern-dark" {% if settings['app.style'] == 'modern-dark' %}selected{% endif %}>Modern Dark — تیره و مدرن</option>
+      <option value="soft-neutral" {% if settings['app.style'] == 'soft-neutral' %}selected{% endif %}>Soft Neutral — گرم و آرام</option>
+      <option value="high-contrast" {% if settings['app.style'] == 'high-contrast' %}selected{% endif %}>High Contrast — کنتراست بالا</option>
+    </select>
+  </label>
+  <label>رنگ اصلی سامانه<input type="color" name="app_primary_color" data-appearance-control="color" value="{{ settings['app.primary_color'] or '#176b67' }}"></label>
+  <label>اندازه متن
+    <select name="app_font_scale" data-appearance-control="font-scale">
+      <option value="small" {% if settings['app.font_scale'] == 'small' %}selected{% endif %}>کوچک</option>
+      <option value="normal" {% if settings['app.font_scale'] == 'normal' %}selected{% endif %}>استاندارد</option>
+      <option value="large" {% if settings['app.font_scale'] == 'large' %}selected{% endif %}>بزرگ</option>
+    </select>
+  </label>
+  <section class="appearance-preview" aria-live="polite">
+    <div class="appearance-preview__heading"><strong>پیش‌نمایش زنده</strong><span>تغییرات قبل از ذخیره قابل مشاهده‌اند</span></div>
+    <div class="appearance-preview__sample">
+      <div><span class="appearance-preview__eyebrow">CLINICCORE</span><h3>نمونه کارت داشبورد</h3><p>نمایش نمونه متن و وضعیت یک نوبت</p></div>
+      <span class="appearance-preview__status">نوبت تأییدشده</span>
+      <button type="button" tabindex="-1">دکمه نمونه</button>
+    </div>
+  </section>
   <label>تراکم نمایش
     <select name="app_density">
       <option value="comfortable" {% if settings['app.density'] == 'comfortable' %}selected{% endif %}>راحت</option>

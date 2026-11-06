@@ -1,5 +1,19 @@
 # ClinicCore — Development Changelog (Redesign Phase)
 
+## 2026-11-06 — Dynamic UI themes and appearance controls
+
+- Branch: `development`, based directly on `main` after PR #14 and PR #15 were merged.
+- Added four semantic visual presets: Clinical Light, Modern Dark, Soft Neutral, and High Contrast.
+- Added validated `app.style` and `app.font_scale` settings; existing theme mode, primary color, and density controls remain available.
+- Added live preview behavior on the administrator settings page without saving changes until the form is submitted.
+- Added isolated theme stylesheet and lightweight preview controller; no CSS framework or new runtime dependency was introduced.
+- Kept print views on a paper-safe light palette independent of the selected application preset.
+- Added tests for persistence and invalid appearance preset rejection, plus acceptance criteria and settings documentation.
+- Verification: Windows CI run #102 passed on the source branch; consolidated-branch CI and manual Windows/browser acceptance remain pending. This work is not marked complete.
+- Scope note: appearance remains an administrator-managed system default; per-user theme overrides are not implemented in this change.
+
+---
+
 ## 2026-11-06 — Sprint 1: User Administration & RBAC implementation
 
 - Branch: `feature/user-management-rbac`; dependent on Sprint 0 PR #14.

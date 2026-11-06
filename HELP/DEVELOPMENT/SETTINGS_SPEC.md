@@ -99,6 +99,15 @@ appearance.secondary_color
 appearance.font_family
 appearance.font_size
 appearance.density
+
+ClinicCore implementation keys:
+- `app.style`: `clinical-light | modern-dark | soft-neutral | high-contrast`
+- `app.theme`: `light | dark | system` (display mode; modern-dark preset enforces dark presentation)
+- `app.primary_color`: validated six-digit hex accent color
+- `app.font_scale`: `small | normal | large`
+- `app.density`: `comfortable | compact`
+
+The four visual presets share the same semantic CSS tokens and component structure. Print views must force a light, paper-safe palette independent of the selected application preset. Current appearance settings are administrator-managed system defaults; per-user overrides are a separate follow-up and must not be represented as implemented.
 ```
 
 مقادیر باید validation داشته باشند.
