@@ -20,7 +20,7 @@ def list_appointments(user=Depends(require_permission("appointments.view")), ser
 
 
 @router.post("/", response_model=AppointmentRead, status_code=201)
-def book_appointment(payload: AppointmentCreate, user=Depends(require_user), service: AppointmentService = Depends(get_service)):
+def book_appointment(payload: AppointmentCreate, user=Depends(require_permission("appointments.create")), service: AppointmentService = Depends(get_service)):
     try:
         return service.book(payload)
     except AppointmentSlotUnavailableError as error:
