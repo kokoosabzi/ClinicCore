@@ -393,3 +393,11 @@ input:focus, textarea:focus, select:focus { border-color: #56a9a0; box-shadow: 0
   .appointment-actions { min-width: 230px; }
   .appointment-actions .button, .appointment-actions button { font-size: .76rem; }
 }
+
+
+/* Clinic working-day settings. */
+.working-days-fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1rem; }
+.working-days-fieldset legend { padding: 0 .4rem; font-weight: 700; }
+.working-days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: .6rem; }
+.working-day-option { display: flex; align-items: center; gap: .45rem; padding: .55rem .65rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-background); }
+.working-day-option input { width: auto; margin: 0; accent-color: var(--color-primary); }
