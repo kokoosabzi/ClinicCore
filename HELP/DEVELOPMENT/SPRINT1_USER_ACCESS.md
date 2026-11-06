@@ -2,7 +2,7 @@
 
 ## Status
 
-Design baseline for implementation. This branch is intentionally based on the unmerged Sprint 0 branch `stabilization/windows-sqlite-runtime`; it must not be merged into `main` independently of its prerequisite. Sprint 0 hosted Windows CI is green, while manual acceptance on the target Windows PC remains outstanding.
+Implementation is present on the feature branch and hosted Windows CI run #93 passed (40 tests, clean SQLite migration and populated-database compatibility test). Manual Windows UI acceptance remains pending. This branch is intentionally based on the unmerged Sprint 0 branch `stabilization/windows-sqlite-runtime`; it must not be merged into `main` independently of its prerequisite. Sprint 0 hosted Windows CI is green, while manual acceptance on the target Windows PC remains outstanding.
 
 ## 1. Goals
 
