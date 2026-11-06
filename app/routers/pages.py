@@ -21,6 +21,7 @@ from app.repositories.appointment_repository import AppointmentRepository
 from app.repositories.patient_repository import PatientRepository
 from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
+from app.services.appointment_schedule_service import build_daily_slots
 from app.services.appointment_service import (
     AppointmentNotFoundError, AppointmentService, AppointmentSlotUnavailableError,
     InvalidAppointmentTransitionError,
@@ -118,7 +119,7 @@ def settings_form(request: Request, db: Session = Depends(get_db), user=Depends(
         request,
         "settings.html",
         "تنظیمات سامانه",
-        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+        settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system") | SettingsService(db).get_group("appointments"),
         saved=request.query_params.get("saved") == "1",
     )
 
@@ -172,19 +173,34 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
         "print.show_lines": data.get("print_show_lines", "true"),
         "print.thermal_width": data.get("print_thermal_width", "80"),
         "system.audit_enabled": data.get("system_audit_enabled", "true"),
+        "appointments.workday_start": data.get("appointments_workday_start", "09:00"),
+        "appointments.workday_end": data.get("appointments_workday_end", "17:00"),
+        "appointments.slot_minutes": data.get("appointments_slot_minutes", "30"),
+        "appointments.working_days": ",".join(sorted(set(
+            value for value in submitted.getlist("appointments_working_days") if value
+        ), key=int)) if "appointments_working_days" in submitted else SettingsService(db).get("appointments.working_days", "1,2,3,4,6,7"),
     }
     if not values["app.name"] or not values["app.title"]:
         return render(
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system") | SettingsService(db).get_group("appointments"),
             error="نام سامانه و عنوان نمایشی الزامی هستند.",
         )
     service = SettingsService(db)
     try:
         for key, value in values.items():
             service._validate(key, value)
+        workday_start = time.fromisoformat(values["appointments.workday_start"])
+        workday_end = time.fromisoformat(values["appointments.workday_end"])
+        slot_minutes = int(values["appointments.slot_minutes"])
+        workday_duration = int((
+            datetime.combine(date.today(), workday_end)
+            - datetime.combine(date.today(), workday_start)
+        ).total_seconds() // 60)
+        if workday_start >= workday_end or workday_duration % slot_minutes:
+            raise ValueError("مدت بازه کاری باید از صفر بیشتر و بر مدت هر نوبت بخش‌پذیر باشد.")
         if isinstance(logo_upload, UploadFile) and logo_upload.filename:
             allowed_types = {
                 "image/png": ".png",
@@ -217,7 +233,7 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
             request,
             "settings.html",
             "تنظیمات سامانه",
-            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system"),
+            settings=SettingsService(db).get_group("app") | SettingsService(db).get_group("datetime") | SettingsService(db).get_group("clinic") | SettingsService(db).get_group("reports") | SettingsService(db).get_group("messaging") | SettingsService(db).get_group("contacts") | SettingsService(db).get_group("print") | SettingsService(db).get_group("system") | SettingsService(db).get_group("appointments"),
             error=error_message,
         )
     request.state.app_name = values["app.name"]
@@ -341,6 +357,9 @@ def appointment_form(request: Request, db: Session = Depends(get_db), user=Depen
         "ثبت نوبت",
         patients=patients,
         today_jalali=format_jalali(today),
+        slot_minutes=int(SettingsService(db).get("appointments.slot_minutes", "30")),
+        workday_start=SettingsService(db).get("appointments.workday_start", "09:00"),
+        workday_end=SettingsService(db).get("appointments.workday_end", "17:00"),
     )
 
 
@@ -409,6 +428,9 @@ def reschedule_appointment_form(
         reschedule=True,
         appointment=appointment,
         form_action=f"/ui/appointments/{appointment.id}/reschedule",
+        slot_minutes=int(SettingsService(db).get("appointments.slot_minutes", "30")),
+        workday_start=SettingsService(db).get("appointments.workday_start", "09:00"),
+        workday_end=SettingsService(db).get("appointments.workday_end", "17:00"),
     )
 
 
@@ -457,19 +479,21 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
     ))
     timezone_name = getattr(request.state, "datetime_timezone", "Asia/Tehran")
     now = current_datetime(timezone_name).replace(tzinfo=None)
-    slots = []
-    for hour in range(9, 17):
-        for minute in (0, 30):
-            slot_time = time(hour, minute)
-            slot_datetime = datetime.combine(selected_day, slot_time)
-            if slot_datetime in occupied:
-                slot_status = "booked"
-            elif slot_datetime < now:
-                slot_status = "past"
-            else:
-                slot_status = "available"
-            slots.append({"time": slot_time.strftime("%H:%M"), "status": slot_status})
-    return {"date": date_text, "slot_minutes": 30, "slots": slots}
+    schedule = SettingsService(db).get_group("appointments")
+    slot_minutes = int(schedule["appointments.slot_minutes"])
+    try:
+        slots = build_daily_slots(
+            selected_day,
+            occupied,
+            now,
+            workday_start=schedule["appointments.workday_start"],
+            workday_end=schedule["appointments.workday_end"],
+            slot_minutes=slot_minutes,
+            working_days=schedule["appointments.working_days"],
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=500, detail="تنظیمات برنامه کاری معتبر نیست.") from error
+    return {"date": date_text, "slot_minutes": slot_minutes, "slots": slots}
 
 
 @router.post("/ui/appointments")
