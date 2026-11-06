@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+      - stabilization/windows-sqlite-runtime
   workflow_dispatch:
 
 permissions:
