@@ -1,42 +1,45 @@
-# Installation Guide
+# راهنمای نصب ClinicCore در Windows
 
-## Requirements
+## پیش‌نیازها
 
-- Python 3.12+
-- SQLite (included with supported Python builds)
-- PostgreSQL is optional when explicitly configured through `DATABASE_URL`
+- Windows 10 یا Windows 11
+- Python نسخه 3.12 یا جدیدتر، با گزینه Add Python to PATH
+- Git برای clone کردن مخزن
+- دسترسی اینترنت در زمان نصب اولیه وابستگی‌ها
 
-## Setup (Windows PowerShell)
+برای این نسخه نیازی به Docker، PostgreSQL، Node.js یا نصب جداگانه SQLite نیست.
 
+## نصب اولیه
+
+1. مخزن را clone کنید و وارد پوشه ClinicCore شوید.
+2. روی `setup.bat` دوبار کلیک کنید یا آن را از PowerShell اجرا کنید.
+3. اسکریپت، محیط مجازی `.venv` را ایجاد و وابستگی‌ها را نصب می‌کند.
+4. اگر فایل `.env` وجود نداشته باشد، یک کلید محرمانگی و رمز اولیه مدیر به‌صورت تصادفی تولید می‌شود.
+5. اسکریپت Migrationهای Alembic را اجرا و حساب مدیر اولیه را ایجاد می‌کند.
+6. رمز اولیه مدیر فقط یک بار در پنجره نصب نمایش داده می‌شود؛ آن را در محل امن نگهداری کنید.
+
+اگر نصب با خطا متوقف شد، متن کامل خطا را نگه دارید و آن را بررسی کنید؛ فایل دیتابیس موجود را حذف نکنید.
+
+## فایل‌ها و داده‌ها
+
+- محیط مجازی: `.venv/`
+- تنظیمات محرمانه: `.env`
+- دیتابیس محلی: `data/cliniccore.db`
+- فایل‌های runtime و گزارش‌ها: در پوشه‌های محلی برنامه
+
+فایل `.env` و دیتابیس نباید در Git commit شوند.
+
+## تنظیمات موجود
+
+در نصب تازه، `setup.bat` فایل `.env` را با تنظیمات SQLite و رمزهای تصادفی ایجاد می‌کند. اگر از قبل `.env` دارید، اسکریپت آن را بازنویسی نمی‌کند. اگر `DATABASE_URL` موجود به PostgreSQL یا هر دیتابیس غیر SQLite اشاره کند، برنامه با خطای تنظیمات متوقف می‌شود؛ قبل از تغییر آن، از داده‌های قبلی نسخه پشتیبان تهیه کنید و آگاهانه تصمیم بگیرید.
+
+## ارتقا یا نصب مجدد
+
+برای نصب مجدد وابستگی‌ها:
 ```powershell
-python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-```
-
-## Environment
-
-The default connection is `sqlite:///./data/cliniccore.db`; the application
-creates the `data` directory if needed. The existing `.env` file is not
-rewritten automatically. If it contains a PostgreSQL `DATABASE_URL`, that
-explicit setting continues to take precedence until you change it yourself.
-
-For a new local environment, copy `.env.example` to `.env` or remove the
-`DATABASE_URL` line from your existing `.env` to use the application default.
-To intentionally use PostgreSQL, set `DATABASE_URL` to your PostgreSQL URL.
-
-## First run
-
-```powershell
 python -m alembic upgrade head
-python -m uvicorn app.main:app --reload
 ```
 
-Then open `http://127.0.0.1:8000/`.
-
-## Required first-run documents
-
-- `HELP/IMPLEMENTATION.txt`
-- `HELP/AUTHENTICATION.txt`
-- `HELP/DB_TABLES.txt`
-- `HELP/PRINTING.txt`
+این دستورات دیتابیس را حذف نمی‌کنند. با این حال، پیش از هر ارتقای نسخه از پوشه `data` نسخه پشتیبان تهیه کنید.
