@@ -70,7 +70,7 @@ def test_admin_can_save_and_reload_settings(client):
         },
         follow_redirects=False,
     )
-    assert response.status_code == 303
+    assert response.status_code == 303, response.text
 
     saved = client.get("/settings")
     assert saved.status_code == 200
