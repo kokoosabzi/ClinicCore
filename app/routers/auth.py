@@ -28,6 +28,7 @@ def login_form(request: Request):
     context={
         "request": request,
         "title": "ورود",
+        "csrf_token": get_csrf_token(request),
     },
 )
 
