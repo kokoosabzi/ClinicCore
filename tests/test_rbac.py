@@ -49,7 +49,7 @@ def seed_rbac(db_session):
             "messaging.view", "messaging.create",
         ],
         "accountant": [
-            "patients.view", "financial.view", "financial.create", "financial.update", "reports.financial",
+            "financial.view", "financial.create", "financial.update", "reports.financial",
         ],
     }
     for role_key, permission_codes in grants.items():
