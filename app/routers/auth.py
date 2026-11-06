@@ -55,7 +55,9 @@ async def login(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/logout")
-def logout(request: Request):
+async def logout(request: Request):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
 
