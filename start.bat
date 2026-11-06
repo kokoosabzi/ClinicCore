@@ -1,37 +1,40 @@
 @echo off
 setlocal
-title ClinicCore - Local Launcher
+title ClinicCore - Start
 cd /d "%~dp0"
 
-if not exist "venv\Scripts\python.exe" (
-  py -3.12 -m venv venv
-  if errorlevel 1 (echo Python 3.12 is required.& pause& exit /b 1)
+if not exist ".venv\Scripts\python.exe" (
+  echo ClinicCore is not installed. Run setup.bat first.
+  pause
+  exit /b 1
 )
-
-call "venv\Scripts\activate.bat"
-echo Installing project dependencies...
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
-if errorlevel 1 (pause& exit /b 1)
-
-echo Applying database migrations...
-alembic upgrade head
-if errorlevel 1 (
-  echo Migration failed. Make sure PostgreSQL is running and .env is configured.
+if not exist ".env" (
+  echo Missing .env. Run setup.bat first.
   pause
   exit /b 1
 )
 
-echo Creating default admin if needed...
-python scripts\seed_admin.py
+".venv\Scripts\python.exe" -c "import sys; raise SystemExit(0 if sys.version_info >= (3,12) else 1)"
+if errorlevel 1 (
+  echo Python 3.12 or newer is required. Re-run setup with a supported Python.
+  pause
+  exit /b 1
+)
 
-echo Starting API...
-echo API:     http://127.0.0.1:8000/
-echo Swagger: http://127.0.0.1:8000/docs
-echo Health:  http://127.0.0.1:8000/health
-echo Default admin: admin / 12345678
-echo.
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+echo Checking database migrations...
+".venv\Scripts\python.exe" -m alembic upgrade head
+if errorlevel 1 (
+  echo Database migration failed. No database files were deleted.
+  pause
+  exit /b 1
+)
 
-pause
+echo Starting ClinicCore on http://127.0.0.1:8000 ...
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\start_server.ps1"
+if errorlevel 1 (
+  echo ClinicCore could not be started. Review the message above.
+  pause
+  exit /b 1
+)
+echo ClinicCore launcher completed.
 endlocal
