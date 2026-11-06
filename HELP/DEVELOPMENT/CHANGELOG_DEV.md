@@ -81,4 +81,4 @@
 - Reconciled the master plan with completed Sprint 0/1 and remaining phases.
 - Tightened configured date/time parsing to require a complete minute-precision value, validate the selected calendar explicitly, and reject trailing or malformed input.
 - Added automated cases for Persian digits, Jalali leap-day/year boundaries, invalid dates and invalid time values.
-- Windows CI verification is required before treating this change as complete.
+- Windows CI run #116 passed on the code/test commit: **50 passed, 0 failed**, compileall passed, and clean SQLite migration reached `20261106_0006`. The run reported 85 dependency/framework deprecation warnings; these are recorded for a separate dependency-maintenance pass.
