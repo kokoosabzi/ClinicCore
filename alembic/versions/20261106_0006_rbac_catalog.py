@@ -52,7 +52,7 @@ DOCTOR_SECRETARY = {
     "messaging.view", "messaging.create",
 }
 ACCOUNTANT = {
-    "patients.view", "financial.view", "financial.create", "financial.update", "reports.financial",
+    "financial.view", "financial.create", "financial.update", "reports.financial",
 }
 
 
