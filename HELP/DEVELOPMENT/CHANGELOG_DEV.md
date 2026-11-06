@@ -90,4 +90,4 @@
 - The picker renders Persian month/day labels and stores the selected date as Gregorian ISO for the existing SQLite date columns.
 - Gregorian calendar preference continues to use the browser-native date input.
 - Added integration tests for form rendering and payment/expense date persistence.
-- Automated Windows CI is pending; manual browser acceptance remains outstanding.
+- Windows CI run #128 passed: **53 passed, 0 failed**, compileall passed and clean SQLite migration reached `20261106_0006`. Manual browser acceptance remains outstanding.
