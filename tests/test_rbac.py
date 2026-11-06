@@ -289,3 +289,39 @@ def test_last_active_admin_cannot_be_deactivated(db_session):
             actor_id=999,
             actor_role=UserRole.admin,
         )
+
+
+def test_accountant_can_access_financial_but_not_clinical_records(client, db_session):
+    seed_rbac(db_session)
+    db_session.add(
+        User(
+            full_name="حسابدار",
+            username="accountant1",
+            password_hash=hash_password("test-password-123"),
+            role=UserRole.accountant,
+            must_change_password=False,
+        )
+    )
+    db_session.commit()
+
+    assert login(client, "accountant1").status_code == 200
+    assert client.get("/financial").status_code == 200
+    assert client.get("/patients").status_code == 403
+
+
+def test_clinic_manager_can_manage_staff_but_not_system_settings(client, db_session):
+    seed_rbac(db_session)
+    db_session.add(
+        User(
+            full_name="مدیر کلینیک",
+            username="clinic.manager",
+            password_hash=hash_password("test-password-123"),
+            role=UserRole.clinic_manager,
+            must_change_password=False,
+        )
+    )
+    db_session.commit()
+
+    assert login(client, "clinic.manager").status_code == 200
+    assert client.get("/users/manage").status_code == 200
+    assert client.get("/settings").status_code == 403
