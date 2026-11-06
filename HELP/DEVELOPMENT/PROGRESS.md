@@ -6,7 +6,7 @@ Last updated: 2026-11-06
 Last updated by: ChatGPT — Windows CI failure analysis and remediation
 Repository baseline inspected: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
 Working branch: `stabilization/windows-sqlite-runtime`
-Current branch head: `c0025c4c6dd0efffb1ceb4ab3145aca79e10f0a8`
+Current branch head: `0ba8226a125e81d9600e7a0d812cb0b2adbc1850`
 
 ## 1. Current project phase
 
@@ -42,6 +42,7 @@ Current branch head: `c0025c4c6dd0efffb1ceb4ab3145aca79e10f0a8`
 - Added `tzdata` as a runtime dependency so Windows installations can resolve configured IANA zones such as `Asia/Tehran`.
 - Updated `tests/test_app.py` to use the shared `client` fixture and its isolated in-memory SQLite database.
 - Rewrote stale PostgreSQL references in `tests/conftest.py` to describe the actual isolated SQLite test setup.
+- Removed `Base.metadata.create_all` from `scripts/seed_admin.py`; the setup flow now relies on the already-run Alembic migrations as the single schema source of truth, while the seed script only creates the administrator record.
 - Updated this progress record and development changelog with the observed CI result and remediation.
 
 ## 5. Not yet verified
@@ -56,7 +57,7 @@ Current branch head: `c0025c4c6dd0efffb1ceb4ab3145aca79e10f0a8`
 
 - Updated-head CI verification remains outstanding.
 - `get_db` catches broad exceptions while loading settings and falls back silently; review separately.
-- `scripts/seed_admin.py` calls `Base.metadata.create_all` in addition to Alembic; review separately before release.
+- The seed script no longer creates ORM tables; Alembic is the schema source of truth. This change is awaiting updated-head CI verification.
 - Fine-grained permissions and full user CRUD are not yet complete.
 - Active appointment uniqueness is global per `starts_at`; adding doctor/room scheduling requires a scoped migration and decision record.
 
@@ -72,7 +73,7 @@ Current branch head: `c0025c4c6dd0efffb1ceb4ab3145aca79e10f0a8`
 
 ## 8. Exact next action
 
-Obtain a fresh Windows CI run for current branch head `c0025c4c6dd0efffb1ceb4ab3145aca79e10f0a8`. Confirm pytest, then confirm the clean SQLite Alembic migration. If GitHub does not automatically schedule a run, trigger/re-enable it through repository Actions or an authorized workflow dispatch.
+Obtain a fresh Windows CI run for current branch head `0ba8226a125e81d9600e7a0d812cb0b2adbc1850`. Confirm pytest, then confirm the clean SQLite Alembic migration. If GitHub does not automatically schedule a run, trigger/re-enable it through repository Actions or an authorized workflow dispatch.
 
 After CI passes, run on a clean Windows clone:
 ```powershell
