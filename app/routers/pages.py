@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import current_user, has_permission, require_admin, require_permission, require_user
 from app.core.csrf import get_csrf_token, verify_csrf
 from app.core.database import get_db
-from app.models.appointment import Appointment
+from app.models.appointment import Appointment, AppointmentStatus
 from app.models.financial import Expense, ExpenseCategory, Payment
 from app.models.messaging import Message, MessageProvider
 from app.models.patient import Patient
@@ -21,7 +21,7 @@ from app.repositories.appointment_repository import AppointmentRepository
 from app.repositories.patient_repository import PatientRepository
 from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
-from app.services.appointment_service import AppointmentService, AppointmentSlotUnavailableError
+from app.services.appointment_service import (\n    AppointmentNotFoundError, AppointmentService, AppointmentSlotUnavailableError,\n    InvalidAppointmentTransitionError,\n)
 from app.services.patient_service import PatientService
 from app.services.settings_service import SettingsService
 from app.services.datetime_service import current_datetime, format_configured_datetime, format_jalali, parse_configured_datetime
@@ -339,6 +339,99 @@ def appointment_form(request: Request, db: Session = Depends(get_db), user=Depen
         patients=patients,
         today_jalali=format_jalali(today),
     )
+
+
+@router.post("/ui/appointments/{appointment_id}/status")
+async def update_appointment_status_from_form(
+    appointment_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("appointments.update")),
+):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
+    try:
+        target = AppointmentStatus(data.get("status", ""))
+        if target == AppointmentStatus.cancelled:
+            raise ValueError("لغو نوبت باید از مسیر لغو انجام شود.")
+        AppointmentService(AppointmentRepository(db)).change_status(
+            appointment_id, target, actor=str(user["username"])
+        )
+    except AppointmentNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except (ValueError, TypeError) as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    return RedirectResponse(url="/appointments", status_code=303)
+
+
+@router.post("/ui/appointments/{appointment_id}/cancel")
+async def cancel_appointment_from_form(
+    appointment_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("appointments.cancel")),
+):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
+    try:
+        AppointmentService(AppointmentRepository(db)).change_status(
+            appointment_id, AppointmentStatus.cancelled, actor=str(user["username"])
+        )
+    except AppointmentNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except InvalidAppointmentTransitionError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    return RedirectResponse(url="/appointments", status_code=303)
+
+
+@router.get("/appointments/{appointment_id}/reschedule", response_class=HTMLResponse)
+def reschedule_appointment_form(
+    appointment_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("appointments.update")),
+):
+    appointment = AppointmentRepository(db).get(appointment_id)
+    if appointment is None:
+        raise HTTPException(status_code=404, detail="نوبت موردنظر پیدا نشد.")
+    if appointment.status not in {AppointmentStatus.booked, AppointmentStatus.rescheduled}:
+        raise HTTPException(status_code=422, detail="این نوبت دیگر قابل جابه‌جایی نیست.")
+    today = current_datetime(request.state.datetime_timezone)
+    return render(
+        request,
+        "appointments/form.html",
+        "تغییر زمان نوبت",
+        patients=[],
+        today_jalali=format_jalali(today),
+        reschedule=True,
+        appointment=appointment,
+        form_action=f"/ui/appointments/{appointment.id}/reschedule",
+    )
+
+
+@router.post("/ui/appointments/{appointment_id}/reschedule")
+async def reschedule_appointment_from_form(
+    appointment_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("appointments.update")),
+):
+    data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
+    try:
+        starts_at = parse_configured_datetime(
+            f"{data['starts_at_date']} {data['starts_at_time']}", "jalali"
+        )
+        AppointmentService(AppointmentRepository(db)).reschedule(
+            appointment_id, starts_at, actor=str(user["username"])
+        )
+    except AppointmentNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except AppointmentSlotUnavailableError as error:
+        raise HTTPException(status_code=409, detail="این ساعت قبلاً رزرو شده است.") from error
+    except (KeyError, TypeError, ValueError) as error:
+        raise HTTPException(status_code=422, detail="تاریخ یا ساعت جدید معتبر نیست.") from error
+    return RedirectResponse(url="/appointments", status_code=303)
 
 
 @router.get("/ui/appointments/availability")
