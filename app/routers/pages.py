@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.auth import current_user, require_admin, require_permission, require_user
+from app.core.auth import current_user, has_permission, require_admin, require_permission, require_user
 from app.core.csrf import get_csrf_token, verify_csrf
 from app.core.database import get_db
 from app.models.appointment import Appointment
@@ -219,7 +219,13 @@ async def save_settings(request: Request, db: Session = Depends(get_db), user=De
 
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db), user=Depends(require_user)):
-    return render(request, "dashboard.html", "داشبورد", summary=DashboardService(db).summary())
+    role = user["role"]
+    summary = DashboardService(db).summary(
+        include_patients=has_permission(db, role, "patients.view"),
+        include_appointments=has_permission(db, role, "appointments.view"),
+        include_financial=has_permission(db, role, "financial.view"),
+    )
+    return render(request, "dashboard.html", "داشبورد", summary=summary)
 
 
 @router.get("/patients", response_class=HTMLResponse)
@@ -249,9 +255,28 @@ def patient_detail(patient_id: int, request: Request, db: Session = Depends(get_
     patient = db.get(Patient, patient_id)
     if patient is None or patient.is_deleted:
         raise HTTPException(status_code=404, detail="Patient not found")
-    appointments = list(db.scalars(select(Appointment).where(Appointment.patient_id == patient_id, Appointment.is_deleted.is_(False))))
-    payments = list(db.scalars(select(Payment).where(Payment.patient_id == patient_id, Payment.is_deleted.is_(False))))
-    return render(request, "patients/detail.html", "پرونده بیمار", patient=patient, appointments=appointments, payments=payments)
+    can_view_appointments = has_permission(db, user["role"], "appointments.view")
+    can_view_financial = has_permission(db, user["role"], "financial.view")
+    appointments = (
+        list(db.scalars(select(Appointment).where(Appointment.patient_id == patient_id, Appointment.is_deleted.is_(False))))
+        if can_view_appointments else []
+    )
+    payments = (
+        list(db.scalars(select(Payment).where(Payment.patient_id == patient_id, Payment.is_deleted.is_(False))))
+        if can_view_financial else []
+    )
+    return render(
+        request,
+        "patients/detail.html",
+        "پرونده بیمار",
+        patient=patient,
+        appointments=appointments,
+        payments=payments,
+        can_update=has_permission(db, user["role"], "patients.update"),
+        can_archive=has_permission(db, user["role"], "patients.archive"),
+        can_view_appointments=can_view_appointments,
+        can_view_financial=can_view_financial,
+    )
 
 
 @router.get("/patients/{patient_id}/edit", response_class=HTMLResponse)
