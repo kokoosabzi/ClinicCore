@@ -31,7 +31,6 @@ def test_api_allows_booking_a_slot_released_by_soft_delete(admin_client, db_sess
     released = Appointment(patient_id=patient.id, starts_at=datetime(2026, 10, 2, 10, 0), is_deleted=True)
     db_session.add(released)
     db_session.commit()
-    client.app.dependency_overrides[require_user] = lambda: {"username": "test-admin", "role": "admin"}
 
     response = client.post(
         "/appointments/",
