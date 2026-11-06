@@ -49,6 +49,10 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "print.show_lines": ("true", "boolean", "نمایش خطوط جداکننده در چاپ"),
     "print.thermal_width": ("80", "enum", "عرض رول حرارتی به میلی‌متر"),
     "system.audit_enabled": ("true", "boolean", "فعال بودن ثبت رویدادهای سامانه"),
+    "appointments.workday_start": ("09:00", "time", "ساعت شروع برنامه کاری کلینیک"),
+    "appointments.workday_end": ("17:00", "time", "ساعت پایان برنامه کاری کلینیک"),
+    "appointments.slot_minutes": ("30", "integer", "مدت هر نوبت بر حسب دقیقه"),
+    "appointments.working_days": ("1,2,3,4,6,7", "csv", "روزهای کاری بر اساس ISO weekday"),
 }
 
 ALLOWED_VALUES: dict[str, set[str]] = {
@@ -74,6 +78,7 @@ ALLOWED_VALUES: dict[str, set[str]] = {
     "print.show_header": {"true", "false"},
     "print.show_footer": {"true", "false"},
     "system.audit_enabled": {"true", "false"},
+    "appointments.slot_minutes": {"15", "20", "30", "45", "60"},
 }
 
 
@@ -111,6 +116,13 @@ class SettingsService:
                 raise ValueError("Invalid print margin") from error
             if margin < 0 or margin > 100:
                 raise ValueError("Invalid print margin")
+        if key in {"appointments.workday_start", "appointments.workday_end"}:
+            import re
+            if value is None or re.fullmatch(r"(?:[01]\\d|2[0-3]):[0-5]\\d", value) is None:
+                raise ValueError("ساعت شروع یا پایان معتبر نیست.")
+        if key == "appointments.working_days":
+            from app.services.appointment_schedule_service import parse_working_days
+            parse_working_days(value or "")
         if key == "datetime.timezone":
             if not value or value not in available_timezones():
                 raise ValueError("Invalid timezone")
