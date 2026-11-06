@@ -1,66 +1,38 @@
-# Implementation and Run Instructions
+# ClinicCore — دستورالعمل نصب و توسعه محلی
 
-## 1. Install
-\`\`\`bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-\`\`\`
+## نصب در Windows
 
-## 2. Configure PostgreSQL
-Create \`.env\`:
+از ریشه مخزن:
+```bat
+setup.bat
+```
 
-\`\`\`env
-DATABASE_URL=postgresql+psycopg://cliniccore:cliniccore@localhost:5432/cliniccore
-SECRET_KEY=replace-with-a-long-random-secret
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=replace-with-a-strong-unique-password
-\`\`\`
+این اسکریپت محیط مجازی `.venv`، وابستگی‌های Python، تنظیمات امن نصب تازه، دیتابیس SQLite و حساب مدیر اولیه را آماده می‌کند.
 
-**Production requirement:** do not leave \`ADMIN_PASSWORD=admin\`. The fallback \`admin\` password is for development only. Set the production credentials before running the seed command.
+## اجرا و توقف
 
-## 3. Migrate database
-\`\`\`bash
-alembic upgrade head
-\`\`\`
+```bat
+start.bat
+stop.bat
+```
 
-## 4. Create initial manager
-\`\`\`bash
+برنامه در آدرس http://127.0.0.1:8000 در دسترس خواهد بود.
+
+## دستورات توسعه
+
+پس از فعال‌سازی محیط مجازی:
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m compileall app tests main.py alembic scripts
+python -m pytest -q
+python -m alembic upgrade head
 python scripts/seed_admin.py
-\`\`\`
+```
 
-The seeded admin is forced to change the password on first login. If the fallback password is used, the seed script prints a security warning.
+## دیتابیس
 
-## 5. Run
-\`\`\`bash
-uvicorn app.main:app --reload
-\`\`\`
+در نسخه فعلی، SQLite تنها دیتابیس پشتیبانی‌شده است و فایل پیش‌فرض آن `data/cliniccore.db` است. برای تغییر ساختار دیتابیس فقط Migration جدید Alembic بسازید. فایل‌های دیتابیس موجود را حذف یا جایگزین نکنید.
 
-## 6. Validate
-\`\`\`bash
-python -m pytest
-\`\`\`
+## نکته امنیتی
 
-## Main pages
-- \`/login\`
-- \`/dashboard\`
-- \`/patients/new\`
-- \`/appointments/new\`
-- \`/financial/payments/new\`
-- \`/financial/expenses/new\`
-- \`/messages/new\`
-
-## Developer shortcuts
-\`\`\`bash
-make install
-make compile
-make test
-make migrate
-make seed
-make run
-\`\`\`
-
-## Local PostgreSQL with Docker
-\`\`\`bash
-docker compose up -d postgres
-\`\`\`
+در نصب تازه، `scripts/bootstrap_env.py` یک `SECRET_KEY` و رمز تصادفی مدیر تولید می‌کند. فایل `.env` خصوصی است و نباید commit شود. حساب مدیر در اولین ورود باید رمز را تغییر دهد.
