@@ -3,17 +3,19 @@
 > این فایل وضعیت واقعی مخزن و شواهد تست را ثبت می‌کند. هیچ تست اجرا‌نشده‌ای نباید Pass علامت بخورد.
 
 Last updated: 2026-11-06
-Last updated by: ChatGPT — Sprint 1 user administration and RBAC implementation
+Last updated by: ChatGPT — dynamic UI theme implementation in progress
 Repository baseline: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
-Sprint 0 branch: `stabilization/windows-sqlite-runtime`
-Sprint 1 branch: `feature/user-management-rbac`
+Sprint 0 merged into `main` by PR #14
+Sprint 1 merged into `main` by PR #15
 Sprint 1 head at last verified run: `25b881b6f8c672812cbe4ff7206cbb2287eac279`
 
-## 1. Current delivery status
+## 1. Current delivery status\n\n- PR #14 (Windows/SQLite) and PR #15 (RBAC) have been merged into `main`.\n- Dynamic UI themes are now being consolidated into the single `development` branch; CI and manual browser acceptance remain release gates.
 
-- **Sprint 0 — Windows & SQLite readiness:** hosted Windows CI passed; manual installation/runtime acceptance on the target PC is still pending. PR #14 remains Draft.
-- **Sprint 1 — User Administration & RBAC:** implementation is present on the dependent feature branch; hosted Windows CI run #93 passed. UI acceptance on the target PC and review are still pending. PR #15 remains Draft and targets the Sprint 0 branch.
-- Neither PR has been merged. `main` remains unchanged.
+- **Dynamic UI themes — implementation in progress:** four visual presets, font scale, live settings preview, and print-view isolation are implemented on `development`; hosted CI and manual Windows/browser acceptance remain pending.
+
+- **Sprint 0 — Windows & SQLite readiness:** PR #14 merged; manual installation/runtime acceptance on the target PC remains pending.
+- **Sprint 1 — User Administration & RBAC:** PR #15 merged; hosted Windows CI passed; manual role/UI acceptance on the target PC remains pending.
+- PR #14 and PR #15 are merged. PR #16 is superseded by consolidation into `development`.
 
 ## 2. Existing application baseline
 
@@ -62,16 +64,16 @@ Sprint 1 head at last verified run: `25b881b6f8c672812cbe4ff7206cbb2287eac279`
 - Dedicated populated-database upgrade regression: passed; the existing user's username, role and exact password-hash string were preserved while the five role rows and administrator grants were added.
 - Run: https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528
 
-## 6. Remaining work / release gates
+## 6. Dynamic UI theme implementation (in progress)\n\n- Added four semantic visual presets: Clinical Light, Modern Dark, Soft Neutral, and High Contrast.\n- Added validated `app.style` and `app.font_scale` settings while preserving existing theme mode, accent color, and density settings.\n- Added a live preview on the admin settings page and an appearance stylesheet/controller.\n- Added acceptance criteria for persistence, validation, preview behavior, and print isolation.\n- Current settings remain administrator-managed system defaults; per-user overrides are not implemented.\n- Verification: GitHub Windows CI and manual browser acceptance are pending; do not mark this phase complete.\n\n## 7. Remaining work / release gates
 
 - On the target Windows PC, complete Sprint 0 setup/start/stop and persistence acceptance from AT-1101 through AT-1105.
-- After PR #14 is accepted and merged, update the Sprint 1 branch base as needed; do not merge PR #15 ahead of PR #14.
+- PR #14 and PR #15 are merged; continue development from the single `development` branch.
 - On Windows, manually inspect the user-management page, role-permission matrix, CSRF-protected forms, forced password change, role-specific navigation, and permission-denied behavior.
 - Review the 81 dependency/deprecation warnings separately; they did not fail CI.
 - Review existing appointment global-slot uniqueness before adding practitioner/room scheduling.
 - Fine-grained record ownership (e.g. doctor sees only assigned patients) is not implemented in this sprint; current permissions are module/action level.
 
-## 7. Next action
+## 8. Next action
 
 1. User performs the Sprint 0 Windows installation/runtime checklist without deleting `.env` or `data`.
 2. Review and merge PR #14 only after acceptance.
