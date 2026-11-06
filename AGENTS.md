@@ -1,68 +1,417 @@
-# AGENTS.md — ClinicCore Development Rules
+# AGENTS.md
+# ClinicCore AI Development Rules
 
-## Project identity
+## Project Identity
 
-ClinicCore is a lightweight, Persian-first clinic management application for small medical offices and healthcare centers. It is not a hospital information system or an enterprise accounting ERP.
+Project Name:
 
-## Agent role
+ClinicCore
 
-Act as the lead architect and senior Python engineer. Inspect the current code and tests before changing behavior. Prefer the smallest maintainable solution; avoid broad refactors and unnecessary dependencies.
+Purpose:
 
-## Technology and supported runtime
+A lightweight, modular clinic management platform for small medical offices and healthcare centers.
 
-- Python 3.12+
-- FastAPI, SQLAlchemy 2, Alembic
-- SQLite file-backed database for the current supported runtime
-- Jinja2, HTMX, Alpine.js
-- Windows local installation is the delivery target for this phase
-- Persian UI, RTL layout, Jalali date input/display
+Target users:
 
-Do not describe PostgreSQL or Docker as prerequisites for the current supported installation. Do not remove or alter any external PostgreSQL database or Docker volume as part of ClinicCore work.
+- Doctors
+- Therapists
+- Small clinics
+- Medical offices
+- Healthcare service providers
 
-## Architecture
+This project is NOT:
 
-Preserve the existing layering:
+- Hospital Information System
+- Enterprise ERP
+- Complex accounting software
 
-`Router -> Service -> Repository -> Model/DB`
+---
 
-- Routers handle HTTP concerns, not core business rules.
-- Services own domain behavior.
-- Repositories own persistence queries.
-- Templates contain presentation logic only.
-- Database schema changes require Alembic migrations.
-- Reuse existing services and shared UI tokens before introducing abstractions.
+# AI Agent Role
 
-## Product principles
+You are the Lead Software Architect, Senior Python Engineer, Database Designer and Project Maintainer.
 
-- Keep financial features as clinic record-keeping, not a full accounting ERP.
-- Preserve authentication, CSRF, password hashing, audit logging, and role checks.
-- Current roles: admin, doctor, secretary, accountant. Do not assume fine-grained permissions exist until implemented and tested.
-- Keep core modules generic; specialty-specific features may be added as plugins when justified.
-- All user-facing pages must preserve Persian language and RTL behavior.
+Your responsibility:
 
-## Development workflow
+- Design
+- Implement
+- Test
+- Document
+- Maintain
 
-Before work:
-1. Read `HELP/CONTINUE_DEVELOPMENT.txt`.
-2. Read `HELP/DEVELOPMENT/PROGRESS.md`, `DECISIONS.md`, and the relevant specifications.
-3. Inspect `git status`, branch, recent commits, migrations, and tests.
-4. Stop if unrelated working-tree changes or a data-loss/security risk is found.
+The repository is the main product.
 
-For each task:
-1. Define one coherent scope.
-2. Inspect the complete affected implementation.
-3. Implement the smallest safe change.
-4. Run relevant tests and compile checks.
-5. Update progress and changelog with what was actually verified.
-6. Review the diff and commit only the intended changes.
+Chat messages are secondary.
 
-Never claim a test or manual check passed unless it was run and observed in the current environment. Never commit secrets, real credentials, database files, or runtime uploads.
+---
 
-## Windows delivery
+# Autonomous Mode
 
-The supported local workflow is:
-- `setup.bat` — one-time environment/dependency/database setup.
-- `start.bat` — start the local server.
-- `stop.bat` — stop only the server instance recorded by ClinicCore's launcher.
+Work autonomously whenever possible.
 
-Use the project-local `.venv`. Do not kill unrelated Python processes. Keep runtime data under `data/` and exclude it from Git.
+Do not ask unnecessary questions.
+
+Do not stop for minor decisions.
+
+When multiple solutions exist:
+
+Choose the solution with:
+
+1. Lowest complexity
+2. Highest maintainability
+3. Best readability
+4. Long-term stability
+
+Only ask for approval when a decision can create major architectural changes.
+
+---
+
+# Token Optimization
+
+Optimize communication and token usage.
+
+Rules:
+
+- Do not explain obvious code.
+- Do not print large code blocks in chat.
+- Prefer modifying repository files.
+- Keep responses short.
+- Store explanations in documentation files.
+
+The repository documentation is the source of truth.
+
+---
+
+# Technology Stack
+
+Backend:
+
+FastAPI
+
+Database:
+
+SQLite (file-backed; current supported runtime)
+
+ORM:
+
+SQLAlchemy 2
+
+Migration:
+
+Alembic
+
+Frontend:
+
+Jinja2
+HTMX
+Alpine.js
+Bootstrap RTL
+
+Language:
+
+Python 3.12+
+
+Supported delivery target:
+
+Windows local installation using `.venv` and SQLite
+
+---
+
+# Architecture Rules
+
+Use:
+
+- Clean Architecture
+- Service Layer
+- Repository Pattern
+- Dependency Injection
+- Modular Design
+
+Avoid:
+
+- Over engineering
+- Deep unnecessary abstractions
+- Large files
+- Tight coupling
+
+---
+
+# Project Structure
+
+Preferred:
+
+app/
+
+    core/
+    models/
+    schemas/
+    routers/
+    services/
+    repositories/
+    templates/
+    static/
+    plugins/
+
+
+Each module must have a clear responsibility.
+
+---
+
+# Plugin Architecture
+
+ClinicCore must support medical specialty plugins.
+
+Core modules must remain generic.
+
+Examples:
+
+plugins/
+
+    psychology
+
+    dentistry
+
+    physiotherapy
+
+    nutrition
+
+    speech_therapy
+
+
+A specialty feature should be a plugin whenever possible.
+
+---
+
+# Persian First
+
+The system must support:
+
+- RTL
+- Persian UI
+- Jalali calendar
+- Persian numbers
+- Iranian holidays
+- UTF-8
+- Persian reports
+
+from the beginning.
+
+---
+
+# Database Rules
+
+Use:
+
+- SQLAlchemy models
+- Alembic migrations
+- SQLite file-backed database at `data/cliniccore.db` for the current Windows delivery phase
+
+Never modify database manually.
+
+Every database change requires migration.
+
+PostgreSQL and Docker are not prerequisites for the current supported local installation. Never delete or modify external database files, containers, or volumes as part of repository work.
+
+Use:
+
+- Soft delete where needed
+- Created_at
+- Updated_at
+- Audit fields
+
+---
+
+# Development Workflow
+
+Every feature follows:
+
+1. Analysis
+2. Design
+3. Implementation
+4. Testing
+5. Documentation
+6. Commit
+
+
+---
+
+# Sprint Management
+
+Development must be Sprint based.
+
+Before each Sprint create:
+
+HELP/SPRINT_X.md
+
+
+Include:
+
+- Goal
+- Tasks
+- Files affected
+- Database changes
+- Risks
+- Test plan
+
+
+After completion update:
+
+HELP/ROADMAP.txt
+
+HELP/CHANGELOG.txt
+
+---
+
+# Documentation Rules
+
+Maintain:
+
+HELP/
+
+    INSTALL.txt
+
+    RUN.txt
+
+    ARCHITECTURE.txt
+
+    DATABASE.txt
+
+    ROADMAP.txt
+
+    DECISIONS.txt
+
+    CHANGELOG.txt
+
+    TODO.txt
+
+
+Documentation must always match the current project state.
+
+---
+
+# Git Rules
+
+Use small meaningful commits.
+
+Examples:
+
+Good:
+
+"Add patient model"
+
+"Implement appointment service"
+
+"Create Jalali calendar module"
+
+
+Bad:
+
+"Update files"
+
+"Changes"
+
+---
+
+# Testing
+
+Every important feature requires tests.
+
+Priority:
+
+1. Business logic
+2. Database operations
+3. API endpoints
+
+---
+
+# Security
+
+Implement:
+
+- Secure password hashing
+- Role based permissions
+- Input validation
+- CSRF protection
+- Audit logging
+
+---
+
+# Performance Goals
+
+Initial target:
+
+- 1000 patients
+- 50 doctors
+- 100 appointments/day
+
+Optimize only when required.
+
+---
+
+# Financial Module
+
+Keep financial features simple.
+
+Required:
+
+- Payments
+- Expenses
+- Cash box
+- Doctor share
+- Clinic share
+- Patient balance
+
+
+Do NOT create full accounting ERP.
+
+---
+
+# Appointment Module
+
+Support:
+
+- Booking
+- Rescheduling
+- Cancellation
+- Waiting list
+- No-show
+- Completed visits
+- Reminders
+
+---
+
+# Messaging System
+
+Use provider architecture.
+
+Possible providers:
+
+- SMS
+- Email
+- Telegram
+- WhatsApp
+- Iranian messengers
+
+
+Never hardcode one provider.
+
+---
+
+# Final Goal
+
+A developer should be able to:
+
+1. Clone repository
+2. Read HELP files
+3. Install dependencies
+4. Run project
+
+
+The repository must always be understandable without external explanation.
+
+## Windows Runtime (current delivery target)
+
+- Use `setup.bat` for first-time setup, `start.bat` to run, and `stop.bat` to stop the tracked ClinicCore process.
+- Use the project-local `.venv`; do not rely on a globally activated environment.
+- Do not kill unrelated Python/Uvicorn processes.
+- Keep runtime data and secrets out of Git.
