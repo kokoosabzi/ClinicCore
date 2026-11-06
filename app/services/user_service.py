@@ -14,8 +14,8 @@ class UserService:
     def __init__(self, repository: UserRepository) -> None:
         self.repository = repository
 
-    def list_users(self) -> list[User]:
-        return self.repository.list()
+    def list_users(self, *, include_inactive: bool = False) -> list[User]:
+        return self.repository.list_all() if include_inactive else self.repository.list()
 
     def create_user(self, data: UserCreate) -> User:
         username = data.username.strip()
