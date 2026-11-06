@@ -9,7 +9,7 @@ Working branch: `stabilization/windows-sqlite-runtime`
 
 ## 1. Current project phase
 
-**Phase 0 — Stabilization & Windows Readiness**
+**Sprint 0 — Project Stabilization & Windows Readiness**
 
 ## 2. Current task
 
@@ -65,4 +65,4 @@ python -m alembic upgrade head
 ```
 Then test `setup.bat`, generated administrator login and mandatory password change, dashboard, patient/appointment pages, persistence after restart, `stop.bat`, and confirm unrelated Python processes remain running.
 
-Only after these checks pass should Phase 0 be marked complete. Next product task: Phase 1 — User Administration & Access Control.
+Only after these checks pass should Sprint 0 be marked complete. Next product task: Phase 1 — User Administration & Access Control.
