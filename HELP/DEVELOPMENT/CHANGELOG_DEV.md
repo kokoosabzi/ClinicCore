@@ -61,3 +61,15 @@
 - Safety: no merge to `main`, no database deletion, and no user data changes.
 
 ---
+
+
+---
+
+## 2026-11-06 — Consolidation and verified integration
+
+- Merged PR #17 into `main` after consolidated Windows CI run #105 completed successfully.
+- Merge commit: `c3c3e07847d3e31e2981b606268da4fcc46f05c9`.
+- PR #14 (Windows/SQLite) and PR #15 (RBAC) were already merged; PR #16 remains closed as superseded by PR #17.
+- Verified run #105: dependency installation, compileall, pytest, and clean SQLite migration all passed.
+- Corrected the project progress document to reflect actual merged state and to keep manual Windows/browser acceptance explicitly pending.
+- No claim is made that the application has been installed or visually accepted on the user's local Windows machine.
