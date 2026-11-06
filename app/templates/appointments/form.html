@@ -75,7 +75,7 @@
           </div>
           <span class="selected-date-chip" data-selected-date>در حال آماده‌سازی تقویم…</span>
         </div>
-        <p class="panel-description">ساعت‌ها با قالب ۲۴ ساعته نمایش داده می‌شوند.</p>
+        <p class="panel-description">ساعت‌های کاری {{ workday_start|default("09:00") }} تا {{ workday_end|default("17:00") }} با فاصله‌های {{ slot_minutes|default(30) }} دقیقه‌ای نمایش داده می‌شوند.</p>
         <div class="time-slots" data-time-slots aria-live="polite"></div>
         <p class="slot-message" data-slot-message role="status">در حال دریافت ساعت‌های قابل رزرو…</p>
         <div class="selected-slot-summary">
@@ -95,6 +95,6 @@
       <button type="submit" class="booking-submit" {% if not reschedule|default(false) and not patients %}disabled{% endif %}>{{ "ثبت زمان جدید" if reschedule|default(false) else "ثبت نوبت" }} <span aria-hidden="true">←</span></button>
     </div>
   </form>
-  <p class="schedule-note">بازه اولیه نمایش ساعت‌ها ۰۹:۰۰ تا ۱۷:۰۰ با فاصله‌های ۳۰ دقیقه‌ای است؛ تنظیم ساعات کاری و مدت نوبت برای هر پزشک، مرحله بعدی توسعه خواهد بود.</p>
+  <p class="schedule-note">برنامه کاری و مدت نوبت از تنظیمات کلینیک خوانده می‌شود. تنظیم مستقل برای هر پزشک در مرحله بعد اضافه خواهد شد.</p>
 </section>
 {% endblock %}
