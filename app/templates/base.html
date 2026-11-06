@@ -48,10 +48,18 @@
     <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
     <nav id="main-nav">
       <a class="{% if request.url.path == '/dashboard' %}active{% endif %}" href="/dashboard">داشبورد</a>
+      {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary", "accountant"] %}
       <a class="{% if request.url.path.startswith('/patients') %}active{% endif %}" href="/patients">بیماران</a>
+      {% endif %}
+      {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
       <a class="{% if request.url.path.startswith('/appointments') %}active{% endif %}" href="/appointments">نوبت‌ها</a>
+      {% endif %}
+      {% if user and user.role in ["admin", "clinic_manager", "accountant"] %}
       <a class="{% if request.url.path.startswith('/financial') %}active{% endif %}" href="/financial">مالی</a>
+      {% endif %}
+      {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
       <a class="{% if request.url.path.startswith('/messages') %}active{% endif %}" href="/messages">پیام‌ها</a>
+      {% endif %}
       {% if user and (user.role == "admin" or user.role == "clinic_manager" or user["role"] == "admin" or user["role"] == "clinic_manager") %}
       <a class="{% if request.url.path.startswith('/users') %}active{% endif %}" href="/users/manage">کاربران</a>
       {% endif %}
