@@ -102,3 +102,14 @@
 - Added integration coverage for lifecycle transitions, cancellation/rebooking, rescheduling conflicts and audit history.
 - Windows CI run #150: **58 passed, 0 failed**; Python compile, JavaScript syntax checks and clean SQLite migration passed.
 - Manual Windows/browser acceptance remains pending.
+
+
+## 2026-11-07 — Configurable clinic-wide appointment schedule
+
+- Added persisted settings for workday start/end, slot duration and ISO weekdays using the existing system settings store; no migration required.
+- Appointment availability now generates the configured slot grid, respects closed weekdays and exposes the working-day flag to the UI.
+- Added administrator controls using native time inputs, slot-duration select and weekday checkboxes.
+- Validation prevents invalid times, invalid/empty weekday selections and workday/slot combinations that do not divide evenly.
+- Defaults preserve 09:00–17:00, 30-minute slots and a six-day week with Friday closed.
+- Windows CI run #171: **71 passed, 0 failed**; Python compile, JavaScript syntax validation and clean SQLite migration passed.
+- Manual browser acceptance and practitioner-specific schedules remain pending.
