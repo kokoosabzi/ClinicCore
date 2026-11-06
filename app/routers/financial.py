@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_user
+from app.core.auth import require_permission
 from app.core.database import get_db
 from app.repositories.financial_repository import ExpenseRepository, PaymentRepository
 from app.schemas.financial import ExpenseCreate, ExpenseRead, PaymentCreate, PaymentRead
@@ -15,7 +15,7 @@ def get_service(db: Session = Depends(get_db)) -> FinancialService:
 
 
 @router.get("/payments", response_model=list[PaymentRead])
-def list_payments(user=Depends(require_user), service: FinancialService = Depends(get_service)):
+def list_payments(user=Depends(require_permission("financial.view")), service: FinancialService = Depends(get_service)):
     return service.list_payments()
 
 
