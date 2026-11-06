@@ -10,6 +10,8 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
     "app.name": ("ClinicCore", "string", "نام داخلی سامانه"),
     "app.title": ("سامانه جامع سلامت", "string", "عنوان نمایشی سامانه"),
     "app.theme": ("system", "enum", "حالت نمایش: روشن، تاریک یا سیستم"),
+    "app.style": ("clinical-light", "enum", "سبک بصری رابط کاربری"),
+    "app.font_scale": ("normal", "enum", "اندازه متن رابط کاربری"),
     "app.density": ("comfortable", "enum", "تراکم نمایش: راحت یا فشرده"),
     "app.primary_color": ("#176b67", "color", "رنگ اصلی رابط کاربری"),
     "clinic.name": ("", "string", "نام کلینیک"),
@@ -51,6 +53,8 @@ DEFAULTS: dict[str, tuple[str, str, str]] = {
 
 ALLOWED_VALUES: dict[str, set[str]] = {
     "app.theme": {"light", "dark", "system"},
+    "app.style": {"clinical-light", "modern-dark", "soft-neutral", "high-contrast"},
+    "app.font_scale": {"small", "normal", "large"},
     "app.density": {"comfortable", "compact"},
     "print.show_table_borders": {"true", "false"},
     "print.show_lines": {"true", "false"},
@@ -126,7 +130,7 @@ class SettingsService:
                 category=key.split(".", 1)[0],
                 description=description,
                 is_public=key in {
-                    "app.name", "app.title", "app.theme", "app.density", "app.primary_color",
+                    "app.name", "app.title", "app.theme", "app.style", "app.font_scale", "app.density", "app.primary_color",
                     "clinic.name", "clinic.logo", "clinic.header_text", "clinic.footer_text",
                     "datetime.calendar", "datetime.timezone", "datetime.date_format",
                     "datetime.time_format", "datetime.show_seconds",
