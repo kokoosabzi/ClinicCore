@@ -1,81 +1,107 @@
 # ClinicCore — Development Progress
 
-> این فایل وضعیت واقعی مخزن و شواهد تست را ثبت می‌کند. هیچ تست اجرا‌نشده‌ای نباید Pass علامت بخورد.
+> این فایل وضعیت واقعی مخزن و شواهد تست را ثبت می‌کند. هیچ تست اجرا‌نشده‌ای Pass محسوب نمی‌شود.
 
 Last updated: 2026-11-06
-Last updated by: ChatGPT — branch consolidation after PR #14 and PR #15 merges
-Repository baseline: `main` at `4c7d5e7c31accfca670283e2460a81a97860686a`
-Sprint 0 merged into `main` by PR #14
-Sprint 1 merged into `main` by PR #15
-Sprint 1 head at last verified run: `25b881b6f8c672812cbe4ff7206cbb2287eac279`
+Last updated by: ChatGPT — consolidation of Windows/SQLite, RBAC and dynamic UI themes
+Repository: `main`
+Current main commit: `c3c3e07847d3e31e2981b606268da4fcc46f05c9`
 
-## 1. Current delivery status\n\n- PR #14 (Windows/SQLite) and PR #15 (RBAC) have been merged into `main`.\n- Dynamic UI themes are now being consolidated into the single `development` branch; CI and manual browser acceptance remain release gates.
+## 1. وضعیت شاخه‌ها و ادغام‌ها
 
-- **Dynamic UI themes — implementation in progress:** four visual presets, font scale, live settings preview, and print-view isolation are implemented on `development`; hosted CI and manual Windows/browser acceptance remain pending.
+- PR #14 — Windows & SQLite runtime: ادغام‌شده در `main`.
+- PR #15 — User Administration & RBAC: ادغام‌شده در `main`.
+- PR #17 — Dynamic UI Themes: ادغام‌شده در `main`.
+- PR #16 — نسخه قبلی تغییرات تم؛ به‌عنوان superseded بسته شد و تغییرات آن از مسیر PR #17 وارد `main` شدند.
+- PRهای قبلی #1 تا #13 نیز طبق سوابق GitHub ادغام شده‌اند.
+- شاخه `main` مبنای فعلی کد است. شاخه `development` در PR #17 ادغام شده و برای ادامه توسعه لازم نیست.
+- چند شاخه قدیمی هنوز به‌صورت ref در GitHub وجود دارند؛ حذف آن‌ها به‌دلیل نبود عملیات حذف شاخه در اتصال فعلی انجام نشده است. پیش از حذف باید اطمینان حاصل شود که commit منحصربه‌فرد و کار ادغام‌نشده‌ای ندارند.
+- فایل قدیمی `ClinicCore-Full-Structure.md` در شاخه `cliniccore-refactor` یک طرح اولیه و منسوخ است؛ معماری PostgreSQL/Docker و `create_all` آن با تصمیم فعلی SQLite-only و Alembic-only مغایرت دارد و وارد محصول نشده است.
 
-- **Sprint 0 — Windows & SQLite readiness:** PR #14 merged; manual installation/runtime acceptance on the target PC remains pending.
-- **Sprint 1 — User Administration & RBAC:** PR #15 merged; hosted Windows CI passed; manual role/UI acceptance on the target PC remains pending.
-- PR #14 and PR #15 are merged. PR #16 is superseded by consolidation into `development`.
+## 2. وضعیت تحویل
 
-## 2. Existing application baseline
+| بخش | وضعیت پیاده‌سازی | شواهد / محدودیت |
+|---|---|---|
+| Windows + SQLite runtime | پیاده‌سازی ادغام‌شده | CI ویندوز موفق؛ پذیرش دستی روی رایانه کاربر باقی است |
+| Login / User Administration / RBAC | پیاده‌سازی ادغام‌شده | CI ویندوز و تست‌های RBAC موفق؛ پذیرش دستی UI باقی است |
+| Dynamic UI Themes | پیاده‌سازی ادغام‌شده | CI ویندوز روی شاخه ادغام‌شده موفق؛ بازبینی بصری دستی باقی است |
+| Jalali calendar/date handling | قابلیت‌های موجود قبلی | تاریخ‌ورودی واقعی در تمام فرم‌ها باید جداگانه بررسی شود |
+| Manual Windows installation | تأییدنشده | هنوز روی رایانه کاربر اجرا نشده است |
 
-- FastAPI + SQLAlchemy 2 + Alembic + Jinja2, Persian RTL UI.
-- Windows local deployment uses file-backed SQLite at `data/cliniccore.db`.
-- Alembic remains the only schema creation/migration mechanism.
-- Existing modules include patients, appointments, financial records, messaging, settings and print views.
-- Existing roles were admin, doctor, secretary and accountant; Sprint 1 adds clinic_manager without rewriting existing user rows.
+## 3. مبنای فنی فعلی
 
-## 3. Sprint 0 — completed implementation, manual acceptance pending
+- FastAPI + SQLAlchemy 2 + Alembic + Jinja2، رابط فارسی RTL.
+- اجرای محلی Windows با SQLite فایل‌محور در `data/cliniccore.db`.
+- Alembic تنها مرجع ایجاد و تغییر schema است؛ از `Base.metadata.create_all` در مسیر نصب استفاده نمی‌شود.
+- نصب و اجرا با `setup.bat`، `start.bat` و `stop.bat`.
+- ماژول‌های موجود شامل بیماران، نوبت‌ها، اطلاعات مالی ثبت‌شده، پیام‌رسانی، تنظیمات، کاربران و صفحات چاپ.
+- سامانه تراکنش مالی واقعی انجام نمی‌دهد؛ اطلاعات مالی صرفاً در حد ثبت سوابق تعریف‌شده در محصول است.
 
-- Aligned documentation and local runtime with SQLite-only Windows delivery.
-- Added `setup.bat`, bootstrap of a private local `.env`, and start/stop scripts with PID/process identity checks.
-- Existing `.env` is not overwritten; no application database is deleted or reset.
-- Added Windows CI and fixed the PowerShell reserved-variable collision involving `$PID`.
-- Fixed missing Windows IANA timezone data by adding `tzdata`.
-- Corrected the homepage smoke test to use the isolated SQLite fixture.
-- Removed `Base.metadata.create_all` from the admin seed script so Alembic is the single schema source of truth.
+## 4. Sprint 0 — Windows & SQLite
 
-## 4. Sprint 1 — implementation completed on the feature branch
+- اسکریپت نصب اولیه و bootstrap فایل محلی `.env` اضافه شده است.
+- فایل `.env` موجود بازنویسی نمی‌شود و دیتابیس موجود حذف یا reset نمی‌شود.
+- اسکریپت‌های start/stop با PID tracking و بررسی هویت process اضافه شده‌اند.
+- پشتیبانی timezone ویندوز با `tzdata` تکمیل شده است.
+- CI ویندوز روی Windows Server 2025 / Python 3.12.10:
+  - compileall: موفق
+  - pytest: **29 passed, 0 failed**
+  - مهاجرت SQLite تمیز تا revision `20261005_0005`: موفق
+- PR #14 ادغام شده است.
+- نصب، اجرا، توقف و حفظ داده روی رایانه Windows کاربر: **هنوز دستی تأیید نشده است**.
 
-- Added `Role`, `Permission`, and `RolePermission` models.
-- Added Alembic revision `20261106_0006` with five built-in roles and the initial permission matrix.
-- Added the clinic manager role while retaining legacy role keys and existing user/password data.
-- Added database-backed `require_permission` checks and refreshed effective user/permission state on every request.
-- Enforced permissions across patient, appointment, financial, messaging, settings and user routes.
-- Restricted dashboard totals and patient-chart sections according to effective permissions. Accountants do not receive clinical chart access by default; doctors/receptionists do not receive financial access by default.
-- Added Persian RTL user administration: list, create, update, deactivate/reactivate and one-time temporary password reset.
-- Added administrator-only role permission matrix for built-in non-admin roles; admin permissions are immutable.
-- Added protection against deactivating/demoting the last active administrator and against clinic managers modifying system-administrator accounts.
-- Added CSRF validation to login, logout, password-change, user-management and role-permission browser forms; successful login rotates the session.
-- Added RBAC integration tests and a migration regression test proving existing usernames, roles and password-hash values remain unchanged when upgrading a populated 0005 database.
+## 5. Sprint 1 — User Administration & RBAC
 
-## 5. Verification evidence
+- مدل‌های Role، Permission و RolePermission و migration شماره `20261106_0006` اضافه شده‌اند.
+- پنج نقش پایه: admin، clinic_manager، doctor، secretary و accountant.
+- کنترل دسترسی در سمت سرور و به‌روزرسانی permissionهای کاربر در هر درخواست.
+- مدیریت کاربران، فعال/غیرفعال‌سازی، تغییر اطلاعات و reset رمز یک‌بارمصرف.
+- ماتریس مجوزها برای نقش‌های غیرمدیر سیستم؛ مجوزهای admin غیرقابل‌تغییر.
+- جلوگیری از حذف/تنزل آخرین مدیر فعال و محدودیت مدیر کلینیک در مدیریت حساب مدیر سیستم.
+- CSRF برای فرم‌های حساس و چرخش session پس از ورود.
+- CI ویندوز run #93:
+  - compileall: موفق
+  - pytest: **40 passed, 0 failed**
+  - مهاجرت SQLite تمیز تا `20261106_0006`: موفق
+  - آزمون ارتقای دیتابیس دارای داده قبلی و حفظ username، role و password hash: موفق
+- PR #15 ادغام شده است.
+- پذیرش دستی نقش‌ها و فرم‌ها روی رایانه کاربر: **هنوز انجام نشده است**.
 
-### Sprint 0
-- Windows CI run #23 on Windows Server 2025 / Python 3.12.10: compileall passed; pytest 29 passed / 0 failed; clean SQLite Alembic migration passed through `20261005_0005`.
-- Manual Windows acceptance on the user's PC: **not run**.
+## 6. Dynamic UI Themes — پیاده‌سازی ادغام‌شده
 
-### Sprint 1
-- Windows CI run #93 on Windows Server 2025 / Python 3.12.10: **success**.
-- Dependency installation: passed.
-- `python -m compileall app tests main.py alembic scripts`: passed.
-- `python -m pytest -q`: **40 passed, 0 failed** (81 dependency/deprecation warnings).
-- `python -m alembic upgrade head`: passed on a clean SQLite database through `20261106_0006`.
-- Dedicated populated-database upgrade regression: passed; the existing user's username, role and exact password-hash string were preserved while the five role rows and administrator grants were added.
-- Run: https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528
+- چهار preset بصری: Clinical Light، Modern Dark، Soft Neutral و High Contrast.
+- تنظیمات اعتبارسنجی‌شده `app.style` و `app.font_scale`؛ تنظیمات قبلی حالت نمایش، رنگ اصلی و تراکم حفظ شده‌اند.
+- پیش‌نمایش زنده در صفحه تنظیمات مدیر، بدون ذخیره تا زمان submit.
+- stylesheet مجزا برای تم‌ها و کنترل‌گر preview.
+- صفحه‌های چاپ باید مستقل از تم برنامه، با پالت روشن و مناسب کاغذ باقی بمانند.
+- تنظیم ظاهر فعلاً پیش‌فرض سراسری و تحت مدیریت مدیر سیستم است؛ override مستقل برای هر کاربر در این مرحله وجود ندارد.
+- PR #17 ادغام شده است.
+- CI روی شاخه یکپارچه‌شده، run #105:
+  - نصب وابستگی‌ها: موفق
+  - compileall: موفق
+  - pytest: موفق
+  - مهاجرت SQLite تمیز: موفق
+- پذیرش بصری دستی روی مرورگر و Windows کاربر: **هنوز انجام نشده است**.
 
-## 6. Dynamic UI theme implementation (in progress)\n\n- Added four semantic visual presets: Clinical Light, Modern Dark, Soft Neutral, and High Contrast.\n- Added validated `app.style` and `app.font_scale` settings while preserving existing theme mode, accent color, and density settings.\n- Added a live preview on the admin settings page and an appearance stylesheet/controller.\n- Added acceptance criteria for persistence, validation, preview behavior, and print isolation.\n- Current settings remain administrator-managed system defaults; per-user overrides are not implemented.\n- Verification: GitHub Windows CI and manual browser acceptance are pending; do not mark this phase complete.\n\n## 7. Remaining work / release gates
+## 7. شواهد CI
 
-- On the target Windows PC, complete Sprint 0 setup/start/stop and persistence acceptance from AT-1101 through AT-1105.
-- PR #14 and PR #15 are merged; continue development from the single `development` branch.
-- On Windows, manually inspect the user-management page, role-permission matrix, CSRF-protected forms, forced password change, role-specific navigation, and permission-denied behavior.
-- Review the 81 dependency/deprecation warnings separately; they did not fail CI.
-- Review existing appointment global-slot uniqueness before adding practitioner/room scheduling.
-- Fine-grained record ownership (e.g. doctor sees only assigned patients) is not implemented in this sprint; current permissions are module/action level.
+- Sprint 0: [Windows CI run #23](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
+- Sprint 1: [Windows CI run #93](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
+- Dynamic UI Themes (consolidated): [Windows CI run #105](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192980523)
 
-## 8. Next action
+## 8. کارهای باقیمانده و دروازه انتشار
 
-1. User performs the Sprint 0 Windows installation/runtime checklist without deleting `.env` or `data`.
-2. Review and merge PR #14 only after acceptance.
-3. Rebase/update PR #15 on the accepted Sprint 0 branch, run CI again, and complete manual Sprint 1 UI acceptance.
-4. Only then consider merging PR #15. No merge to `main` is authorized by this progress update.
+1. اجرای `setup.bat` روی Windows هدف و بررسی نصب اولیه، ساخت admin، start/stop و حفظ دیتابیس موجود؛ بدون حذف `.env` یا `data`.
+2. بررسی دستی Login، تغییر اجباری رمز، مدیریت کاربران، ماتریس نقش‌ها و مسیرهای مجاز/غیرمجاز.
+3. بررسی بصری هر چهار تم، رنگ اصلی، اندازه فونت، تراکم و واکنش‌گرایی صفحه‌ها.
+4. بررسی چاپ در حالت‌های روشن و تیره و اطمینان از خروجی کاغذی مستقل از تم برنامه.
+5. بررسی و اولویت‌بندی هشدارهای dependency/deprecation ثبت‌شده در CI.
+6. بررسی دامنه دسترسی رکوردی؛ محدودیت فعلی عمدتاً در سطح ماژول/عملیات است و مالکیت رکوردی پزشک به‌صورت کامل پیاده‌سازی نشده است.
+7. بررسی نیاز به توسعه بعدی در تقویم/ورودی جلالی و جریان نوبت‌دهی پس از پذیرش دستی نسخه فعلی.
+
+## 9. قاعده ادامه توسعه
+
+- ادامه کار از `main` انجام شود تا وقتی کاربر ساخت شاخه فعال دیگری را صریحاً تأیید کند.
+- هر مرحله شامل تغییر محدود، تست مرتبط، به‌روزرسانی مستندات و گزارش commit باشد.
+- ادغام یا حذف شاخه در آینده بدون مجوز صریح کاربر انجام نشود.
+- هیچ‌یک از دروازه‌های پذیرش دستی تا زمان اجرای واقعی روی Windows کاربر Pass اعلام نشود.
