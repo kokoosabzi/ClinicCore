@@ -29,8 +29,11 @@ def create_user(
     user=Depends(require_permission("users.create")),
     service: UserService = Depends(get_service),
 ):
-    if payload.role == UserRole.admin and user["role"] != UserRole.admin.value:
-        raise HTTPException(status_code=403, detail="Only a system administrator can create an administrator")
+    actor_role = UserRole(user["role"])
+    if payload.role != UserRole.secretary and not has_permission(
+        service.repository.db, actor_role, "users.assign_role"
+    ):
+        raise HTTPException(status_code=403, detail="Role assignment is not permitted")
     try:
         return service.create_user(payload)
     except UserManagementError as error:
@@ -45,10 +48,11 @@ def update_user(
     service: UserService = Depends(get_service),
 ):
     actor_role = UserRole(user["role"])
-    if payload.role != actor_role and not has_permission(service.repository.db, actor_role, "users.assign_role"):
-        raise HTTPException(status_code=403, detail="Role assignment is not permitted")
+    can_assign_role = has_permission(service.repository.db, actor_role, "users.assign_role")
     try:
-        return service.update_user(user_id, payload, actor_role=actor_role)
+        return service.update_user(
+            user_id, payload, actor_role=actor_role, can_assign_role=can_assign_role
+        )
     except UserManagementError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
 
