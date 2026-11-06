@@ -21,7 +21,10 @@ from app.repositories.appointment_repository import AppointmentRepository
 from app.repositories.patient_repository import PatientRepository
 from app.schemas.appointment import AppointmentCreate
 from app.services.dashboard_service import DashboardService
-from app.services.appointment_service import (\n    AppointmentNotFoundError, AppointmentService, AppointmentSlotUnavailableError,\n    InvalidAppointmentTransitionError,\n)
+from app.services.appointment_service import (
+    AppointmentNotFoundError, AppointmentService, AppointmentSlotUnavailableError,
+    InvalidAppointmentTransitionError,
+)
 from app.services.patient_service import PatientService
 from app.services.settings_service import SettingsService
 from app.services.datetime_service import current_datetime, format_configured_datetime, format_jalali, parse_configured_datetime
@@ -447,6 +450,7 @@ def appointment_availability(request: Request, db: Session = Depends(get_db), us
     occupied = set(db.scalars(
         select(Appointment.starts_at).where(
             Appointment.is_deleted.is_(False),
+            Appointment.status != AppointmentStatus.cancelled,
             Appointment.starts_at >= day_start,
             Appointment.starts_at < day_end,
         )
