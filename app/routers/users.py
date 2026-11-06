@@ -52,7 +52,8 @@ def render_manage(
         context={
             "request": request,
             "title": "مدیریت کاربران",
-            "user": current_user(request),
+            "user": getattr(request.state, "current_user", None) or current_user(request),
+            "permissions": getattr(request.state, "permissions", set()),
             "csrf_token": get_csrf_token(request),
             "users": users,
             "roles": list(UserRole),
