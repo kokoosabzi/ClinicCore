@@ -36,8 +36,6 @@ def test_client_fixture_supports_full_crud_round_trip_through_http(admin_client)
     """Exercises the full stack the fixture is meant to unblock for later
     phases: HTTP request -> router -> service -> repository -> the
     isolated test database -> back out through the response model."""
-    client.app.dependency_overrides[require_user] = lambda: {"username": "test-admin", "role": "admin"}
-
     create_response = client.post(
         "/patients/",
         json={"first_name": "Reza", "last_name": "Karimi", "phone": "09121234567"},
