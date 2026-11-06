@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_permission
+from app.core.auth import has_permission, require_permission
 from app.core.database import get_db
 from app.models.user import UserRole
 from app.repositories.user_repository import UserRepository
@@ -44,10 +44,11 @@ def update_user(
     user=Depends(require_permission("users.update")),
     service: UserService = Depends(get_service),
 ):
-    if payload.role != UserRole(user["role"]) and "users.assign_role" not in user.get("permissions", []):
+    actor_role = UserRole(user["role"])
+    if payload.role != actor_role and not has_permission(service.repository.db, actor_role, "users.assign_role"):
         raise HTTPException(status_code=403, detail="Role assignment is not permitted")
     try:
-        return service.update_user(user_id, payload, actor_role=UserRole(user["role"]))
+        return service.update_user(user_id, payload, actor_role=actor_role)
     except UserManagementError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
 
@@ -59,7 +60,9 @@ def deactivate_user(
     service: UserService = Depends(get_service),
 ):
     try:
-        return service.set_active(user_id, active=False, actor_id=int(user["id"]))
+        return service.set_active(
+            user_id, active=False, actor_id=int(user["id"]), actor_role=UserRole(user["role"])
+        )
     except UserManagementError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
 
@@ -71,7 +74,9 @@ def reactivate_user(
     service: UserService = Depends(get_service),
 ):
     try:
-        return service.set_active(user_id, active=True, actor_id=int(user["id"]))
+        return service.set_active(
+            user_id, active=True, actor_id=int(user["id"]), actor_role=UserRole(user["role"])
+        )
     except UserManagementError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
 
@@ -83,7 +88,9 @@ def reset_password(
     service: UserService = Depends(get_service),
 ):
     try:
-        target, temporary_password = service.reset_password(user_id)
+        target, temporary_password = service.reset_password(
+            user_id, actor_role=UserRole(user["role"])
+        )
     except UserManagementError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
     return UserResetPasswordResult(user_id=target.id, temporary_password=temporary_password)
