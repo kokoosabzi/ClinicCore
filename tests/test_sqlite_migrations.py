@@ -54,6 +54,11 @@ def test_alembic_migrations_create_file_backed_sqlite_schema(tmp_path: Path) -> 
             for row in connection.execute("PRAGMA index_list('appointments')")
         }
         assert "uq_active_appointment_starts_at" in indexes
+        index_sql = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = ? AND name = ?",
+            ("index", "uq_active_appointment_starts_at"),
+        ).fetchone()[0]
+        assert "status != 'cancelled'" in index_sql
 
         version = connection.execute(
             "SELECT version_num FROM alembic_version"
