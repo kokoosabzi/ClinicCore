@@ -300,3 +300,11 @@ Release زمانی قابل قبول است که:
 - Valid Jalali leap-day and year-boundary values convert to the expected Gregorian date.
 - Persian digits are accepted in date/time values.
 - Malformed values, trailing text, seconds when minute precision is expected, invalid times, invalid calendar names and out-of-range dates are rejected.
+
+
+### AT-406 — Jalali date picker in financial forms
+- When the configured calendar is Jalali, payment and expense forms display a calendar picker with Persian month/day labels and no free-text date entry.
+- Selecting a Jalali date writes its equivalent Gregorian ISO date to the form payload.
+- When the configured calendar is Gregorian, the browser-native date picker remains available.
+- Payment and expense POST handlers persist the selected Gregorian date without shifting the calendar day.
+- Keyboard focus, open/close state and small-screen layout remain usable.
