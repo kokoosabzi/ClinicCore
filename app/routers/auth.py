@@ -34,6 +34,7 @@ def login_form(request: Request):
 @router.post("/login")
 async def login(request: Request, db: Session = Depends(get_db)):
     data = await form_data(request)
+    verify_csrf(request, data.get("csrf_token"))
     user = AuthService(UserRepository(db)).authenticate(data.get("username", ""), data.get("password", ""))
     if user is None:
        return templates.TemplateResponse(
@@ -43,6 +44,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "title": "ورود",
         "error": "نام کاربری یا رمز عبور نادرست است.",
+        "csrf_token": get_csrf_token(request),
     },
     status_code=status.HTTP_401_UNAUTHORIZED,
 )
