@@ -31,12 +31,12 @@ class Appointment(TimestampMixin, SoftDeleteMixin, Base):
 
     __table_args__ = (
         # ClinicCore currently schedules a single shared appointment slot.
-        # Deleted appointments do not occupy a slot and can be replaced.
+        # Deleted and cancelled appointments do not occupy a slot and can be replaced.
         Index(
             "uq_active_appointment_starts_at",
             "starts_at",
             unique=True,
-            postgresql_where=text("NOT is_deleted"),
-            sqlite_where=text("is_deleted = 0"),
+            postgresql_where=text("NOT is_deleted AND status != 'cancelled'"),
+            sqlite_where=text("is_deleted = 0 AND status != 'cancelled'"),
         ),
     )
