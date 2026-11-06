@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from sqlalchemy import select
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,6 +10,8 @@ from app.core import audit as audit_module
 from app.core.audit import audit_request_middleware
 from app.core.database import get_db
 from app.core.auth import current_user
+from app.models.role import Role, RolePermission
+from app.models.user import User
 from app.services.settings_service import SettingsService
 from app.routers import appointments, auth, financial, health, messaging, pages, patients, users
 
@@ -70,6 +73,32 @@ async def load_app_settings(request: Request, call_next):
         }
         for attribute, key in state_mapping.items():
             setattr(request.state, attribute, keys.get(key))
+
+        username = request.session.get("username")
+        if username:
+            principal = db.scalar(
+                select(User).where(User.username == username, User.is_deleted.is_(False))
+            )
+            if principal is None:
+                request.session.clear()
+                request.state.current_user = None
+                request.state.permissions = set()
+            else:
+                request.state.current_user = {
+                    "id": principal.id,
+                    "username": principal.username,
+                    "role": principal.role.value,
+                }
+                request.state.permissions = set(
+                    db.scalars(
+                        select(RolePermission.permission_code)
+                        .join(Role, Role.id == RolePermission.role_id)
+                        .where(Role.key == principal.role.value, Role.is_active.is_(True))
+                    )
+                )
+        else:
+            request.state.current_user = None
+            request.state.permissions = set()
     finally:
         db.close()
 
@@ -104,7 +133,8 @@ def create_app() -> FastAPI:
                 "app_title": app_title,
                 "app_primary_color": getattr(request.state, "app_primary_color", "#176b67"),
                 "clinic_logo": getattr(request.state, "clinic_logo", ""),
-                "user": current_user(request),
+                "user": getattr(request.state, "current_user", None) or current_user(request),
+                "permissions": getattr(request.state, "permissions", set()),
             },
         )
 
