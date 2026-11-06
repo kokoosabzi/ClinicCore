@@ -9,16 +9,16 @@
   {% if summary.expenses is not none %}<div class="card"><span>هزینه</span><strong>{{ summary.expenses }} ریال</strong></div>{% endif %}
 </div>
 <div class="grid">
-  {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
+  {% if "patients.create" in permissions %}
   <a class="card" href="/patients/new">ثبت بیمار جدید</a>
   {% endif %}
-  {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
+  {% if "appointments.create" in permissions %}
   <a class="card" href="/appointments/new">رزرو نوبت</a>
   {% endif %}
-  {% if user and user.role in ["admin", "clinic_manager", "accountant"] %}
+  {% if "financial.create" in permissions %}
   <a class="card" href="/financial/payments/new">ثبت پرداخت</a>
   {% endif %}
-  {% if user and user.role in ["admin", "clinic_manager", "doctor", "secretary"] %}
+  {% if "messaging.create" in permissions %}
   <a class="card" href="/messages/new">صف پیام‌ها</a>
   {% endif %}
 </div>
