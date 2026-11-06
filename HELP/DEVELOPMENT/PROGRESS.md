@@ -85,11 +85,13 @@ Repository: `main`
 
 ## 7. شواهد CI
 
+- Jalali date/time hardening: [Windows CI run #116](https://github.com/kokoosabzi/ClinicCore/actions/runs/42286509958) — **50 passed, 0 failed**, SQLite migration موفق.
+
 - Sprint 0: [Windows CI run #103](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192657181) — بعد از ادغام PR #14 روی main
 - Sprint 1: [Windows CI run #93](https://github.com/kokoosabzi/ClinicCore/actions/runs/42190638528)
 - Dynamic UI Themes (consolidated): [Windows CI run #105](https://github.com/kokoosabzi/ClinicCore/actions/runs/42192980523)
 
-- اعتبارسنجی strict ورودی تاریخ/زمان و آزمون تاریخ‌های مرزی جلالی به `datetime_service` اضافه شد؛ نتیجه CI این تغییر باید پیش از اعلام تکمیل بررسی شود.
+- اعتبارسنجی strict ورودی تاریخ/زمان و آزمون تاریخ‌های مرزی جلالی به `datetime_service` اضافه شد؛ Windows CI run #116 موفق شد: **50 passed, 0 failed** و مهاجرت SQLite نیز موفق بود. CI تعداد 85 warning گزارش کرد که باید جداگانه triage شود.
 
 ## 8. کارهای باقیمانده و دروازه انتشار
 
