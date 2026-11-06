@@ -1,23 +1,22 @@
 # ClinicCore
 
-ClinicCore is a Persian-first clinic management application for small medical offices and healthcare centers.
+ClinicCore is a Persian-first, local clinic-management application for small medical offices and healthcare centers.
 
 ## Technology
 
 - Python 3.12+
 - FastAPI
-- SQLAlchemy 2
-- Alembic
-- SQLite (local, file-backed)
+- SQLAlchemy 2 and Alembic
+- SQLite (local, file-backed; no Docker or PostgreSQL required)
 - Jinja2, HTMX and Alpine.js
-- Persian RTL interface and Jalali date presentation
+- Persian RTL interface and Jalali appointment calendar/date presentation
 
 ## Windows quick start
 
 1. Install **Python 3.12 or newer** and Git.
 2. Clone this repository and open its folder.
 3. Run `setup.bat` once. It creates `.venv`, installs dependencies, creates a private local `.env` for a fresh installation, applies database migrations, and creates the initial administrator.
-4. Run `start.bat` to start the local application.
+4. Run `start.bat` to start the application.
 5. Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 6. Use `stop.bat` to stop the server started by this launcher.
 
@@ -27,15 +26,31 @@ Detailed instructions: [HELP/INSTALL.txt](HELP/INSTALL.txt), [HELP/RUN.txt](HELP
 
 ## Database and data safety
 
-The current application configuration supports **SQLite only**. The default database is `data/cliniccore.db`. The application creates the data directory when needed. Database schema changes are managed by Alembic.
+The current application configuration supports **SQLite only**. The default database is `data/cliniccore.db`. Database schema changes are managed by Alembic.
 
 The setup and launch scripts do not delete or replace an existing database. They do not stop Docker containers, remove volumes, or modify PostgreSQL data. If an existing `.env` points to a non-SQLite database, setup will fail safely; review that configuration deliberately rather than overwriting it.
 
 Back up the `data` directory while the application is stopped. Do not commit `.env`, database files, uploaded logos, or credentials.
 
-## Current scope
+## Current implemented scope
 
-ClinicCore includes authentication, user roles, patient records, appointment booking, financial records, messaging foundations, settings, and printable views. The role model currently includes administrator, doctor, secretary, and accountant. Detailed permission granularity and full user administration remain planned work.
+- Local authentication, session handling, forced first-login password change, CSRF protection and audit foundations.
+- User administration and role/permission management for five built-in roles: system administrator, clinic manager, doctor, secretary and accountant.
+- Patient records and appointment booking.
+- Jalali appointment date selection with a dedicated Persian calendar and available-time slots; appointment timestamps are stored as Gregorian Python datetimes.
+- Basic financial record capture (not payment processing or banking transactions).
+- Messaging foundations with a development/console provider; production messaging integrations and contact management are not complete.
+- Central settings for application/clinic identity, date/time, appearance, messaging, reports and printing.
+- Four visual presets: Clinical Light, Modern Dark, Soft Neutral and High Contrast, plus configurable font scale and density.
+- Printable patient, appointment and payment views.
+
+## Known limitations / next work
+
+- Manual installation and browser acceptance on a user's Windows machine are not yet recorded as complete.
+- Record-level ownership restrictions (for example, doctor-specific patient/appointment visibility) need a separate design and implementation pass; current RBAC is primarily module/action based.
+- Appointment lifecycle management, configurable clinic/provider working hours and appointment duration need further development.
+- Reporting, production messaging providers/contacts, backup/restore workflow and final print QA remain incomplete.
+- Theme and print behavior still require visual acceptance in a real Windows browser.
 
 ## Development
 
