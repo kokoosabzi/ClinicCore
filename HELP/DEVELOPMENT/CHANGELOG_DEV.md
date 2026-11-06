@@ -3,7 +3,7 @@
 ## 2026-11-06 — Sprint 0: Windows and SQLite runtime stabilization
 
 - Phase/Task: Sprint 0 / Windows readiness
-- Commit: pending branch completion
+- Commit: implementation/documentation commit series on `stabilization/windows-sqlite-runtime`
 - Summary: Aligned installation and runtime documentation with the existing SQLite-only implementation. Added secure first-install credential bootstrap and dedicated setup/start/stop scripts. Updated progress and Windows acceptance criteria.
 - Verification: GitHub source inspection only. No local Python test suite, Alembic command, or Windows manual test was run.
 
