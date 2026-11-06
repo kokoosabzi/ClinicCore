@@ -132,3 +132,14 @@ Repository: `main`
 - Added lifecycle integration tests for valid/invalid transitions, cancellation slot reuse, reschedule conflict and audit events.
 - Windows CI run #150 passed: **58 passed, 0 failed**, compileall, JavaScript syntax validation and clean SQLite migration to \`20261107_0007\` all passed.
 - Manual Windows/browser acceptance remains outstanding; practitioner-specific schedules and configurable slot duration are not implemented yet.
+
+
+### 2026-11-07 — Configurable clinic-wide appointment schedule
+- Added administrator settings for clinic opening/closing time, slot duration (15/20/30/45/60 minutes) and working weekdays.
+- Defaults preserve the prior 09:00–17:00, 30-minute schedule and six-day week with Friday closed.
+- Availability generation now reads persisted settings, excludes non-working weekdays, marks occupied/past slots and returns the configured slot duration.
+- The booking UI displays configured hours/duration and explains when the clinic is closed on the selected day.
+- Added validation for time format, weekday values, at least one working day and exact divisibility of workday duration by slot duration.
+- No schema migration was required; settings use the existing key/value settings store.
+- Windows CI run #171 passed: **71 passed, 0 failed**, compileall, JavaScript syntax validation and clean SQLite migration passed.
+- Manual browser acceptance remains outstanding. Schedule settings are currently clinic-wide; practitioner-specific hours, leave/holiday exceptions and room/resource allocation remain future work.
