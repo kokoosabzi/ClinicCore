@@ -2,48 +2,24 @@
 
 ## 1. هدف
 
-این سند برنامه مرجع فاز بازطراحی و توسعه ClinicCore است. هدف، تبدیل وضعیت فعلی پروژه به یک سامانه مدیریت کلینیک با:
+تبدیل ClinicCore به سامانه مدیریت کلینیک فارسی‌محور، قابل نصب و اجرا به‌صورت محلی روی Windows با SQLite، شامل مدیریت کاربران و مجوزها، نوبت‌دهی، پرونده بیماران، ثبت سوابق مالی، تنظیمات، ظاهر پویا، گزارش و چاپ.
 
-- تنظیمات مرکزی و قابل مدیریت از UI
-- نام و هویت قابل تنظیم سامانه/کلینیک
-- Design System و Theme پویا
-- UX یکپارچه و RTL
-- تقویم و نمایش تاریخ/زمان هجری شمسی
-- Dashboard و Reporting
-- Messaging و Contacts
-- Print Layout قابل تنظیم
-- اجرای Local با SQLite به‌عنوان گزینه deployment نهایی
-- معماری قابل نگهداری و مناسب برای توسعه توسط AI Agent
+## 2. وضعیت اجرای برنامه
 
-این سند برای Codex/AI Agent نوشته شده و باید همراه با `REQUIREMENTS.md`، `SETTINGS_SPEC.md`، `UX_UI_SPEC.md`، `AGENT_WORKFLOW.md` و `ACCEPTANCE_TESTS.md` خوانده شود.
-
-## 2. وضعیت مبنا
-
-Repository فعلی یک پروژه Python/FastAPI است و ساختار فعلی شامل بخش‌های زیر است:
-
-- `app/core`
-- `app/models`
-- `app/plugins`
-- `app/providers`
-- `app/repositories`
-- `app/routers`
-- `app/schemas`
-- `app/services`
-- `app/static`
-- `app/templates`
-- `alembic`
-- `tests`
-- `HELP`
-
-در فاز فعلی، برنامه اجرا شده و مسیرهای اصلی UI تست شده‌اند. اصلاحات اخیر شامل سازگار کردن `TemplateResponse` با نسخه فعلی Starlette و اضافه شدن `start.bat` بوده است.
-
-**اصل مهم:** Agent باید کد فعلی را قبل از تغییر بررسی کند و قابلیت‌های سالم را بدون دلیل بازنویسی نکند.
+- Sprint 0 — Windows & SQLite stabilization: پیاده‌سازی و ادغام شده؛ پذیرش دستی روی Windows کاربر باقی است.
+- Sprint 1 — User Administration & RBAC: پیاده‌سازی و ادغام شده؛ پذیرش دستی UI باقی است.
+- Phase 1 — Settings & Application Identity: زیرساخت SettingsService و بخش عمده تنظیمات هویت/ظاهر/تاریخ/چاپ پیاده‌سازی شده؛ بازبینی دستی و تکمیل اعتبارسنجی/UX باقی است.
+- Phase 2 — Design System & UX: چهار preset بصری، اندازه فونت و تراکم پیاده‌سازی شده؛ بازبینی بصری و اصلاح جزئیات صفحات باقی است.
+- Phase 3 — Calendar & Date/Time: تبدیل تاریخ جلالی/میلادی و تقویم اختصاصی جلالی برای رزرو نوبت پیاده‌سازی شده؛ یکپارچگی ورودی تاریخ در فرم‌های مالی، آزمون مرز سال/ماه و برنامه کاری قابل تنظیم باقی است.
+- Phase 4 — Dashboard & Reporting: داشبورد پایه وجود دارد؛ گزارش‌های تحلیلی و export کامل باقی است.
+- Phase 5 — Messaging & Contacts: پایه provider و پیام‌رسانی توسعه‌ای وجود دارد؛ مخاطبین و providerهای عملیاتی باقی است.
+- Phase 6 — Printing: صفحات چاپ پایه وجود دارد؛ تکمیل خروجی‌ها و QA بصری/چاپ واقعی باقی است.
+- Phase 7 — Local Database: SQLite و مسیر migration محلی پیاده‌سازی شده؛ backup/restore و پذیرش عملی باقی است.
+- Phase 8 — Final QA: انجام نشده؛ پس از پذیرش دستی و تکمیل قابلیت‌های اصلی اجرا شود.
 
 ## 3. اصول معماری
 
-### 3.1 لایه‌بندی
-
-الگوی فعلی لایه‌ای حفظ شود:
+الگوی لایه‌ای حفظ شود:
 
 ```text
 Router -> Service -> Repository -> Model/DB
@@ -51,123 +27,37 @@ Router -> Service -> Repository -> Model/DB
             Schema
 ```
 
-قواعد:
-
 - Router محل منطق تجاری اصلی نیست.
 - Service محل منطق دامنه است.
 - Repository مسئول دسترسی داده است.
 - Template نباید منطق تجاری داشته باشد.
-- تنظیمات از یک Settings Service مرکزی خوانده شوند.
+- تنظیمات از SettingsService مرکزی خوانده شوند.
 - قابلیت‌های cross-cutting مانند تاریخ، theme، print و messaging سرویس/abstraction مستقل داشته باشند.
+- تغییرات schema فقط با Alembic انجام شوند؛ runtime نباید `Base.metadata.create_all` اجرا کند.
 
-### 3.2 سازگاری با آینده
+## 4. تصمیم پایگاه داده و استقرار
 
-هر قابلیت جدید باید تا حد امکان مستقل از provider و database باشد.
+- سیستم تحویل فعلی Windows local است.
+- SQLite فایل‌محور تنها دیتابیس پشتیبانی‌شده در این نسخه است.
+- مسیر پیش‌فرض دیتابیس: `data/cliniccore.db`.
+- تنظیمات محرمانه در `.env` محلی و خارج از Git نگهداری می‌شوند.
+- نصب و اجرا با `setup.bat`، `start.bat` و `stop.bat` انجام می‌شود.
+- PostgreSQL و Docker پیش‌نیاز نیستند؛ هیچ فایل، volume یا دیتابیس قدیمی خارج از مخزن نباید حذف یا دستکاری شود.
+- هرگونه استقرار شبکه‌ای یا بازگشت به دیتابیس دیگر نیازمند تصمیم معماری و آزمون مستقل است.
 
-نمونه:
+## 5. ترتیب اولویت ادامه توسعه
 
-```text
-MessagingService
-    -> MessagingProvider
-        -> SMSProvider
-        -> TelegramProvider
-        -> ...
-```
+1. پذیرش عملی نصب، ورود، مدیریت کاربران، نقش‌ها، تم‌ها، نوبت‌دهی، چاپ و حفظ داده روی Windows.
+2. سخت‌سازی آزمون‌های تاریخ جلالی/میلادی و ورودی تاریخ/زمان در فرم‌های موجود.
+3. طراحی دامنه دسترسی رکوردی (مثلاً پرونده‌ها و نوبت‌های قابل مشاهده برای هر پزشک) پیش از پیاده‌سازی.
+4. تکمیل چرخه عمر نوبت و تنظیم ساعات کاری/مدت نوبت.
+5. گزارش‌های واقعی و خروجی‌های CSV/PDF/Excel موردنیاز.
+6. تکمیل مخاطبین و اتصال providerهای واقعی پیام‌رسانی.
+7. تکمیل backup/restore و QA نهایی.
 
-و:
+## 6. معیارهای معماری
 
-```text
-Application
-    -> SQLAlchemy
-        -> SQLite
-        -> PostgreSQL
-```
-
-## 4. ترتیب فازها
-
-### Sprint 0 — Project Stabilization & Windows Readiness
-- همسان‌سازی مستندات با کد واقعی و SQLite-only
-- تثبیت نصب، اجرا و توقف در Windows
-- تولید امن تنظیمات و رمز اولیه مدیر در نصب تازه
-- تست migration و مسیر نصب تازه بدون حذف داده موجود
-
-
-### Sprint 1 — User Administration & Role-Based Access Control
-- Add built-in roles: system administrator, clinic manager, doctor, secretary and accountant.
-- Add a normalized role/permission catalog with additive Alembic migration.
-- Complete user lifecycle management and one-time temporary password reset.
-- Enforce permissions at server routes and data presentation boundaries.
-- Add a Persian RTL user page and administrator-only role-permission matrix.
-- Preserve existing accounts and password hashes; do not reset or replace the local SQLite database.
-
-### Phase 0 — Baseline & Specification
-- تثبیت تست‌ها
-- تعریف قراردادهای معماری
-- ایجاد اسناد توسعه
-- ایجاد Acceptance Tests
-
-### Phase 1 — Settings & Application Identity
-- مدل Settings
-- Settings Service/Repository
-- UI تنظیمات
-- نام سامانه، عنوان، اطلاعات کلینیک، لوگو
-
-### Phase 2 — Design System & UX
-- Layout مشترک
-- Header/Sidebar
-- Back
-- Breadcrumb
-- Theme
-- Typography
-- Light/Dark
-- responsive behavior
-
-### Phase 3 — Calendar & Date/Time
-- Calendar Service
-- Jalali/Gregorian conversion
-- timezone
-- نمایش تاریخ/زمان در Header
-- DatePicker مناسب نوبت‌گذاری
-
-### Phase 4 — Dashboard & Reporting
-- KPI cards
-- Charts
-- گزارش‌های اصلی
-- export/print
-
-### Phase 5 — Messaging & Contacts
-- provider abstraction
-- contacts
-- templates
-- message history
-- delivery status
-
-### Phase 6 — Printing
-- print design system
-- قبض
-- گزارش
-- سربرگ/پاورقی
-- تنظیمات چاپ
-
-### Phase 7 — Local Database
-- database abstraction verification
-- SQLite deployment
-- migration strategy
-- backup/restore
-
-### Phase 8 — Final QA
-- regression
-- security
-- permissions
-- accessibility
-- print
-- backup
-- deployment
-
-## 5. معیارهای معماری
-
-قبل از تکمیل هر فاز:
-
+پیش از تکمیل هر فاز:
 1. تست‌های مرتبط سبز باشند.
 2. هیچ secret در repository قرار نگیرد.
 3. migrationها قابل تکرار باشند.
@@ -177,46 +67,6 @@ Application
 7. قابلیت‌های provider-specific در abstraction پنهان شوند.
 8. قابلیت جدید مستند شود.
 
-## 6. تصمیم پایگاه داده و استقرار
+## 7. قانون توسعه
 
-در نسخه محلی فعلی، **SQLite تنها دیتابیس پشتیبانی‌شده** است و مسیر تحویل، Windows local است. PostgreSQL و Docker پیش‌نیاز نصب نیستند. این تصمیم به معنی مجوز حذف یا تغییر دیتابیس‌ها و volumeهای قدیمی بیرون از مخزن نیست.
-
-مسیر پیش‌فرض:
-- فایل دیتابیس: `data/cliniccore.db`
-- تنظیمات محرمانه: `.env` محلی و خارج از Git
-- محیط مجازی: `.venv`
-- Migration: Alembic
-
-هرگونه بازگشت به PostgreSQL یا استقرار چندکاربره شبکه‌ای نیازمند تصمیم معماری و آزمون مستقل خواهد بود.
-
-## 7. خروجی مورد انتظار
-
-در پایان فاز:
-
-- Settings کامل و قابل استفاده
-- UI/UX یکپارچه
-- Theme پویا
-- Jalali
-- Dashboard
-- Reports
-- Messaging
-- Contacts
-- Print
-- Local SQLite
-- Backup/Restore
-- تست‌های پذیرش
-- مستندات به‌روز
-
-## 8. قانون مهم برای Agent
-
-هیچ فاز بزرگی در یک commit انجام نشود.
-
-هر قابلیت منطقی:
-1. plan
-2. implementation
-3. test
-4. manual verification
-5. documentation
-6. commit
-
-باشد.
+هیچ فاز بزرگی در یک commit انجام نشود. هر قابلیت منطقی باید شامل plan، implementation، test، manual verification، documentation و commit باشد. پذیرش دستی فقط پس از اجرای واقعی روی Windows کاربر Pass اعلام شود.
