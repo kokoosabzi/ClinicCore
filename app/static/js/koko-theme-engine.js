@@ -81,7 +81,7 @@
     document.querySelectorAll(nativeControlSelector).forEach(control => {
       if (!controlSnapshots.has(control)) {
         const snapshot = {};
-        ['background-color', 'color', 'border-color', 'appearance', '-webkit-appearance', 'color-scheme'].forEach(property => {
+        ['background', 'background-color', 'color', 'border-color', 'appearance', '-webkit-appearance', 'color-scheme'].forEach(property => {
           snapshot[property] = {
             value: control.style.getPropertyValue(property),
             priority: control.style.getPropertyPriority(property)
@@ -91,6 +91,7 @@
       }
       const snapshot = controlSnapshots.get(control);
       if (prefs.theme === 'dark') {
+        control.style.setProperty('background', '#192633', 'important');
         control.style.setProperty('background-color', '#192633', 'important');
         control.style.setProperty('color', '#edf4f7', 'important');
         control.style.setProperty('border-color', '#354957', 'important');
