@@ -1,0 +1,19 @@
+/* Koko UI System — pastel dashboard foundation. RTL-first; application behavior remains unchanged. */
+:root{--koko-bg:#eef1ff;--koko-surface:#fff;--koko-text:#263653;--koko-muted:#7886a2;--koko-border:#e3e8f4;--koko-primary:#496cf0;--koko-blue:#dcecff;--koko-mint:#d9f7ec;--koko-lilac:#e9ddff;--koko-pink:#ffe0ed;--koko-peach:#ffe8d8;--koko-yellow:#fff2c9;--koko-radius:18px;--koko-shadow:0 8px 26px rgba(53,76,130,.075);color-scheme:light}
+html[dir="rtl"],body{direction:rtl}body{background:var(--koko-bg);color:var(--koko-text);font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif}
+.panel,.card,.metric,.hero,.form,.metrics article,.metrics .card{background:var(--koko-surface);border:1px solid var(--koko-border);border-radius:var(--koko-radius);box-shadow:var(--koko-shadow)}
+h1,h2,h3{color:var(--koko-text)}p,.hint,.muted,small{color:var(--koko-muted)}
+input,select,textarea{border:1px solid #dce3f0;border-radius:11px;background:#fff;color:var(--koko-text)}
+button,.button,.btn,.primary{border-radius:11px;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+button:hover,.button:hover,.btn:hover,.primary:hover{filter:brightness(1.025);box-shadow:0 5px 14px rgba(73,108,240,.14)}
+:focus-visible{outline:3px solid rgba(73,108,240,.32);outline-offset:2px}
+table{border-color:var(--koko-border);border-radius:14px;overflow:hidden}th{background:#f4f6ff;color:#6f7d9b}td,th{border-bottom-color:#edf0f7}
+.sidebar{background:#fff!important;color:var(--koko-text)!important;border-left:1px solid var(--koko-border);box-shadow:var(--koko-shadow)}
+.sidebar nav button,.sidebar button{color:#667493}.sidebar nav button.active,.sidebar nav button:hover,.sidebar button.active,.sidebar button:hover{background:#e9edff!important;color:#3f61df!important}
+.topbar{background:rgba(255,255,255,.94);border-color:var(--koko-border);box-shadow:0 3px 16px rgba(53,76,130,.045)}
+.metrics article:nth-child(4n+1),.metrics .metric:nth-child(4n+1){background:linear-gradient(135deg,#fff,#e8e1ff)}
+.metrics article:nth-child(4n+2),.metrics .metric:nth-child(4n+2){background:linear-gradient(135deg,#fff,#dcf8ed)}
+.metrics article:nth-child(4n+3),.metrics .metric:nth-child(4n+3){background:linear-gradient(135deg,#fff,#ffe3ec)}
+.metrics article:nth-child(4n+4),.metrics .metric:nth-child(4n+4){background:linear-gradient(135deg,#fff,#fff1d5)}
+.koko-shortcut,.quick-action{border:1px solid var(--koko-border);border-radius:18px;box-shadow:var(--koko-shadow);background:linear-gradient(135deg,#fff,#e6edff)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
