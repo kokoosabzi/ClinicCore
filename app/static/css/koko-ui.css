@@ -400,3 +400,16 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
   background:#40252d!important;
   color:#ffb3c0!important;
 }
+
+/* Native form controls can retain browser/legacy white fills; force the dark surface. */
+:root[data-koko-theme="dark"] input.koko-control,
+:root[data-koko-theme="dark"] select.koko-control,
+:root[data-koko-theme="dark"] textarea.koko-control,
+:root[data-koko-theme="dark"] .koko-field input,
+:root[data-koko-theme="dark"] .koko-field select,
+:root[data-koko-theme="dark"] .koko-field textarea{
+  background-color:#192633!important;
+  background:#192633!important;
+  color:#edf4f7!important;
+  border-color:#354957!important;
+}
