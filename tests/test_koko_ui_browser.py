@@ -110,3 +110,26 @@ def test_clinic_mobile_navigation_drawer_and_keyboard_dismissal(page):
     page.get_by_role("link", name="بیماران").click()
     expect(nav).to_be_hidden()
     expect(toggle).to_have_attribute("aria-expanded", "false")
+
+
+def test_patient_pages_adopt_koko_ui_kit_without_changing_form_contracts():
+    form = (ROOT / "app/templates/patients/form.html").read_text(encoding="utf-8")
+    listing = (ROOT / "app/templates/patients/index.html").read_text(encoding="utf-8")
+    detail = (ROOT / "app/templates/patients/detail.html").read_text(encoding="utf-8")
+
+    assert 'class="form koko-form"' in form
+    for field in ("first_name", "last_name", "national_code", "phone", "notes"):
+        assert f'name="{field}"' in form
+    assert 'name="csrf_token"' in form
+    assert 'action="{{ action }}"' in form
+    assert "koko-form-grid" in form and "koko-form-actions" in form
+
+    assert 'class="koko-table-wrap"' in listing
+    assert 'class="koko-table"' in listing
+    assert 'name="q"' in listing
+    assert "/patients/{{ patient.id }}" in listing
+
+    assert detail.count('class="koko-table-wrap"') == 2
+    assert detail.count('class="koko-table"') == 2
+    assert 'action="/ui/patients/{{ patient.id }}/delete"' in detail
+    assert 'name="csrf_token"' in detail
