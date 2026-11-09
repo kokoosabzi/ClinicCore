@@ -138,3 +138,12 @@ table td{vertical-align:middle;font-size:.9rem}
 .status-pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;background:#edf1ff;color:#536cae;font-size:.8rem}
 @media(max-width:700px){.koko-workspace-tabs{padding-inline:12px}.table-wrap{border-radius:12px}.toolbar{flex-wrap:wrap}.toolbar input{flex-basis:100%}}
 @media print{.koko-workspace-tabs{display:none!important}}
+
+/* Mobile navigation overlay and keyboard dismissal state */
+@media(max-width:900px){
+ body.koko-nav-open{overflow:hidden}
+ body.koko-nav-open::after{content:"";position:fixed;z-index:55;inset:70px 0 0;background:rgba(12,25,40,.38)}
+ header.topbar #main-nav{z-index:60;max-height:calc(100dvh - 70px);overscroll-behavior:contain;border-radius:0 0 0 16px}
+ header.topbar #main-nav a:focus-visible,header.topbar #main-nav button:focus-visible{outline:3px solid var(--kt-accent,#496cf0);outline-offset:2px}
+ header.topbar .nav-toggle{min-height:40px;border:1px solid var(--koko-border);border-radius:10px;padding:8px 12px;background:var(--koko-surface);color:var(--koko-text);font:inherit}
+}
