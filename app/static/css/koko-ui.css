@@ -112,3 +112,29 @@ header.topbar .nav-toggle{display:none}
 :root[data-style="modern-dark"] .koko-card-peach,:root[data-theme="dark"] .koko-card-peach{background:linear-gradient(135deg,#392e27,#514034)!important}
 :root[data-style="modern-dark"] .koko-card-yellow,:root[data-theme="dark"] .koko-card-yellow{background:linear-gradient(135deg,#393522,#51482a)!important}
 :root[data-style="modern-dark"] .koko-action,:root[data-theme="dark"] .koko-action{color:var(--koko-text)!important}
+
+/* Workspace tabs and dense business-data presentation */
+.koko-workspace-tabs{display:flex;align-items:center;gap:7px;min-height:48px;margin:0;padding:7px 22px;overflow-x:auto;background:#f7f8ff;border-bottom:1px solid var(--koko-border);scrollbar-width:thin}
+.koko-tab{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;max-width:220px;padding:5px 9px 5px 6px;border:1px solid var(--koko-border);border-radius:11px;background:#fff;color:var(--koko-text);box-shadow:0 2px 8px rgba(53,76,130,.04)}
+.koko-tab a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit;font-size:.85rem;text-decoration:none}
+.koko-tab.active{background:#e8edff;border-color:#cdd8ff;color:#3f61df;font-weight:700}
+.koko-tab-close{display:grid;place-items:center;width:23px;height:23px;padding:0;border-radius:7px;background:transparent;color:var(--koko-muted);font-size:1.1rem;line-height:1}
+.koko-tab-close:hover{background:#fce5eb;color:#b83e58}
+/* Forms */
+.form{gap:1.1rem;padding:clamp(1rem,2.5vw,1.6rem)}
+.form label,.field-label{color:var(--koko-text);font-size:.92rem}
+.form input,.form select,.form textarea{min-height:43px;border-radius:11px;border-color:var(--koko-border);background:var(--koko-surface);transition:border-color .15s,box-shadow .15s}
+.form textarea{min-height:110px;resize:vertical}
+.form input:focus,.form select:focus,.form textarea:focus{border-color:#8ea5fa;box-shadow:0 0 0 3px rgba(73,108,240,.10);outline:0}
+.form button[type=submit],.page-header-actions .button{box-shadow:0 5px 14px rgba(73,108,240,.15)}
+/* Tables: keep semantic table layout; horizontal scroll on narrow screens */
+.table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--koko-border);border-radius:16px;background:var(--koko-surface);box-shadow:var(--koko-shadow)}
+.table-wrap table{min-width:720px;border:0;border-radius:0;box-shadow:none}
+table thead th{position:sticky;top:0;z-index:1;background:#f2f5ff;color:#617293;font-size:.84rem;font-weight:700;white-space:nowrap}
+table tbody tr:hover{background:#f8f9ff}
+table td{vertical-align:middle;font-size:.9rem}
+.toolbar{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--koko-border);border-radius:15px;background:#fff;box-shadow:var(--koko-shadow)}
+.toolbar input{min-width:180px;flex:1}
+.status-pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;background:#edf1ff;color:#536cae;font-size:.8rem}
+@media(max-width:700px){.koko-workspace-tabs{padding-inline:12px}.table-wrap{border-radius:12px}.toolbar{flex-wrap:wrap}.toolbar input{flex-basis:100%}}
+@media print{.koko-workspace-tabs{display:none!important}}
