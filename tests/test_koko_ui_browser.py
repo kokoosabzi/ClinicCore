@@ -133,3 +133,26 @@ def test_patient_pages_adopt_koko_ui_kit_without_changing_form_contracts():
     assert detail.count('class="koko-table"') == 2
     assert 'action="/ui/patients/{{ patient.id }}/delete"' in detail
     assert 'name="csrf_token"' in detail
+
+
+def test_appointment_pages_adopt_koko_ui_kit_and_keep_calendar_hooks():
+    form = (ROOT / "app/templates/appointments/form.html").read_text(encoding="utf-8")
+    listing = (ROOT / "app/templates/appointments/index.html").read_text(encoding="utf-8")
+
+    assert 'class="form appointment-form koko-form"' in form
+    for hook in ("data-appointment-calendar", "data-calendar-grid", "data-time-slots",
+                 "data-selected-date", "data-selected-time", "data-month-prev",
+                 "data-month-next"):
+        assert hook in form
+    for field in ("patient_id", "reason", "notes", "starts_at_date", "starts_at_time"):
+        assert f'name="{field}"' in form
+    assert 'name="csrf_token"' in form
+    assert "koko-form-section" in form and "koko-form-actions" in form
+
+    assert 'class="table-wrap koko-table-wrap"' in listing
+    assert 'class="koko-table"' in listing
+    assert 'class="appointment-actions koko-table-actions"' in listing
+    for endpoint in ("/reschedule", "/status", "/cancel", "/print/appointments/"):
+        assert endpoint in listing
+    assert 'name="csrf_token"' in listing
+    assert "appointments.update" in listing and "appointments.cancel" in listing
