@@ -202,3 +202,49 @@ def test_financial_pages_adopt_koko_ui_kit_and_keep_form_and_calendar_contracts(
         assert "data-jalali-picker" in template
         assert "data-jalali-trigger" in template
         assert "data-jalali-value" in template
+
+
+def test_user_management_and_roles_adopt_koko_ui_without_changing_permissions():
+    manage = (ROOT / "app/templates/users/manage.html").read_text(encoding="utf-8")
+    roles = (ROOT / "app/templates/users/roles.html").read_text(encoding="utf-8")
+    for endpoint in ("/users/ui/create", "/users/ui/{{ item.id }}/update",
+                     "/users/ui/{{ item.id }}/reset-password",
+                     "/users/ui/{{ item.id }}/deactivate",
+                     "/users/ui/{{ item.id }}/reactivate"):
+        assert endpoint in manage
+    assert 'name="csrf_token"' in manage
+    for field in ("full_name", "username", "password", "role"):
+        assert f'name="{field}"' in manage
+    for permission in ("can_create", "can_update", "can_assign_role",
+                       "can_reset_password", "can_deactivate", "actor_id"):
+        assert permission in manage
+    assert 'class="koko-form"' in manage
+    assert 'class="koko-table-wrap"' in manage
+    assert 'class="koko-table"' in manage
+    for state in ("is-success", "is-warning", "is-danger"):
+        assert f"koko-badge {state}" in manage
+    assert "temporary_password" in manage
+
+    assert 'action="/users/roles/{{ entry.role.key }}"' in roles
+    assert 'name="permissions"' in roles
+    assert 'name="csrf_token"' in roles
+    assert "entry.granted" in roles
+    assert "entry.role.key == 'admin'" in roles
+    assert "koko-form-section" in roles and "koko-form-actions" in roles
+
+
+def test_settings_form_keeps_existing_configuration_fields_and_file_upload():
+    settings = (ROOT / "app/templates/settings.html").read_text(encoding="utf-8")
+    assert 'method="post" action="/settings"' in settings
+    assert 'enctype="multipart/form-data"' in settings
+    assert 'name="csrf_token"' in settings
+    assert 'class="form koko-form"' in settings
+    assert 'name="clinic_logo_file"' in settings
+    for field in ("app_name", "app_theme", "app_style", "datetime_calendar",
+                  "datetime_timezone", "appointments_workday_start",
+                  "appointments_workday_end", "appointments_working_days",
+                  "reports_default_format", "messaging_enabled",
+                  "contacts_enabled", "print_paper_size", "system_audit_enabled",
+                  "clinic_name", "clinic_email", "clinic_logo"):
+        assert f'name="{field}"' in settings
+    assert 'class="koko-form-actions is-sticky"' in settings
