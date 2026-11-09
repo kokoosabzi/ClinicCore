@@ -50,3 +50,38 @@ Adopt the supplied Persian RTL dashboard references: soft blue/lavender canvas, 
 - Sabt: contract workflow, transfers, bulk import, and Jalali reporting.
 - ClinicCore: patients, appointments, clinical workflows, and clinic schedule.
 - Store: sales, purchases, inventory, people, accounts, and reports.
+
+## Koko UI Kit v1 — reusable page components
+
+The shared component contract is opt-in and presentation-only. Existing pages can migrate incrementally without changing routes, API payloads, validation rules, permissions, or persistence.
+
+### Forms
+- `.koko-form`: vertical form layout.
+- `.koko-form-grid` (optional `.is-three-columns`): responsive field grid.
+- `.koko-field`: field wrapper; use a real `label` associated with its control.
+- `.koko-control`: reusable input/select/textarea appearance.
+- `.koko-help`, `.koko-field-error`: supporting and validation text.
+- `.koko-form-section`, `.koko-form-actions`: grouped sections and action footer.
+- `.koko-form-actions.is-sticky`: optional sticky action row; do not use where it obscures content.
+
+### Buttons and status
+- `.koko-button` with `.is-secondary`, `.is-ghost`, `.is-danger`, `.is-success`, `.is-small`, or `.is-large`.
+- `.koko-icon-button` for icon-only actions; every icon-only control must have an accessible name.
+- `.koko-badge` with semantic state modifiers `.is-success`, `.is-warning`, `.is-danger`, or `.is-info`.
+
+### Tables
+- Wrap `table.koko-table` in `.koko-table-wrap` for bounded horizontal scrolling.
+- Optional `.is-compact` on the table.
+- Use `.koko-table-toolbar`, `.koko-table-actions`, `.koko-table-empty`, and `.koko-pagination` as layout hooks.
+- Search, sorting, filtering, pagination, and row actions remain implemented by each application's own data layer; CSS does not imply those behaviors exist.
+
+### Dialogs
+- `.koko-dialog-backdrop` contains a `.koko-dialog[role="dialog"]`; set `aria-modal="true"` and an accessible title.
+- Use `.is-wide` for wide dialogs and `.koko-dialog-body` for scrollable content.
+- Dialog open/close behavior, focus trapping/restoration, Escape handling, and background inertness must be provided by the host application; the CSS is visual only.
+
+### Migration and QA
+- Apply these classes to one page group at a time; retain existing field names, IDs, form actions, and event handlers.
+- Verify light/dark themes, RTL, keyboard focus, validation, narrow screens, and print output.
+- Do not apply pastel gradients to dense data tables or long-form clinical/financial content.
+
