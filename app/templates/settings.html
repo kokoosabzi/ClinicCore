@@ -3,7 +3,7 @@
 <h1>تنظیمات سامانه</h1>
 {% if saved %}<p class="alert success" role="status">تنظیمات با موفقیت ذخیره شد.</p>{% endif %}
 {% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
-<form method="post" action="/settings" class="form" enctype="multipart/form-data">
+<form method="post" action="/settings" class="form koko-form" enctype="multipart/form-data">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <h2>عمومی</h2>
   <label>نام سامانه<input name="app_name" value="{{ settings['app.name'] or '' }}" maxlength="4000" required></label>
@@ -214,6 +214,6 @@
   <label>متن سربرگ<textarea name="clinic_header_text" maxlength="4000">{{ settings['clinic.header_text'] or '' }}</textarea></label>
   <label>متن پاورقی<textarea name="clinic_footer_text" maxlength="4000">{{ settings['clinic.footer_text'] or '' }}</textarea></label>
 
-  <button type="submit">ذخیره تنظیمات</button>
+  <div class="koko-form-actions is-sticky"><button class="koko-button" type="submit">ذخیره تنظیمات</button></div>
 </form>
 {% endblock %}
