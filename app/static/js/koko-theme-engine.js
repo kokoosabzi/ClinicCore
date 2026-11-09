@@ -81,7 +81,7 @@
     document.querySelectorAll(nativeControlSelector).forEach(control => {
       if (!controlSnapshots.has(control)) {
         const snapshot = {};
-        ['background-color', 'color', 'border-color'].forEach(property => {
+        ['background-color', 'color', 'border-color', 'appearance', '-webkit-appearance', 'color-scheme'].forEach(property => {
           snapshot[property] = {
             value: control.style.getPropertyValue(property),
             priority: control.style.getPropertyPriority(property)
@@ -94,6 +94,11 @@
         control.style.setProperty('background-color', '#192633', 'important');
         control.style.setProperty('color', '#edf4f7', 'important');
         control.style.setProperty('border-color', '#354957', 'important');
+        control.style.setProperty('color-scheme', 'dark', 'important');
+        if (control.tagName === 'INPUT') {
+          control.style.setProperty('appearance', 'none', 'important');
+          control.style.setProperty('-webkit-appearance', 'none', 'important');
+        }
       } else {
         Object.entries(snapshot).forEach(([property, original]) => {
           if (original.value) control.style.setProperty(property, original.value, original.priority);
