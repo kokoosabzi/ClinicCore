@@ -105,6 +105,13 @@ def test_clinic_mobile_navigation_drawer_and_keyboard_dismissal(page):
     expect(nav).to_be_hidden()
     expect(toggle).to_have_attribute("aria-expanded", "false")
     expect(page.locator("body")).not_to_have_class("koko-nav-open")
+    expect(toggle).to_be_focused()
+
+    toggle.click()
+    page.locator("body").click(position={"x": 5, "y": 5})
+    expect(nav).to_be_hidden()
+    expect(toggle).to_have_attribute("aria-expanded", "false")
+    expect(toggle).to_be_focused()
 
     toggle.click()
     page.get_by_role("link", name="بیماران").click()
