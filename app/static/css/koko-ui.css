@@ -431,3 +431,7 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
   background:#192633!important;
   background-color:#192633!important;
 }
+
+:root[data-koko-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]){
+  color-scheme:dark;
+}
