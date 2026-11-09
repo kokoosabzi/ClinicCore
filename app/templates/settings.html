@@ -1,33 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>تنظیمات سامانه</h1>
+<section class="page-heading"><div><h1>تنظیمات سامانه</h1><p class="muted">مدیریت ظاهر، زمان‌بندی، گزارش‌ها و اطلاعات کلینیک</p></div></section>
 {% if saved %}<p class="alert success" role="status">تنظیمات با موفقیت ذخیره شد.</p>{% endif %}
 {% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
 <form method="post" action="/settings" class="form koko-form" enctype="multipart/form-data">
+  <section class="koko-form-section koko-settings-section">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <h2>عمومی</h2>
-  <label>نام سامانه<input name="app_name" value="{{ settings['app.name'] or '' }}" maxlength="4000" required></label>
-  <label>عنوان نمایشی سامانه<input name="app_title" value="{{ settings['app.title'] or '' }}" maxlength="4000" required></label>
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>عمومی</h2></header>
+  <label class="koko-field">نام سامانه<input class="koko-control" name="app_name" value="{{ settings['app.name'] or '' }}" maxlength="4000" required></label>
+  <label class="koko-field">عنوان نمایشی سامانه<input class="koko-control" name="app_title" value="{{ settings['app.title'] or '' }}" maxlength="4000" required></label>
 
-  <h2>ظاهر</h2>
-  <label>حالت نمایش
-    <select name="app_theme">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>ظاهر</h2></header>
+  <label class="koko-field">حالت نمایش
+    <select class="koko-control" name="app_theme">
       <option value="system" {% if settings['app.theme'] == 'system' %}selected{% endif %}>همگام با سیستم</option>
       <option value="light" {% if settings['app.theme'] == 'light' %}selected{% endif %}>روشن</option>
       <option value="dark" {% if settings['app.theme'] == 'dark' %}selected{% endif %}>تاریک</option>
     </select>
   </label>
-  <label>سبک بصری
-    <select name="app_style" data-appearance-control="style">
+  <label class="koko-field">سبک بصری
+    <select class="koko-control" name="app_style" data-appearance-control="style">
       <option value="clinical-light" {% if settings['app.style'] == 'clinical-light' %}selected{% endif %}>Clinical Light — درمانی و حرفه‌ای</option>
       <option value="modern-dark" {% if settings['app.style'] == 'modern-dark' %}selected{% endif %}>Modern Dark — تیره و مدرن</option>
       <option value="soft-neutral" {% if settings['app.style'] == 'soft-neutral' %}selected{% endif %}>Soft Neutral — گرم و آرام</option>
       <option value="high-contrast" {% if settings['app.style'] == 'high-contrast' %}selected{% endif %}>High Contrast — کنتراست بالا</option>
     </select>
   </label>
-  <label>رنگ اصلی سامانه<input type="color" name="app_primary_color" data-appearance-control="color" value="{{ settings['app.primary_color'] or '#176b67' }}"></label>
-  <label>اندازه متن
-    <select name="app_font_scale" data-appearance-control="font-scale">
+  <label class="koko-field">رنگ اصلی سامانه<input class="koko-control" type="color" name="app_primary_color" data-appearance-control="color" value="{{ settings['app.primary_color'] or '#176b67' }}"></label>
+  <label class="koko-field">اندازه متن
+    <select class="koko-control" name="app_font_scale" data-appearance-control="font-scale">
       <option value="small" {% if settings['app.font_scale'] == 'small' %}selected{% endif %}>کوچک</option>
       <option value="normal" {% if settings['app.font_scale'] == 'normal' %}selected{% endif %}>استاندارد</option>
       <option value="large" {% if settings['app.font_scale'] == 'large' %}selected{% endif %}>بزرگ</option>
@@ -41,55 +46,59 @@
       <button type="button" tabindex="-1">دکمه نمونه</button>
     </div>
   </section>
-  <label>تراکم نمایش
-    <select name="app_density">
+  <label class="koko-field">تراکم نمایش
+    <select class="koko-control" name="app_density">
       <option value="comfortable" {% if settings['app.density'] == 'comfortable' %}selected{% endif %}>راحت</option>
       <option value="compact" {% if settings['app.density'] == 'compact' %}selected{% endif %}>فشرده</option>
     </select>
   </label>
 
-  <h2>تاریخ و زمان</h2>
-  <label>تقویم نمایش
-    <select name="datetime_calendar">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>تاریخ و زمان</h2></header>
+  <label class="koko-field">تقویم نمایش
+    <select class="koko-control" name="datetime_calendar">
       <option value="jalali" {% if settings['datetime.calendar'] == 'jalali' %}selected{% endif %}>جلالی</option>
       <option value="gregorian" {% if settings['datetime.calendar'] == 'gregorian' %}selected{% endif %}>میلادی</option>
     </select>
   </label>
-  <label>منطقه زمانی
-    <input name="datetime_timezone" value="{{ settings['datetime.timezone'] or 'Asia/Tehran' }}" maxlength="100" required>
+  <label class="koko-field">منطقه زمانی
+    <input class="koko-control" name="datetime_timezone" value="{{ settings['datetime.timezone'] or 'Asia/Tehran' }}" maxlength="100" required>
   </label>
-  <label>قالب تاریخ
-    <select name="datetime_date_format">
+  <label class="koko-field">قالب تاریخ
+    <select class="koko-control" name="datetime_date_format">
       <option value="YYYY/MM/DD" {% if settings['datetime.date_format'] == 'YYYY/MM/DD' %}selected{% endif %}>۱۴۰۵/۰۷/۱۳</option>
       <option value="YYYY-MM-DD" {% if settings['datetime.date_format'] == 'YYYY-MM-DD' %}selected{% endif %}>۱۴۰۵-۰۷-۱۳</option>
       <option value="DD/MM/YYYY" {% if settings['datetime.date_format'] == 'DD/MM/YYYY' %}selected{% endif %}>۱۳/۰۷/۱۴۰۵</option>
       <option value="DD-MM-YYYY" {% if settings['datetime.date_format'] == 'DD-MM-YYYY' %}selected{% endif %}>۱۳-۰۷-۱۴۰۵</option>
     </select>
   </label>
-  <label>قالب ساعت
-    <select name="datetime_time_format">
+  <label class="koko-field">قالب ساعت
+    <select class="koko-control" name="datetime_time_format">
       <option value="24" {% if settings['datetime.time_format'] == '24' %}selected{% endif %}>۲۴ ساعته</option>
       <option value="12" {% if settings['datetime.time_format'] == '12' %}selected{% endif %}>۱۲ ساعته</option>
     </select>
   </label>
-  <label>نمایش ثانیه
-    <select name="datetime_show_seconds">
+  <label class="koko-field">نمایش ثانیه
+    <select class="koko-control" name="datetime_show_seconds">
       <option value="false" {% if settings['datetime.show_seconds'] == 'false' %}selected{% endif %}>خیر</option>
       <option value="true" {% if settings['datetime.show_seconds'] == 'true' %}selected{% endif %}>بله</option>
     </select>
   </label>
 
-  <h2>برنامه کاری و نوبت‌دهی</h2>
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>برنامه کاری و نوبت‌دهی</h2></header>
   <p class="muted">این برنامه فعلاً برای کل کلینیک مشترک است. تخصیص ساعت و مدت مستقل به هر پزشک در مرحله بعد توسعه می‌یابد.</p>
   <div class="grid">
-    <label>شروع ساعت کاری
-      <input type="time" name="appointments_workday_start" value="{{ settings['appointments.workday_start'] or '09:00' }}" required>
+    <label class="koko-field">شروع ساعت کاری
+      <input class="koko-control" type="time" name="appointments_workday_start" value="{{ settings['appointments.workday_start'] or '09:00' }}" required>
     </label>
-    <label>پایان ساعت کاری
-      <input type="time" name="appointments_workday_end" value="{{ settings['appointments.workday_end'] or '17:00' }}" required>
+    <label class="koko-field">پایان ساعت کاری
+      <input class="koko-control" type="time" name="appointments_workday_end" value="{{ settings['appointments.workday_end'] or '17:00' }}" required>
     </label>
-    <label>مدت هر نوبت
-      <select name="appointments_slot_minutes">
+    <label class="koko-field">مدت هر نوبت
+      <select class="koko-control" name="appointments_slot_minutes">
         {% for minutes in ["15", "20", "30", "45", "60"] %}
         <option value="{{ minutes }}" {% if settings['appointments.slot_minutes'] == minutes %}selected{% endif %}>{{ minutes }} دقیقه</option>
         {% endfor %}
@@ -110,33 +119,37 @@
     </div>
   </fieldset>
 
-  <h2>گزارش‌ها</h2>
-  <label>لوگوی گزارش<input name="reports_logo" value="{{ settings['reports.logo'] or '' }}" maxlength="4000"></label>
-  <label>سربرگ گزارش<textarea name="reports_header" maxlength="4000">{{ settings['reports.header'] or '' }}</textarea></label>
-  <label>پاورقی گزارش<textarea name="reports_footer" maxlength="4000">{{ settings['reports.footer'] or '' }}</textarea></label>
-  <label>قالب پیش‌فرض گزارش
-    <select name="reports_default_format">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>گزارش‌ها</h2></header>
+  <label class="koko-field">لوگوی گزارش<input class="koko-control" name="reports_logo" value="{{ settings['reports.logo'] or '' }}" maxlength="4000"></label>
+  <label class="koko-field">سربرگ گزارش<textarea class="koko-control" name="reports_header" maxlength="4000">{{ settings['reports.header'] or '' }}</textarea></label>
+  <label class="koko-field">پاورقی گزارش<textarea class="koko-control" name="reports_footer" maxlength="4000">{{ settings['reports.footer'] or '' }}</textarea></label>
+  <label class="koko-field">قالب پیش‌فرض گزارش
+    <select class="koko-control" name="reports_default_format">
       <option value="html" {% if settings['reports.default_format'] == 'html' %}selected{% endif %}>HTML</option>
       <option value="csv" {% if settings['reports.default_format'] == 'csv' %}selected{% endif %}>CSV</option>
       <option value="pdf" {% if settings['reports.default_format'] == 'pdf' %}selected{% endif %}>PDF</option>
     </select>
   </label>
-  <label>نمایش زمان تولید گزارش
-    <select name="reports_include_timestamp">
+  <label class="koko-field">نمایش زمان تولید گزارش
+    <select class="koko-control" name="reports_include_timestamp">
       <option value="true" {% if settings['reports.include_timestamp'] == 'true' %}selected{% endif %}>بله</option>
       <option value="false" {% if settings['reports.include_timestamp'] == 'false' %}selected{% endif %}>خیر</option>
     </select>
   </label>
 
-  <h2>پیام‌رسانی</h2>
-  <label>فعال بودن پیام‌رسانی
-    <select name="messaging_enabled">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>پیام‌رسانی</h2></header>
+  <label class="koko-field">فعال بودن پیام‌رسانی
+    <select class="koko-control" name="messaging_enabled">
       <option value="false" {% if settings['messaging.enabled'] == 'false' %}selected{% endif %}>خیر</option>
       <option value="true" {% if settings['messaging.enabled'] == 'true' %}selected{% endif %}>بله</option>
     </select>
   </label>
-  <label>ارائه‌دهنده پیش‌فرض
-    <select name="messaging_default_provider">
+  <label class="koko-field">ارائه‌دهنده پیش‌فرض
+    <select class="koko-control" name="messaging_default_provider">
       <option value="sms" {% if settings['messaging.default_provider'] == 'sms' %}selected{% endif %}>پیامک</option>
       <option value="email" {% if settings['messaging.default_provider'] == 'email' %}selected{% endif %}>ایمیل</option>
       <option value="telegram" {% if settings['messaging.default_provider'] == 'telegram' %}selected{% endif %}>تلگرام</option>
@@ -146,74 +159,83 @@
   </label>
   <p class="muted">کلیدها، رمزها و اطلاعات محرمانه ارائه‌دهندگان در این تنظیمات ذخیره نمی‌شوند.</p>
 
-  <h2>مخاطبین</h2>
-  <label>فعال بودن مدیریت اطلاعات تماس
-    <select name="contacts_enabled">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>مخاطبین</h2></header>
+  <label class="koko-field">فعال بودن مدیریت اطلاعات تماس
+    <select class="koko-control" name="contacts_enabled">
       <option value="true" {% if settings['contacts.enabled'] == 'true' %}selected{% endif %}>بله</option>
       <option value="false" {% if settings['contacts.enabled'] == 'false' %}selected{% endif %}>خیر</option>
     </select>
   </label>
-  <label>الزام ثبت شماره تماس
-    <select name="contacts_require_phone">
+  <label class="koko-field">الزام ثبت شماره تماس
+    <select class="koko-control" name="contacts_require_phone">
       <option value="false" {% if settings['contacts.require_phone'] == 'false' %}selected{% endif %}>خیر</option>
       <option value="true" {% if settings['contacts.require_phone'] == 'true' %}selected{% endif %}>بله</option>
     </select>
   </label>
 
-  <h2>چاپ</h2>
-  <label>اندازه کاغذ چاپ
-    <select name="print_paper_size">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>چاپ</h2></header>
+  <label class="koko-field">اندازه کاغذ چاپ
+    <select class="koko-control" name="print_paper_size">
       <option value="A4" {% if settings["print.paper_size"] == "A4" %}selected{% endif %}>A4</option>
       <option value="A5" {% if settings["print.paper_size"] == "A5" %}selected{% endif %}>A5</option>
       <option value="thermal" {% if settings["print.paper_size"] == "thermal" %}selected{% endif %}>حرارتی</option>
     </select>
   </label>
-  <label>حاشیه بالا (میلی‌متر)<input type="number" name="print_margin_top" min="0" max="100" value="{{ settings["print.margin_top"] or "10" }}"></label>
-  <label>حاشیه راست (میلی‌متر)<input type="number" name="print_margin_right" min="0" max="100" value="{{ settings["print.margin_right"] or "10" }}"></label>
-  <label>حاشیه پایین (میلی‌متر)<input type="number" name="print_margin_bottom" min="0" max="100" value="{{ settings["print.margin_bottom"] or "10" }}"></label>
-  <label>حاشیه چپ (میلی‌متر)<input type="number" name="print_margin_left" min="0" max="100" value="{{ settings["print.margin_left"] or "10" }}"></label>
-  <label>نمایش لوگو
-    <select name="print_show_logo"><option value="true" {% if settings["print.show_logo"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_logo"] == "false" %}selected{% endif %}>خیر</option></select>
+  <label class="koko-field">حاشیه بالا (میلی‌متر)<input class="koko-control" type="number" name="print_margin_top" min="0" max="100" value="{{ settings["print.margin_top"] or "10" }}"></label>
+  <label class="koko-field">حاشیه راست (میلی‌متر)<input class="koko-control" type="number" name="print_margin_right" min="0" max="100" value="{{ settings["print.margin_right"] or "10" }}"></label>
+  <label class="koko-field">حاشیه پایین (میلی‌متر)<input class="koko-control" type="number" name="print_margin_bottom" min="0" max="100" value="{{ settings["print.margin_bottom"] or "10" }}"></label>
+  <label class="koko-field">حاشیه چپ (میلی‌متر)<input class="koko-control" type="number" name="print_margin_left" min="0" max="100" value="{{ settings["print.margin_left"] or "10" }}"></label>
+  <label class="koko-field">نمایش لوگو
+    <select class="koko-control" name="print_show_logo"><option value="true" {% if settings["print.show_logo"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_logo"] == "false" %}selected{% endif %}>خیر</option></select>
   </label>
-  <label>نمایش سربرگ
-    <select name="print_show_header"><option value="true" {% if settings["print.show_header"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_header"] == "false" %}selected{% endif %}>خیر</option></select>
+  <label class="koko-field">نمایش سربرگ
+    <select class="koko-control" name="print_show_header"><option value="true" {% if settings["print.show_header"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_header"] == "false" %}selected{% endif %}>خیر</option></select>
   </label>
-  <label>نمایش پاورقی
-    <select name="print_show_footer"><option value="true" {% if settings["print.show_footer"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_footer"] == "false" %}selected{% endif %}>خیر</option></select>
+  <label class="koko-field">نمایش پاورقی
+    <select class="koko-control" name="print_show_footer"><option value="true" {% if settings["print.show_footer"] == "true" %}selected{% endif %}>بله</option><option value="false" {% if settings["print.show_footer"] == "false" %}selected{% endif %}>خیر</option></select>
   </label>
-  <label>عنوان چاپ<input name="print_title" value="{{ settings['print.title'] or '' }}" maxlength="200" placeholder="مثلاً رسید خدمات درمانی"></label>
-  <label>پیام پایانی چاپ<textarea name="print_message" maxlength="1000">{{ settings['print.message'] or '' }}</textarea></label>
-  <label>عرض رول حرارتی
-    <select name="print_thermal_width"><option value="58" {% if settings['print.thermal_width'] == '58' %}selected{% endif %}>۵۸ میلی‌متر</option><option value="80" {% if settings['print.thermal_width'] == '80' %}selected{% endif %}>۸۰ میلی‌متر</option></select>
+  <label class="koko-field">عنوان چاپ<input class="koko-control" name="print_title" value="{{ settings['print.title'] or '' }}" maxlength="200" placeholder="مثلاً رسید خدمات درمانی"></label>
+  <label class="koko-field">پیام پایانی چاپ<textarea class="koko-control" name="print_message" maxlength="1000">{{ settings['print.message'] or '' }}</textarea></label>
+  <label class="koko-field">عرض رول حرارتی
+    <select class="koko-control" name="print_thermal_width"><option value="58" {% if settings['print.thermal_width'] == '58' %}selected{% endif %}>۵۸ میلی‌متر</option><option value="80" {% if settings['print.thermal_width'] == '80' %}selected{% endif %}>۸۰ میلی‌متر</option></select>
   </label>
-  <label>خطوط جدول در چاپ
-    <select name="print_show_table_borders"><option value="true" {% if settings['print.show_table_borders'] == 'true' %}selected{% endif %}>نمایش</option><option value="false" {% if settings['print.show_table_borders'] == 'false' %}selected{% endif %}>پنهان</option></select>
+  <label class="koko-field">خطوط جدول در چاپ
+    <select class="koko-control" name="print_show_table_borders"><option value="true" {% if settings['print.show_table_borders'] == 'true' %}selected{% endif %}>نمایش</option><option value="false" {% if settings['print.show_table_borders'] == 'false' %}selected{% endif %}>پنهان</option></select>
   </label>
-  <label>خطوط جداکننده در چاپ
-    <select name="print_show_lines"><option value="true" {% if settings['print.show_lines'] == 'true' %}selected{% endif %}>نمایش</option><option value="false" {% if settings['print.show_lines'] == 'false' %}selected{% endif %}>پنهان</option></select>
+  <label class="koko-field">خطوط جداکننده در چاپ
+    <select class="koko-control" name="print_show_lines"><option value="true" {% if settings['print.show_lines'] == 'true' %}selected{% endif %}>نمایش</option><option value="false" {% if settings['print.show_lines'] == 'false' %}selected{% endif %}>پنهان</option></select>
   </label>
 
-  <h2>سیستم</h2>
-  <label>ثبت رویدادهای سامانه
-    <select name="system_audit_enabled">
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>سیستم</h2></header>
+  <label class="koko-field">ثبت رویدادهای سامانه
+    <select class="koko-control" name="system_audit_enabled">
       <option value="true" {% if settings["system.audit_enabled"] == "true" %}selected{% endif %}>فعال</option>
       <option value="false" {% if settings["system.audit_enabled"] == "false" %}selected{% endif %}>غیرفعال</option>
     </select>
   </label>
   <p class="muted">این گزینه ثبت رویدادهای درخواست‌های سامانه در لاگ داخلی را کنترل می‌کند.</p>
 
-  <h2>هویت کلینیک</h2>
-  <label>نام کلینیک<input name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
-  <label>آدرس<textarea name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
-  <label>تلفن<input name="clinic_phone" value="{{ settings['clinic.phone'] or '' }}" maxlength="4000"></label>
-  <label>ایمیل<input name="clinic_email" type="email" value="{{ settings['clinic.email'] or '' }}" maxlength="4000"></label>
-  <label>مسیر یا URL لوگو<input name="clinic_logo" value="{{ settings['clinic.logo'] or '' }}" maxlength="4000" placeholder="/static/uploads/clinic-logo.png"></label>
-  <label>یا بارگذاری لوگوی جدید (PNG، JPEG یا WebP، حداکثر ۲ مگابایت)<input type="file" name="clinic_logo_file" accept="image/png,image/jpeg,image/webp"></label>
+  </section>
+  <section class="koko-form-section koko-settings-section">
+    <header><h2>هویت کلینیک</h2></header>
+  <label class="koko-field">نام کلینیک<input class="koko-control" name="clinic_name" value="{{ settings['clinic.name'] or '' }}" maxlength="4000"></label>
+  <label class="koko-field">آدرس<textarea class="koko-control" name="clinic_address" maxlength="4000">{{ settings['clinic.address'] or '' }}</textarea></label>
+  <label class="koko-field">تلفن<input class="koko-control" name="clinic_phone" value="{{ settings['clinic.phone'] or '' }}" maxlength="4000"></label>
+  <label class="koko-field">ایمیل<input class="koko-control" name="clinic_email" type="email" value="{{ settings['clinic.email'] or '' }}" maxlength="4000"></label>
+  <label class="koko-field">مسیر یا URL لوگو<input class="koko-control" name="clinic_logo" value="{{ settings['clinic.logo'] or '' }}" maxlength="4000" placeholder="/static/uploads/clinic-logo.png"></label>
+  <label class="koko-field">یا بارگذاری لوگوی جدید (PNG، JPEG یا WebP، حداکثر ۲ مگابایت)<input type="file" name="clinic_logo_file" accept="image/png,image/jpeg,image/webp"></label>
   <p class="hint">در صورت انتخاب فایل جدید، لوگوی بارگذاری‌شده جایگزین مسیر یا URL قبلی خواهد شد.</p>
   {% if settings['clinic.logo'] %}<div class="logo-preview"><p>پیش‌نمایش لوگوی فعلی</p><img src="{{ settings['clinic.logo'] }}" alt="لوگوی فعلی کلینیک" style="max-width: 220px; max-height: 100px; object-fit: contain" onerror="this.hidden=true"><p class="muted">برای جایگزینی، فایل جدید را انتخاب کنید. برای حذف لوگو، مسیر بالا را پاک کرده و ذخیره کنید.</p></div>{% endif %}
-  <label>متن سربرگ<textarea name="clinic_header_text" maxlength="4000">{{ settings['clinic.header_text'] or '' }}</textarea></label>
-  <label>متن پاورقی<textarea name="clinic_footer_text" maxlength="4000">{{ settings['clinic.footer_text'] or '' }}</textarea></label>
+  <label class="koko-field">متن سربرگ<textarea class="koko-control" name="clinic_header_text" maxlength="4000">{{ settings['clinic.header_text'] or '' }}</textarea></label>
+  <label class="koko-field">متن پاورقی<textarea class="koko-control" name="clinic_footer_text" maxlength="4000">{{ settings['clinic.footer_text'] or '' }}</textarea></label>
 
+  </section>
   <div class="koko-form-actions is-sticky"><button class="koko-button" type="submit">ذخیره تنظیمات</button></div>
 </form>
 {% endblock %}
