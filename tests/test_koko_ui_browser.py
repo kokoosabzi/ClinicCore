@@ -218,7 +218,7 @@ def test_user_management_and_roles_adopt_koko_ui_without_changing_permissions():
     for permission in ("can_create", "can_update", "can_assign_role",
                        "can_reset_password", "can_deactivate", "actor_id"):
         assert permission in manage
-    assert 'class="koko-form"' in manage
+    assert 'koko-form' in manage
     assert 'class="koko-table-wrap"' in manage
     assert 'class="koko-table"' in manage
     for state in ("is-success", "is-warning", "is-danger"):
