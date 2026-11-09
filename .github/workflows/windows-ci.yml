@@ -7,6 +7,7 @@ on:
       - stabilization/windows-sqlite-runtime
       - feature/user-management-rbac
       - feature/dynamic-ui-themes
+      - ui/**
   pull_request:
     branches:
       - main
