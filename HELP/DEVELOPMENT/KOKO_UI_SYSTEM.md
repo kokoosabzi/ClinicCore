@@ -85,3 +85,9 @@ The shared component contract is opt-in and presentation-only. Existing pages ca
 - Verify light/dark themes, RTL, keyboard focus, validation, narrow screens, and print output.
 - Do not apply pastel gradients to dense data tables or long-form clinical/financial content.
 
+
+### Page rollout — ClinicCore
+- Migrated: patient list/create/detail, appointment calendar/create/reschedule, messaging list/form, financial list/payment/expense forms, user management, role permissions, and grouped settings.
+- Settings are organized into responsive two-column sections; native date/time controls and existing configuration names remain unchanged.
+- Preserve the current permissions, CSRF, calendar hooks, and print routes when migrating further pages.
+- Remaining: identify/report screens from actual routes and migrate them in a separate pass; profile pages if present.
