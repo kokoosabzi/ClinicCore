@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/static/css/themes.css">
   <link rel="stylesheet" href="/static/css/koko-ui.css">
   <script src="/static/js/appearance.js" defer></script>
+  <script src="/static/js/koko-workspace-tabs.js" defer></script>
   <script>
     window.addEventListener("beforeprint", function () {
       const root = document.documentElement;
@@ -80,6 +81,7 @@
       {% endif %}
     </nav>
   </header>
+  <div id="koko-workspace-tabs" class="koko-workspace-tabs no-print" role="tablist" aria-label="صفحه‌های باز"></div>
   <main class="container">
     {% if request.url.path != "/dashboard" %}
     <div class="page-actions no-print"><a class="back-link" href="javascript:history.back()">بازگشت</a></div>
