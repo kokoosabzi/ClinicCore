@@ -71,3 +71,44 @@ header.topbar .nav-toggle{display:none}
 .app-shell>main{min-width:0}
 .app-shell header{background:rgba(255,255,255,.88);border:1px solid var(--koko-border);border-radius:16px;padding:14px 18px;box-shadow:var(--koko-shadow)}
 .app-shell .totals div,.app-shell dl div{background:#f4f6ff;border:1px solid #e8ecf8;border-radius:12px}
+
+/* Koko dashboard components */
+.koko-welcome{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin:0 0 1.25rem;padding:clamp(1.25rem,3vw,2rem);border:1px solid var(--koko-border);border-radius:22px;background:linear-gradient(115deg,#fff 0%,#edf1ff 55%,#e1f7f0 100%);box-shadow:var(--koko-shadow)}
+.koko-welcome h2{margin:.2rem 0 .35rem;font-size:1.35rem;color:var(--koko-text)}
+.koko-welcome p,.koko-section-heading p{margin:0;color:var(--koko-muted);font-size:.9rem}
+.koko-eyebrow{font-size:.7rem;letter-spacing:.12em;font-weight:800;color:#637be1}
+.koko-welcome-mark{display:grid;place-items:center;flex:0 0 68px;height:68px;border-radius:20px;background:linear-gradient(145deg,#d9e6ff,#d9f7ec);color:#4569d8;font-size:2rem;font-weight:800}
+.koko-section-heading{display:flex;justify-content:space-between;align-items:end;gap:1rem;margin:1.4rem 0 .85rem}
+.koko-section-heading h2{margin:0 0 .25rem;font-size:1.08rem}
+.koko-metric{display:flex;flex-direction:column;gap:.35rem;min-height:132px}
+.koko-metric strong{font-size:clamp(1.35rem,2vw,1.9rem);color:var(--koko-text);overflow-wrap:anywhere}
+.koko-metric small,.koko-action small{color:var(--koko-muted)}
+.koko-card-blue{background:linear-gradient(135deg,#fff 0%,#e2efff 100%)!important}
+.koko-card-mint{background:linear-gradient(135deg,#fff 0%,#def8ed 100%)!important}
+.koko-card-lilac{background:linear-gradient(135deg,#fff 0%,#eee5ff 100%)!important}
+.koko-card-pink{background:linear-gradient(135deg,#fff 0%,#ffe5ef 100%)!important}
+.koko-card-peach{background:linear-gradient(135deg,#fff 0%,#ffeadc 100%)!important}
+.koko-card-yellow{background:linear-gradient(135deg,#fff 0%,#fff4d2 100%)!important}
+.koko-clinic-actions,.koko-store-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:1.25rem}
+.koko-action{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;min-height:145px;padding:18px!important;border:1px solid var(--koko-border)!important;border-radius:18px!important;color:var(--koko-text)!important;text-decoration:none;text-align:right;box-shadow:var(--koko-shadow);transition:transform .16s ease,box-shadow .16s ease}
+.koko-action:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(53,76,130,.13)}
+.koko-action strong{font-size:1rem}
+.koko-action-icon{display:grid;place-items:center;width:36px;height:36px;margin-bottom:.35rem;border-radius:12px;background:rgba(255,255,255,.72);color:#4869d8;font-size:1.25rem;font-weight:800}
+.koko-action-arrow{position:absolute;left:17px;bottom:17px;color:#7083bd;font-size:1.1rem}
+.koko-dashboard-note{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1rem;padding:1rem 1.2rem!important}
+.koko-dashboard-note p{margin:.25rem 0 0;color:var(--koko-muted)}
+.koko-dashboard-note .button{white-space:nowrap}
+.koko-finance-panel{margin-top:1.1rem}
+.koko-finance-panel dl{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.koko-finance-panel dl div{border:1px solid var(--koko-border);border-radius:13px;background:rgba(255,255,255,.65)}
+.koko-store-actions .koko-action{font:inherit;cursor:pointer;width:100%;background-color:#fff}
+@media(max-width:700px){.koko-welcome{align-items:flex-start}.koko-welcome-mark{flex-basis:48px;height:48px;font-size:1.5rem}.koko-dashboard-note{align-items:flex-start;flex-direction:column}.koko-clinic-actions,.koko-store-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){.koko-clinic-actions,.koko-store-actions{grid-template-columns:1fr}.koko-action{min-height:118px}}
+:root[data-style="modern-dark"] .koko-welcome,:root[data-theme="dark"] .koko-welcome{background:linear-gradient(115deg,#192633,#243548 55%,#1c3b39)}
+:root[data-style="modern-dark"] .koko-card-blue,:root[data-theme="dark"] .koko-card-blue{background:linear-gradient(135deg,#1b2b3a,#263b55)!important}
+:root[data-style="modern-dark"] .koko-card-mint,:root[data-theme="dark"] .koko-card-mint{background:linear-gradient(135deg,#1b302e,#24483f)!important}
+:root[data-style="modern-dark"] .koko-card-lilac,:root[data-theme="dark"] .koko-card-lilac{background:linear-gradient(135deg,#28263b,#3b3455)!important}
+:root[data-style="modern-dark"] .koko-card-pink,:root[data-theme="dark"] .koko-card-pink{background:linear-gradient(135deg,#382733,#523343)!important}
+:root[data-style="modern-dark"] .koko-card-peach,:root[data-theme="dark"] .koko-card-peach{background:linear-gradient(135deg,#392e27,#514034)!important}
+:root[data-style="modern-dark"] .koko-card-yellow,:root[data-theme="dark"] .koko-card-yellow{background:linear-gradient(135deg,#393522,#51482a)!important}
+:root[data-style="modern-dark"] .koko-action,:root[data-theme="dark"] .koko-action{color:var(--koko-text)!important}
