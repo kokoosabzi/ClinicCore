@@ -90,7 +90,6 @@
     Object.entries(variables).forEach(([name, value]) => root.style.setProperty(name, value));
     root.style.setProperty('--kt-accent', prefs.accent);
     root.style.setProperty('--koko-primary', prefs.accent);
-    root.style.setProperty('--color-primary', prefs.accent);
     root.style.setProperty('--kt-radius', prefs.radius + 'px');
     root.style.setProperty('--koko-radius', prefs.radius + 'px');
     if (save) {
@@ -129,12 +128,12 @@
     $('kt-font').value = prefs.font;
   }
 
-  function setOpen(open) {
+  function setOpen(open, returnFocus = true) {
     panel.classList.toggle('open', open);
     panel.setAttribute('aria-hidden', String(!open));
     launcher.setAttribute('aria-expanded', String(open));
     if (open) $('kt-theme').focus();
-    else launcher.focus();
+    else if (returnFocus) launcher.focus();
   }
 
   function change() {
@@ -165,7 +164,7 @@
   document.addEventListener('pointerdown', event => {
     if (!panel.classList.contains('open')) return;
     if (panel.contains(event.target) || launcher.contains(event.target)) return;
-    setOpen(false);
+    setOpen(false, false);
   });
 
   sync();
