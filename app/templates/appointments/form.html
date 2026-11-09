@@ -17,13 +17,13 @@
     </div>
   </div>
 
-  <form method="post" action="{{ form_action|default('/ui/appointments') }}" class="form appointment-form">
+  <form method="post" action="{{ form_action|default('/ui/appointments') }}" class="form appointment-form koko-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="starts_at_date" value="">
     <input type="hidden" name="starts_at_time" value="">
 
     {% if reschedule|default(false) %}
-    <div class="booking-patient-fields">
+    <div class="booking-patient-fields koko-form-grid">
       <div class="field-label">بیمار
         <strong>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</strong>
       </div>
@@ -33,7 +33,7 @@
     </div>
     {% else %}
     <div class="booking-patient-fields">
-      <label class="field-label">بیمار
+      <label class="field-label koko-field">بیمار
         <select name="patient_id" required>
           <option value="" disabled selected>بیمار را انتخاب کنید…</option>
           {% for patient in patients %}
@@ -51,7 +51,7 @@
     {% endif %}
 
     <div class="booking-workspace">
-      <section class="calendar-panel" aria-labelledby="calendar-title">
+      <section class="calendar-panel koko-form-section" aria-labelledby="calendar-title">
         <div class="panel-heading">
           <div>
             <span class="eyebrow">مرحله اول</span>
@@ -67,7 +67,7 @@
         <div class="calendar-footnote"><span class="today-marker"></span> امروز</div>
       </section>
 
-      <section class="slots-panel" aria-labelledby="slots-title">
+      <section class="slots-panel koko-form-section" aria-labelledby="slots-title">
         <div class="panel-heading">
           <div>
             <span class="eyebrow">مرحله دوم</span>
@@ -86,13 +86,13 @@
     </div>
 
     {% if not reschedule|default(false) %}
-    <label class="field-label notes-field">یادداشت پرونده <span class="optional-label">اختیاری</span>
+    <label class="field-label notes-field koko-field">یادداشت پرونده <span class="optional-label">اختیاری</span>
       <textarea name="notes" rows="3" placeholder="نکته‌ای که لازم است هنگام مراجعه بدانیم…"></textarea>
     </label>
     {% endif %}
-    <div class="booking-submit-row">
+    <div class="booking-submit-row koko-form-actions is-sticky">
       <p>ثبت نهایی پس از بررسی دوباره آزادبودن ساعت انجام می‌شود.</p>
-      <button type="submit" class="booking-submit" {% if not reschedule|default(false) and not patients %}disabled{% endif %}>{{ "ثبت زمان جدید" if reschedule|default(false) else "ثبت نوبت" }} <span aria-hidden="true">←</span></button>
+      <button type="submit" class="booking-submit koko-button" {% if not reschedule|default(false) and not patients %}disabled{% endif %}>{{ "ثبت زمان جدید" if reschedule|default(false) else "ثبت نوبت" }} <span aria-hidden="true">←</span></button>
     </div>
   </form>
   <p class="schedule-note">برنامه کاری و مدت نوبت از تنظیمات کلینیک خوانده می‌شود. تنظیم مستقل برای هر پزشک در مرحله بعد اضافه خواهد شد.</p>
