@@ -256,3 +256,13 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
   table.koko-table{min-width:0;font-size:9pt}
   .koko-table thead th{position:static;background:#eee!important;color:#111!important}
 }
+
+
+/* Settings: grouped two-column controls with full-width section headings. */
+.koko-settings-section{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.koko-settings-section>header,.koko-settings-section>p,.koko-settings-section>fieldset,
+.koko-settings-section>.grid,.koko-settings-section>.appearance-preview,
+.koko-settings-section>.logo-preview,.koko-settings-section>.hint{grid-column:1/-1}
+.koko-settings-section>label{min-width:0}
+.koko-settings-section .working-days-fieldset{margin:0}
+@media(max-width:680px){.koko-settings-section{grid-template-columns:1fr}}
