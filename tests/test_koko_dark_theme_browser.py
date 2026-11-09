@@ -26,6 +26,8 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
     page.add_style_tag(path=str(CSS_PATH))
     page.add_script_tag(path=str(THEME_PATH))
 
+    initial = page.locator("#control").evaluate("(el) => ({background:getComputedStyle(el).backgroundColor,backgroundImage:getComputedStyle(el).backgroundImage,appearance:getComputedStyle(el).appearance})")
+
     page.locator("#koko-theme-launcher").click()
     page.locator("#koko-theme-panel #kt-theme").select_option("dark")
     expect(page.locator("html")).to_have_attribute("data-koko-theme", "dark")
@@ -61,6 +63,4 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
     page.locator("#koko-theme-panel #kt-theme").select_option("pastel")
     expect(page.locator("html")).to_have_attribute("data-koko-theme", "pastel")
     restored = page.locator("#control").evaluate("(el) => ({background:getComputedStyle(el).backgroundColor,backgroundImage:getComputedStyle(el).backgroundImage,appearance:getComputedStyle(el).appearance})")
-    assert restored["background"] == "rgb(255, 255, 255)"
-    assert restored["appearance"] == "auto"
-    assert restored["backgroundImage"] == "none"
+    assert restored == initial
