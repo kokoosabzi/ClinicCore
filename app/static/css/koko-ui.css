@@ -17,3 +17,8 @@ table{border-color:var(--koko-border);border-radius:14px;overflow:hidden}th{back
 .metrics article:nth-child(4n+4),.metrics .metric:nth-child(4n+4){background:linear-gradient(135deg,#fff,#fff1d5)}
 .koko-shortcut,.quick-action{border:1px solid var(--koko-border);border-radius:18px;box-shadow:var(--koko-shadow);background:linear-gradient(135deg,#fff,#e6edff)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+/* Preserve the host application's explicit dark theme when available. */
+:root[data-theme="dark"],:root[data-style="modern-dark"]{color-scheme:dark;--koko-bg:#101923;--koko-surface:#192633;--koko-text:#edf4f7;--koko-muted:#a5b5c1;--koko-border:#354957;--koko-shadow:0 8px 26px rgba(0,0,0,.22)}
+:root[data-theme="dark"] body,:root[data-style="modern-dark"] body{background:var(--koko-bg);color:var(--koko-text)}
+:root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea,:root[data-style="modern-dark"] input,:root[data-style="modern-dark"] select,:root[data-style="modern-dark"] textarea{background:#192633;color:var(--koko-text);border-color:var(--koko-border)}
+:root[data-theme="dark"] th,:root[data-style="modern-dark"] th{background:#223442;color:var(--koko-muted)}
