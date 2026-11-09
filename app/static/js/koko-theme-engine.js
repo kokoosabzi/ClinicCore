@@ -74,6 +74,40 @@
   style.textContent = css;
   document.head.appendChild(style);
 
+  const controlSnapshots = new WeakMap();
+  const nativeControlSelector = 'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),select,textarea';
+
+  function syncNativeControlTheme() {
+    document.querySelectorAll(nativeControlSelector).forEach(control => {
+      if (!controlSnapshots.has(control)) {
+        const snapshot = {};
+        ['background-color', 'color', 'border-color'].forEach(property => {
+          snapshot[property] = {
+            value: control.style.getPropertyValue(property),
+            priority: control.style.getPropertyPriority(property)
+          };
+        });
+        controlSnapshots.set(control, snapshot);
+      }
+      const snapshot = controlSnapshots.get(control);
+      if (prefs.theme === 'dark') {
+        control.style.setProperty('background-color', '#192633', 'important');
+        control.style.setProperty('color', '#edf4f7', 'important');
+        control.style.setProperty('border-color', '#354957', 'important');
+      } else {
+        Object.entries(snapshot).forEach(([property, original]) => {
+          if (original.value) control.style.setProperty(property, original.value, original.priority);
+          else control.style.removeProperty(property);
+        });
+      }
+    });
+  }
+
+  const nativeControlObserver = new MutationObserver(() => {
+    if (prefs.theme === 'dark') syncNativeControlTheme();
+  });
+  nativeControlObserver.observe(document.documentElement, { childList: true, subtree: true });
+
   function apply(save = true) {
     normalize();
     const palette = palettes[prefs.theme];
@@ -92,6 +126,7 @@
     root.style.setProperty('--koko-primary', prefs.accent);
     root.style.setProperty('--kt-radius', prefs.radius + 'px');
     root.style.setProperty('--koko-radius', prefs.radius + 'px');
+    syncNativeControlTheme();
     if (save) {
       try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (_) {}
     }
