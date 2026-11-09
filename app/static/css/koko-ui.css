@@ -413,3 +413,13 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
   color:#edf4f7!important;
   border-color:#354957!important;
 }
+
+/* Dark mode must override native UA and legacy input backgrounds even without UI Kit classes. */
+:root[data-koko-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),
+:root[data-koko-theme="dark"] select,
+:root[data-koko-theme="dark"] textarea{
+  background:#192633!important;
+  background-color:#192633!important;
+  color:#edf4f7!important;
+  border-color:#354957!important;
+}
