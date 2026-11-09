@@ -60,3 +60,14 @@ header.topbar .nav-toggle{display:none}
  header.topbar #main-nav{display:none!important}
  body:has(>header.topbar) main.container{margin:0;padding:0}
 }
+
+/* Repository-specific existing navigation hooks */
+.layout>nav{background:#fff;border:1px solid var(--koko-border);border-radius:18px;padding:12px;box-shadow:var(--koko-shadow)}
+.layout>nav button{width:100%;text-align:right;background:transparent;color:#667493;border:0;padding:12px 13px;border-radius:11px;cursor:pointer}
+.layout>nav button.active,.layout>nav button:hover{background:#e9edff;color:#3f61df;font-weight:700}
+.app-shell>.sidebar{background:#fff!important;color:var(--koko-text)!important;border-left:1px solid var(--koko-border);border-right:0}
+.app-shell>.sidebar nav button{color:#667493}
+.app-shell>.sidebar nav button.active,.app-shell>.sidebar nav button:hover{background:#e9edff;color:#3f61df}
+.app-shell>main{min-width:0}
+.app-shell header{background:rgba(255,255,255,.88);border:1px solid var(--koko-border);border-radius:16px;padding:14px 18px;box-shadow:var(--koko-shadow)}
+.app-shell .totals div,.app-shell dl div{background:#f4f6ff;border:1px solid #e8ecf8;border-radius:12px}
