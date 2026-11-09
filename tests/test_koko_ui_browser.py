@@ -239,6 +239,15 @@ def test_settings_form_keeps_existing_configuration_fields_and_file_upload():
     assert 'enctype="multipart/form-data"' in settings
     assert 'name="csrf_token"' in settings
     assert 'class="form koko-form"' in settings
+    assert settings.count('class="koko-form-section koko-settings-section"') >= 10
+    assert 'class="koko-field"' in settings
+    assert 'class="koko-control"' in settings
+    assert '<header><h2>عمومی</h2></header>' in settings
+    assert '<header><h2>تاریخ و زمان</h2></header>' in settings
+    assert '<header><h2>برنامه کاری و نوبت‌دهی</h2></header>' in settings
+    assert '<header><h2>هویت کلینیک</h2></header>' in settings
+    assert 'class="koko-form-actions is-sticky"' in settings
+    assert 'name="clinic_logo_file"' in settings
     assert 'name="clinic_logo_file"' in settings
     for field in ("app_name", "app_theme", "app_style", "datetime_calendar",
                   "datetime_timezone", "appointments_workday_start",
