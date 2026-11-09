@@ -1,33 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>ثبت هزینه</h1>
-<form method="post" action="/ui/financial/expenses" class="form">
+{% set page_title = "ثبت هزینه" %}
+{% include "partials/page_header.html" with context %}
+<form method="post" action="/ui/financial/expenses" class="form koko-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>عنوان<input name="title" maxlength="120" required></label>
-  <label>مبلغ ریال<input name="amount" type="number" min="1" required></label>
-  <label>تاریخ هزینه
-    {% if datetime_calendar == "jalali" %}
-    <div class="jalali-date-picker" data-jalali-picker data-today="{{ today_jalali }}" data-initial="{{ today_jalali }}">
-      <input type="hidden" name="spent_at" value="{{ today_gregorian }}" data-jalali-value required>
-      <button type="button" class="jalali-date-trigger" data-jalali-trigger aria-expanded="false" aria-controls="expense-date-calendar">
-        <span data-jalali-label>{{ today_jalali }}</span><span aria-hidden="true">▦</span>
-      </button>
-      <div class="jalali-date-panel" id="expense-date-calendar" data-jalali-panel hidden>
-        <div class="jalali-date-heading">
-          <button type="button" class="icon-button" data-jalali-prev aria-label="ماه قبل">‹</button>
-          <strong data-jalali-month></strong>
-          <button type="button" class="icon-button" data-jalali-next aria-label="ماه بعد">›</button>
+  <section class="koko-form-section" aria-labelledby="expense-info-heading">
+    <header><h2 id="expense-info-heading">اطلاعات هزینه</h2></header>
+    <div class="koko-form-grid">
+      <label class="koko-field">عنوان<input name="title" maxlength="120" required></label>
+      <label class="koko-field">مبلغ ریال<input name="amount" type="number" min="1" required></label>
+      <label class="koko-field">تاریخ هزینه
+        {% if datetime_calendar == "jalali" %}
+        <div class="jalali-date-picker" data-jalali-picker data-today="{{ today_jalali }}" data-initial="{{ today_jalali }}">
+          <input type="hidden" name="spent_at" value="{{ today_gregorian }}" data-jalali-value required>
+          <button type="button" class="jalali-date-trigger" data-jalali-trigger aria-expanded="false" aria-controls="expense-date-calendar">
+            <span data-jalali-label>{{ today_jalali }}</span><span aria-hidden="true">▦</span>
+          </button>
+          <div class="jalali-date-panel" id="expense-date-calendar" data-jalali-panel hidden>
+            <div class="jalali-date-heading">
+              <button type="button" class="icon-button" data-jalali-prev aria-label="ماه قبل">‹</button>
+              <strong data-jalali-month></strong>
+              <button type="button" class="icon-button" data-jalali-next aria-label="ماه بعد">›</button>
+            </div>
+            <div class="calendar-grid jalali-date-grid" data-jalali-grid aria-label="انتخاب تاریخ شمسی"></div>
+            <button type="button" class="jalali-date-close" data-jalali-close>بستن تقویم</button>
+          </div>
         </div>
-        <div class="calendar-grid jalali-date-grid" data-jalali-grid aria-label="انتخاب تاریخ شمسی"></div>
-        <button type="button" class="jalali-date-close" data-jalali-close>بستن تقویم</button>
-      </div>
+        {% else %}
+        <input name="spent_at" type="date" value="{{ today_gregorian }}" required>
+        {% endif %}
+      </label>
+      <label class="koko-field">دسته‌بندی<select name="category"><option value="rent">اجاره</option><option value="salary">حقوق</option><option value="supplies">ملزومات</option><option value="utilities">خدمات</option><option value="other">سایر</option></select></label>
     </div>
-    {% else %}
-    <input name="spent_at" type="date" value="{{ today_gregorian }}" required>
-    {% endif %}
-  </label>
-  <label>دسته‌بندی<select name="category"><option value="rent">اجاره</option><option value="salary">حقوق</option><option value="supplies">ملزومات</option><option value="utilities">خدمات</option><option value="other">سایر</option></select></label>
-  <label>توضیحات<textarea name="description"></textarea></label>
-  <button type="submit">ثبت هزینه</button>
+    <label class="koko-field">توضیحات<textarea name="description"></textarea></label>
+  </section>
+  <div class="koko-form-actions is-sticky">
+    <button class="koko-button" type="submit">ثبت هزینه</button>
+    <a class="koko-button is-secondary" href="/financial">انصراف</a>
+  </div>
 </form>
 {% endblock %}
