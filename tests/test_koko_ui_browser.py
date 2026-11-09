@@ -156,3 +156,49 @@ def test_appointment_pages_adopt_koko_ui_kit_and_keep_calendar_hooks():
         assert endpoint in listing
     assert 'name="csrf_token"' in listing
     assert "appointments.update" in listing and "appointments.cancel" in listing
+
+
+def test_message_pages_adopt_koko_ui_kit_without_changing_post_contracts():
+    listing = (ROOT / "app/templates/messages/index.html").read_text(encoding="utf-8")
+    form = (ROOT / "app/templates/messages/form.html").read_text(encoding="utf-8")
+
+    assert 'class="koko-table-wrap"' in listing
+    assert 'class="koko-table"' in listing
+    for column in ("recipient", "provider", "status", "body"):
+        assert f"item.{column}" in listing
+
+    assert 'method="post" action="/ui/messages"' in form
+    assert 'class="form koko-form"' in form
+    assert 'name="csrf_token"' in form
+    for field in ("recipient", "provider", "body"):
+        assert f'name="{field}"' in form
+    assert 'class="koko-form-section"' in form
+    assert 'class="koko-form-actions is-sticky"' in form
+
+
+def test_financial_pages_adopt_koko_ui_kit_and_keep_form_and_calendar_contracts():
+    listing = (ROOT / "app/templates/financial/index.html").read_text(encoding="utf-8")
+    payment = (ROOT / "app/templates/financial/payment_form.html").read_text(encoding="utf-8")
+    expense = (ROOT / "app/templates/financial/expense_form.html").read_text(encoding="utf-8")
+
+    assert listing.count('class="koko-table-wrap"') == 2
+    assert listing.count('class="koko-table"') == 2
+    assert "/print/payments/{{ item.id }}" in listing
+    assert "/financial/expenses/new" in listing
+
+    assert 'method="post" action="/ui/financial/payments"' in payment
+    assert 'method="post" action="/ui/financial/expenses"' in expense
+    for template, fields, date_name in (
+        (payment, ("patient_id", "amount", "paid_at", "description"), "paid_at"),
+        (expense, ("title", "amount", "spent_at", "category", "description"), "spent_at"),
+    ):
+        assert 'class="form koko-form"' in template
+        assert 'name="csrf_token"' in template
+        assert 'class="koko-form-section"' in template
+        assert 'class="koko-form-actions is-sticky"' in template
+        for field in fields:
+            assert f'name="{field}"' in template
+        assert f'name="{date_name}"' in template
+        assert "data-jalali-picker" in template
+        assert "data-jalali-trigger" in template
+        assert "data-jalali-value" in template
