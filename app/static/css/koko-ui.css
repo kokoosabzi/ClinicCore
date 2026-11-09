@@ -266,3 +266,137 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
 .koko-settings-section>label{min-width:0}
 .koko-settings-section .working-days-fieldset{margin:0}
 @media(max-width:680px){.koko-settings-section{grid-template-columns:1fr}}
+
+
+/* Koko dark-theme coverage for legacy surfaces and UI Kit v1 primitives. */
+:root[data-koko-theme="dark"]{
+  color-scheme:dark;
+  --koko-danger:#f0788b;
+  --koko-success:#53c99a;
+  --koko-warning:#e7b65c;
+  --koko-table-row-hover:color-mix(in srgb,var(--koko-primary) 12%,var(--koko-surface));
+}
+:root[data-koko-theme="dark"] .panel,
+:root[data-koko-theme="dark"] .card,
+:root[data-koko-theme="dark"] .metric,
+:root[data-koko-theme="dark"] .hero,
+:root[data-koko-theme="dark"] .form,
+:root[data-koko-theme="dark"] .metrics article,
+:root[data-koko-theme="dark"] .koko-metric,
+:root[data-koko-theme="dark"] .koko-form-section,
+:root[data-koko-theme="dark"] .koko-table-wrap,
+:root[data-koko-theme="dark"] .koko-dialog,
+:root[data-koko-theme="dark"] .koko-tab{
+  background:var(--koko-surface)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .sidebar,
+:root[data-koko-theme="dark"] .topbar,
+:root[data-koko-theme="dark"] .layout>nav,
+:root[data-koko-theme="dark"] .app-shell>.sidebar,
+:root[data-koko-theme="dark"] .app-shell header,
+:root[data-koko-theme="dark"] .toolbar,
+:root[data-koko-theme="dark"] .table-wrap{
+  background:var(--koko-surface)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .sidebar nav button,
+:root[data-koko-theme="dark"] .sidebar button,
+:root[data-koko-theme="dark"] .layout>nav button{
+  color:var(--koko-muted)!important;
+}
+:root[data-koko-theme="dark"] .sidebar nav button.active,
+:root[data-koko-theme="dark"] .sidebar nav button:hover,
+:root[data-koko-theme="dark"] .layout>nav button.active,
+:root[data-koko-theme="dark"] .layout>nav button:hover{
+  background:#263b52!important;
+  color:#edf4f7!important;
+}
+:root[data-koko-theme="dark"] .koko-welcome{
+  background:linear-gradient(115deg,#192633,#243548 55%,#1c3b39)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-welcome-mark{
+  background:linear-gradient(145deg,#263b52,#24483f)!important;
+  color:#c7d8ff!important;
+}
+:root[data-koko-theme="dark"] .koko-card-blue,
+:root[data-koko-theme="dark"] .koko-card-mint,
+:root[data-koko-theme="dark"] .koko-card-lilac,
+:root[data-koko-theme="dark"] .koko-card-pink,
+:root[data-koko-theme="dark"] .koko-card-peach,
+:root[data-koko-theme="dark"] .koko-card-yellow,
+:root[data-koko-theme="dark"] .koko-action,
+:root[data-koko-theme="dark"] .koko-shortcut,
+:root[data-koko-theme="dark"] .quick-action{
+  background:linear-gradient(135deg,#192633,#263b52)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-action-icon{
+  background:#30465b!important;
+  color:#c7d8ff!important;
+}
+:root[data-koko-theme="dark"] .app-shell .totals div,
+:root[data-koko-theme="dark"] .app-shell dl div,
+:root[data-koko-theme="dark"] .koko-dashboard-note{
+  background:var(--koko-surface)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-control,
+:root[data-koko-theme="dark"] .koko-field input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),
+:root[data-koko-theme="dark"] .koko-field select,
+:root[data-koko-theme="dark"] .koko-field textarea{
+  background:var(--koko-surface)!important;
+  color:var(--koko-text)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-table thead th,
+:root[data-koko-theme="dark"] th{
+  background:#223442!important;
+  color:var(--koko-muted)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-table tbody tr,
+:root[data-koko-theme="dark"] .koko-table tbody td{
+  background:var(--koko-surface);
+  color:var(--koko-text);
+  border-color:var(--koko-border);
+}
+:root[data-koko-theme="dark"] .koko-table tbody tr:hover{
+  background:var(--koko-table-row-hover);
+}
+:root[data-koko-theme="dark"] .koko-tab.active,
+:root[data-koko-theme="dark"] .koko-page-tabs .active{
+  background:#263b52!important;
+  color:#edf4f7!important;
+  border-color:var(--koko-primary)!important;
+}
+:root[data-koko-theme="dark"] .koko-tab-close:hover{
+  background:#51313d!important;
+  color:#ffdce5!important;
+}
+:root[data-koko-theme="dark"] .koko-form-actions.is-sticky{
+  background:color-mix(in srgb,var(--koko-surface) 94%,transparent)!important;
+  border-color:var(--koko-border)!important;
+}
+:root[data-koko-theme="dark"] .koko-button.is-secondary,
+:root[data-koko-theme="dark"] .koko-icon-button{
+  background:#223442;
+  color:var(--koko-text);
+  border-color:var(--koko-border);
+}
+:root[data-koko-theme="dark"] .message.success,
+:root[data-koko-theme="dark"] .success{
+  background:#173a30!important;
+  color:#9be0bd!important;
+}
+:root[data-koko-theme="dark"] .message.error,
+:root[data-koko-theme="dark"] .error{
+  background:#40252d!important;
+  color:#ffb3c0!important;
+}
