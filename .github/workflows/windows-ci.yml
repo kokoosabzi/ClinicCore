@@ -36,6 +36,11 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      - name: Set up Node.js for UI script validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev]"
 
@@ -48,6 +53,8 @@ jobs:
           node --check app/static/js/appearance.js
           node --check app/static/js/appointment-booking.js
           node --check app/static/js/jalali-date-picker.js
+          node --check app/static/js/koko-theme-engine.js
+          node --check app/static/js/koko-workspace-tabs.js
 
       - name: Run test suite
         run: python -m pytest -q
