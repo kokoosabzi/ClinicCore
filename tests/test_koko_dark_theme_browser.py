@@ -34,7 +34,7 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
       const read = id => {
         const el = document.getElementById(id);
         const style = getComputedStyle(el);
-        return { background: style.backgroundColor, color: style.color, appearance: style.appearance };
+        return { background: style.backgroundColor, backgroundImage: style.backgroundImage, color: style.color, appearance: style.appearance };
       };
       return {
         body: getComputedStyle(document.body).backgroundColor,
@@ -50,8 +50,9 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
     }""")
 
     assert colors["body"] == "rgb(16, 25, 35)"
-    for key in ("metric", "form", "control", "table", "dialog"):
+    for key in ("metric", "form", "table", "dialog"):
         assert colors[key]["background"] == "rgb(25, 38, 51)", f"{key}: {colors[key]}"
+    assert "rgb(25, 38, 51)" in colors["control"]["backgroundImage"]
     assert colors["control"]["appearance"] == "none"
     assert colors["tableHead"]["background"] == "rgb(34, 52, 66)"
     assert colors["action"]["color"] == "rgb(237, 244, 247)"
@@ -59,6 +60,7 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
 
     page.locator("#koko-theme-panel #kt-theme").select_option("pastel")
     expect(page.locator("html")).to_have_attribute("data-koko-theme", "pastel")
-    restored = page.locator("#control").evaluate("(el) => ({background:getComputedStyle(el).backgroundColor,appearance:getComputedStyle(el).appearance})")
+    restored = page.locator("#control").evaluate("(el) => ({background:getComputedStyle(el).backgroundColor,backgroundImage:getComputedStyle(el).backgroundImage,appearance:getComputedStyle(el).appearance})")
     assert restored["background"] == "rgb(255, 255, 255)"
     assert restored["appearance"] == "auto"
+    assert restored["backgroundImage"] == "none"
