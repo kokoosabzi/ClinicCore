@@ -6,7 +6,9 @@
   <title>{{ title or app_title or app_name or "سامانه جامع سلامت" }}</title>
   <link rel="stylesheet" href="/static/css/app.css">
   <link rel="stylesheet" href="/static/css/themes.css">
+  <link rel="stylesheet" href="/static/css/koko-ui.css">
   <script src="/static/js/appearance.js" defer></script>
+  <script src="/static/js/koko-workspace-tabs.js" defer></script>
   <script>
     window.addEventListener("beforeprint", function () {
       const root = document.documentElement;
@@ -50,8 +52,8 @@
   <header class="topbar">
     <strong class="brand-title">{% if clinic_logo %}<img class="brand-logo" src="{{ clinic_logo }}" alt="" onerror="this.hidden=true">{% endif %}{{ app_title or "سامانه جامع سلامت" }}</strong>
     {% if request.state.current_datetime %}<time class="header-datetime" datetime="{{ request.state.current_datetime.isoformat() if request.state.current_datetime.isoformat is defined else '' }}">{{ request.state.current_datetime }}</time>{% endif %}
-    <button class="nav-toggle no-print" type="button" aria-controls="main-nav" aria-expanded="false" onclick="document.getElementById('main-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.getElementById('main-nav').classList.contains('is-open'));">منو</button>
-    <nav id="main-nav">
+    <button class="nav-toggle no-print" type="button" aria-label="باز و بسته کردن منوی اصلی" aria-controls="main-nav" aria-expanded="false" onclick="toggleClinicNav()">منو</button>
+    <nav id="main-nav" aria-label="منوی اصلی">
       {% if user and not request.state.must_change_password %}
       <a class="{% if request.url.path == '/dashboard' %}active{% endif %}" href="/dashboard">داشبورد</a>
       {% endif %}
@@ -79,11 +81,41 @@
       {% endif %}
     </nav>
   </header>
+  <div id="koko-workspace-tabs" class="koko-workspace-tabs no-print" role="group" aria-label="صفحه‌های باز"></div>
   <main class="container">
     {% if request.url.path != "/dashboard" %}
     <div class="page-actions no-print"><a class="back-link" href="javascript:history.back()">بازگشت</a></div>
     {% endif %}
     {% block content %}{% endblock %}
   </main>
+  <script>
+    function toggleClinicNav(force) {
+      const nav = document.getElementById("main-nav");
+      const toggle = document.querySelector(".nav-toggle");
+      if (!nav || !toggle) return;
+      const open = typeof force === "boolean" ? force : !nav.classList.contains("is-open");
+      nav.classList.toggle("is-open", open);
+      document.body.classList.toggle("koko-nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open) nav.querySelector("a,button")?.focus();
+      else if (force === false) toggle.focus();
+    }
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("main-nav");
+      const toggle = document.querySelector(".nav-toggle");
+      if (!nav || !nav.classList.contains("is-open")) return;
+      if (nav.contains(event.target) || toggle?.contains(event.target)) {
+        if (event.target.closest("a")) toggleClinicNav(false);
+        return;
+      }
+      toggleClinicNav(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && document.getElementById("main-nav")?.classList.contains("is-open")) {
+        toggleClinicNav(false);
+      }
+    });
+  </script>
+  <script src="/static/js/koko-theme-engine.js" defer></script>
 </body>
 </html>

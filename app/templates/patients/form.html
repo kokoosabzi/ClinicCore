@@ -1,13 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>{{ title }}</h1>
-<form method="post" action="{{ action }}" class="form">
+{% set page_title = title %}
+{% include "partials/page_header.html" with context %}
+<form method="post" action="{{ action }}" class="form koko-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>نام<input name="first_name" required maxlength="80" value="{{ patient.first_name if patient else '' }}"></label>
-  <label>نام خانوادگی<input name="last_name" required maxlength="80" value="{{ patient.last_name if patient else '' }}"></label>
-  <label>کد ملی<input name="national_code" maxlength="10" inputmode="numeric" value="{{ patient.national_code if patient else '' }}"></label>
-  <label>تلفن<input name="phone" maxlength="20" inputmode="tel" value="{{ patient.phone if patient else '' }}"></label>
-  <label>یادداشت<textarea name="notes">{{ patient.notes if patient else '' }}</textarea></label>
-  <button type="submit">ذخیره</button>
+  <section class="koko-form-section" aria-labelledby="patient-basic-heading">
+    <header><h2 id="patient-basic-heading">اطلاعات هویتی و تماس</h2></header>
+    <div class="koko-form-grid">
+      <label class="koko-field">نام<input name="first_name" required maxlength="80" value="{{ patient.first_name if patient else '' }}" autocomplete="given-name"></label>
+      <label class="koko-field">نام خانوادگی<input name="last_name" required maxlength="80" value="{{ patient.last_name if patient else '' }}" autocomplete="family-name"></label>
+      <label class="koko-field">کد ملی<input name="national_code" maxlength="10" inputmode="numeric" value="{{ patient.national_code if patient else '' }}" autocomplete="off"></label>
+      <label class="koko-field">تلفن<input name="phone" maxlength="20" inputmode="tel" value="{{ patient.phone if patient else '' }}" autocomplete="tel"></label>
+    </div>
+  </section>
+  <section class="koko-form-section" aria-labelledby="patient-notes-heading">
+    <header><h2 id="patient-notes-heading">یادداشت پرونده</h2></header>
+    <label class="koko-field">یادداشت<textarea name="notes">{{ patient.notes if patient else '' }}</textarea></label>
+  </section>
+  <div class="koko-form-actions is-sticky">
+    <button class="koko-button" type="submit">ذخیره</button>
+    <a class="koko-button is-secondary" href="/patients">انصراف</a>
+  </div>
 </form>
 {% endblock %}

@@ -5,18 +5,23 @@
 {% set action_label = "بیمار جدید" %}
 {% set action_permission = "patients.create" %}
 {% include "partials/page_header.html" with context %}
-<form class="toolbar" method="get" action="/patients">
-  <input name="q" value="{{ q }}" placeholder="جستجو نام، تلفن یا کد ملی">
-  <button type="submit">جستجو</button>
+<form class="toolbar koko-table-toolbar" method="get" action="/patients" role="search">
+  <label class="koko-field">
+    <span class="koko-field-label">جستجوی بیماران</span>
+    <input class="koko-control" name="q" value="{{ q }}" placeholder="نام، تلفن یا کد ملی را وارد کنید" aria-label="جستجوی نام، تلفن یا کد ملی">
+  </label>
+  <button class="koko-button" type="submit">جستجو</button>
 </form>
-<table>
-  <thead><tr><th>شناسه</th><th>نام</th><th>کد ملی</th><th>تلفن</th><th>عملیات</th></tr></thead>
-  <tbody>
-  {% for patient in patients %}
-    <tr><td>{{ patient.id }}</td><td>{{ patient.first_name }} {{ patient.last_name }}</td><td>{{ patient.national_code or '' }}</td><td>{{ patient.phone or '' }}</td><td><a href="/patients/{{ patient.id }}">پرونده</a></td></tr>
-  {% else %}
-    <tr><td colspan="5" class="empty-state"><strong>بیماری ثبت نشده است.</strong>برای شروع، بیمار جدید را ثبت کنید.</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="koko-table-wrap">
+  <table class="koko-table">
+    <thead><tr><th scope="col">شناسه</th><th scope="col">نام</th><th scope="col">کد ملی</th><th scope="col">تلفن</th><th scope="col">عملیات</th></tr></thead>
+    <tbody>
+    {% for patient in patients %}
+      <tr><td>{{ patient.id }}</td><td>{{ patient.first_name }} {{ patient.last_name }}</td><td>{{ patient.national_code or '' }}</td><td>{{ patient.phone or '' }}</td><td><a class="koko-button is-secondary is-small" href="/patients/{{ patient.id }}">مشاهده پرونده</a></td></tr>
+    {% else %}
+      <tr><td colspan="5" class="koko-table-empty"><strong>بیماری ثبت نشده است.</strong><br>برای شروع، بیمار جدید را ثبت کنید.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

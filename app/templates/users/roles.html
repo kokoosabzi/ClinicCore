@@ -1,50 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="page-heading">
-  <div>
-    <h1>نقش‌ها و مجوزها</h1>
-    <p class="muted">تعیین دسترسی هر نقش به بخش‌های مختلف سامانه</p>
-  </div>
-  <a class="button secondary" href="/users/manage">بازگشت به کاربران</a>
+  <div><h1>نقش‌ها و مجوزها</h1><p class="muted">تعیین دسترسی هر نقش به بخش‌های مختلف سامانه</p></div>
+  <a class="koko-button is-secondary" href="/users/manage">بازگشت به کاربران</a>
 </section>
 {% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
 {% if request.query_params.get('saved') == '1' %}<p class="alert success" role="status">مجوزهای نقش ذخیره شد.</p>{% endif %}
-
-{% set category_labels = {
-  'users': 'کاربران',
-  'roles': 'نقش‌ها',
-  'patients': 'بیماران',
-  'appointments': 'نوبت‌ها',
-  'financial': 'امور مالی',
-  'messaging': 'پیام‌رسانی',
-  'reports': 'گزارش‌ها',
-  'settings': 'تنظیمات',
-  'audit': 'رویدادهای سامانه'
-} %}
+{% set category_labels = {'users':'کاربران','roles':'نقش‌ها','patients':'بیماران','appointments':'نوبت‌ها','financial':'امور مالی','messaging':'پیام‌رسانی','reports':'گزارش‌ها','settings':'تنظیمات','audit':'رویدادهای سامانه'} %}
 {% for entry in roles_data %}
-<section class="card">
-  <h2>{{ entry.role.label }}</h2>
+<section class="card koko-form-section">
+  <header><h2>{{ entry.role.label }}</h2></header>
   {% if entry.role.key == 'admin' %}
     <p class="muted">مدیر سیستم به تمام مجوزها دسترسی دارد. این نقش و مجوزهای آن قابل تغییر نیست.</p>
   {% else %}
-  <form method="post" action="/users/roles/{{ entry.role.key }}" class="form">
+  <form method="post" action="/users/roles/{{ entry.role.key }}" class="form koko-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% set ns = namespace(category='') %}
     {% for permission in entry.permissions %}
       {% if permission.category != ns.category %}
         {% if ns.category %}</div>{% endif %}
         {% set ns.category = permission.category %}
-        <h3>{{ category_labels.get(permission.category, permission.category) }}</h3>
-        <div class="permission-grid">
+        <h3 class="koko-permission-heading">{{ category_labels.get(permission.category, permission.category) }}</h3><div class="permission-grid">
       {% endif %}
       <label class="checkbox-label">
         <input type="checkbox" name="permissions" value="{{ permission.code }}" {% if permission.code in entry.granted %}checked{% endif %}>
-        <span>{{ permission.label }}</span>
-        <small dir="ltr">{{ permission.code }}</small>
+        <span>{{ permission.label }}</span><small dir="ltr">{{ permission.code }}</small>
       </label>
     {% endfor %}
     {% if ns.category %}</div>{% endif %}
-    <button type="submit">ذخیره مجوزهای {{ entry.role.label }}</button>
+    <div class="koko-form-actions is-sticky"><button class="koko-button" type="submit">ذخیره مجوزهای {{ entry.role.label }}</button></div>
   </form>
   {% endif %}
 </section>
