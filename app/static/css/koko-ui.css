@@ -423,3 +423,11 @@ table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:se
   color:#edf4f7!important;
   border-color:#354957!important;
 }
+
+/* Normalize native text-input painting so dark surface colors are honored consistently. */
+:root[data-koko-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]){
+  -webkit-appearance:none;
+  appearance:none;
+  background:#192633!important;
+  background-color:#192633!important;
+}
