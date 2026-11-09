@@ -48,6 +48,14 @@ def test_koko_theme_and_workspace_tabs_in_browser(page):
     panel = page.locator("#koko-theme-panel")
     panel.locator("#kt-theme").select_option("dark")
     expect(page.locator("html")).to_have_attribute("data-koko-theme", "dark")
+    expect(panel).to_have_attribute("aria-hidden", "false")
+    expect(launcher).to_have_attribute("aria-expanded", "true")
+    assert page.locator("html").evaluate(
+        "(el) => getComputedStyle(el).getPropertyValue('--koko-bg').trim() === '#101923'"
+    )
+    page.keyboard.press("Escape")
+    expect(panel).to_be_hidden()
+    expect(launcher).to_have_attribute("aria-expanded", "false")
 
     page.reload()
     expect(page.locator("html")).to_have_attribute("data-koko-theme", "dark")
