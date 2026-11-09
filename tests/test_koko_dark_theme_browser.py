@@ -41,6 +41,10 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
         metric: read("metric"),
         form: read("form-section"),
         control: read("control"),
+        controlMatchesDark: document.getElementById("control").matches(':root[data-koko-theme="dark"] input'),
+        controlMatchesClass: document.getElementById("control").matches(':root[data-koko-theme="dark"] input.koko-control'),
+        controlSurface: getComputedStyle(document.documentElement).getPropertyValue("--koko-surface").trim(),
+        controlRules: (() => { const el = document.getElementById("control"); const found = []; for (const sheet of document.styleSheets) { try { for (const rule of sheet.cssRules) { if (!rule.selectorText) continue; try { if (el.matches(rule.selectorText) && (rule.style.background || rule.style.backgroundColor)) found.push({selector:rule.selectorText,background:rule.style.background,backgroundColor:rule.style.backgroundColor,important:rule.style.getPropertyPriority("background")}); } catch (_) {} } } catch (_) {} } return found; })(),
         table: read("table-wrap"),
         tableHead: read("table-head"),
         dialog: read("dialog"),
@@ -50,6 +54,10 @@ def test_koko_dark_theme_covers_forms_tables_dialogs_and_legacy_surfaces(page):
     }""")
 
     assert colors["body"] == "rgb(16, 25, 35)"
+    assert colors["controlMatchesDark"] is True, colors
+    assert colors["controlMatchesClass"] is True, colors
+    assert colors["controlSurface"] == "#192633", colors
+    assert any("#192633" in (rule["background"] + rule["backgroundColor"]) for rule in colors["controlRules"]), colors["controlRules"]
     for key in ("metric", "form", "control", "table", "dialog"):
         assert colors[key]["background"] == "rgb(25, 38, 51)", f"{key}: {colors[key]}"
     assert colors["tableHead"]["background"] == "rgb(34, 52, 66)"
