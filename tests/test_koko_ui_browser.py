@@ -88,7 +88,7 @@ def test_clinic_mobile_navigation_drawer_and_keyboard_dismissal(page):
     </style></head><body><header class="topbar">
       <button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" onclick="toggleClinicNav()">منو</button>
       <nav id="main-nav"><a href="#patients">بیماران</a><a href="#appointments">نوبت‌ها</a></nav>
-    </header></body></html>""")
+    </header><main><input id="outsideControl" aria-label="فیلد خارج از منو"></main></body></html>""")
     page.add_script_tag(content=NAV_SCRIPT)
 
     toggle = page.locator(".nav-toggle")
@@ -108,10 +108,10 @@ def test_clinic_mobile_navigation_drawer_and_keyboard_dismissal(page):
     expect(toggle).to_be_focused()
 
     toggle.click()
-    page.locator("body").click(position={"x": 5, "y": 5})
+    page.locator("#outsideControl").click()
     expect(nav).to_be_hidden()
     expect(toggle).to_have_attribute("aria-expanded", "false")
-    expect(toggle).to_be_focused()
+    expect(page.locator("#outsideControl")).to_be_focused()
 
     toggle.click()
     page.get_by_role("link", name="بیماران").click()
