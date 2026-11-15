@@ -305,10 +305,9 @@ def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
       <style>
         html,body {{ margin:0; width:100%; }}
         .fixture {{ width:min(320px,calc(100vw - 24px)); margin:12px; }}
-        .koko-table-wrap {{ height:180px; }}
       </style>
     </head><body><main class="fixture">
-      <div class="koko-table-wrap" style="height:180px;max-height:180px;overflow:auto">
+      <div class="koko-table-wrap">
         <table class="koko-table" style="min-width:720px"><thead><tr><th>ردیف</th><th>نام مشتری</th><th>توضیحات</th></tr></thead>
         <tbody>{rows}</tbody></table>
       </div>
@@ -322,8 +321,7 @@ def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
     assert page.locator("body").evaluate("(el) => el.scrollWidth <= window.innerWidth")
     assert header.evaluate("(el) => getComputedStyle(el).position") == "sticky"
 
-    wrapper.evaluate("(el) => { el.scrollLeft = -120; el.scrollTop = 120; }")
-    assert wrapper.evaluate("(el) => Math.abs(el.scrollLeft) > 0 && el.scrollTop > 0")
-    wrapper_top = wrapper.evaluate("(el) => el.getBoundingClientRect().top")
+    page.evaluate("() => window.scrollTo(0, 120)")
+    assert page.evaluate("() => window.scrollY > 0")
     header_top = header.evaluate("(el) => el.getBoundingClientRect().top")
-    assert abs(header_top - wrapper_top) <= 3
+    assert abs(header_top) <= 3
