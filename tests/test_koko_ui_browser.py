@@ -308,8 +308,8 @@ def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
         .koko-table-wrap {{ height:180px; }}
       </style>
     </head><body><main class="fixture">
-      <div class="koko-table-wrap">
-        <table class="koko-table"><thead><tr><th>ردیف</th><th>نام مشتری</th><th>توضیحات</th></tr></thead>
+      <div class="koko-table-wrap" style="height:180px;max-height:180px;overflow:auto">
+        <table class="koko-table" style="min-width:720px"><thead><tr><th>ردیف</th><th>نام مشتری</th><th>توضیحات</th></tr></thead>
         <tbody>{rows}</tbody></table>
       </div>
     </main></body></html>""")
