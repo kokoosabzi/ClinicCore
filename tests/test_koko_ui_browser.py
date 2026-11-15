@@ -292,3 +292,38 @@ def test_clinic_workspace_tab_keyboard_focus_survives_closing_inactive_tab(page)
     expect(page.locator("#koko-workspace-tabs .koko-tab")).to_have_count(1)
     expect(page.locator("#koko-workspace-tabs .koko-tab a")).to_be_focused()
     expect(page.locator("#koko-workspace-tabs .koko-tab")).to_contain_text("بیماران")
+
+def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
+    stylesheet = (ROOT / "app/static/css/koko-ui.css").read_text(encoding="utf-8")
+    page.set_viewport_size({"width": 390, "height": 844})
+    rows = "".join(
+        f"<tr><td>{index}</td><td>مشتری آزمایشی {index}</td><td>توضیحات طولانی برای بررسی اسکرول جدول</td></tr>"
+        for index in range(1, 25)
+    )
+    page.set_content(f"""<!doctype html><html lang="fa" dir="rtl"><head>
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <style>
+        html,body {{ margin:0; width:100%; }}
+        .fixture {{ width:min(320px,calc(100vw - 24px)); margin:12px; }}
+        .koko-table-wrap {{ height:180px; }}
+      </style>
+    </head><body><main class="fixture">
+      <div class="koko-table-wrap">
+        <table class="koko-table"><thead><tr><th>ردیف</th><th>نام مشتری</th><th>توضیحات</th></tr></thead>
+        <tbody>{rows}</tbody></table>
+      </div>
+    </main></body></html>""")
+    page.add_style_tag(content=stylesheet)
+
+    wrapper = page.locator(".koko-table-wrap")
+    header = page.locator(".koko-table thead th").first
+    expect(wrapper).to_be_visible()
+    assert wrapper.evaluate("(el) => el.scrollWidth > el.clientWidth")
+    assert page.locator("body").evaluate("(el) => el.scrollWidth <= window.innerWidth")
+    assert header.evaluate("(el) => getComputedStyle(el).position") == "sticky"
+
+    wrapper.evaluate("(el) => { el.scrollLeft = 120; el.scrollTop = 120; }")
+    assert wrapper.evaluate("(el) => el.scrollLeft > 0 and el.scrollTop > 0")
+    wrapper_top = wrapper.evaluate("(el) => el.getBoundingClientRect().top")
+    header_top = header.evaluate("(el) => el.getBoundingClientRect().top")
+    assert abs(header_top - wrapper_top) <= 3
