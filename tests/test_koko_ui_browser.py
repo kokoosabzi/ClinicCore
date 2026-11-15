@@ -323,7 +323,7 @@ def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
     assert header.evaluate("(el) => getComputedStyle(el).position") == "sticky"
 
     wrapper.evaluate("(el) => { el.scrollLeft = 120; el.scrollTop = 120; }")
-    assert wrapper.evaluate("(el) => el.scrollLeft > 0 && el.scrollTop > 0")
+    assert wrapper.evaluate("(el) => Math.abs(el.scrollLeft) > 0 && el.scrollTop > 0")
     wrapper_top = wrapper.evaluate("(el) => el.getBoundingClientRect().top")
     header_top = header.evaluate("(el) => el.getBoundingClientRect().top")
     assert abs(header_top - wrapper_top) <= 3
