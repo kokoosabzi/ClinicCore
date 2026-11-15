@@ -83,6 +83,7 @@ def test_clinic_mobile_navigation_drawer_and_keyboard_dismissal(page):
     <style>
       body{margin:0}header.topbar{height:70px;display:flex;align-items:center}
       .nav-toggle{display:inline-flex}
+      #outsideControl{position:fixed;left:5px;bottom:5px;width:80px;z-index:1}
       #main-nav{display:none;position:fixed;top:70px;right:0;width:280px;height:calc(100vh - 70px);background:white}
       #main-nav.is-open{display:flex;flex-direction:column}
     </style></head><body><header class="topbar">
