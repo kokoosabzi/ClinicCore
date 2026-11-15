@@ -36,6 +36,8 @@
         tabs=tabs.filter(x=>x.path!==tab.path);
         if(tab.path===path){const next=tabs[Math.min(index,tabs.length-1)]||{path:"/dashboard"};save();window.location.assign(next.path);return}
         save();render();
+        const focusIndex=Math.min(index,tabs.length-1);
+        if(tabs.length>0)host.querySelectorAll(".koko-tab")[focusIndex]?.querySelector("a")?.focus();
       });
       item.append(link,close);host.append(item);
     });
