@@ -265,3 +265,30 @@ def test_settings_form_keeps_existing_configuration_fields_and_file_upload():
                   "clinic_name", "clinic_email", "clinic_logo"):
         assert f'name="{field}"' in settings
     assert 'class="koko-form-actions is-sticky"' in settings
+
+
+def test_clinic_workspace_tab_keyboard_focus_survives_closing_inactive_tab(page):
+    page.route("http://clinic.test/**", lambda route: route.fulfill(
+        status=200, content_type="text/html; charset=utf-8",
+        body=f"""<!doctype html><html lang="fa" dir="rtl"><body>
+        <main><h1>بیماران</h1></main>
+        <nav><a href="/dashboard">داشبورد</a><a href="/patients">بیماران</a></nav>
+        <div id="koko-workspace-tabs" role="group" aria-label="صفحه‌های باز"></div>
+        <script>{TABS_SCRIPT}</script></body></html>"""
+    ))
+    page.goto("http://clinic.test/patients")
+    page.evaluate("""() => {
+      const key = "cliniccore.koko.tabs.v1";
+      sessionStorage.setItem(key, JSON.stringify([
+        {path:"/dashboard",label:"داشبورد"},
+        {path:"/patients",label:"بیماران"}
+      ]));
+      location.reload();
+    }""")
+    page.wait_for_load_state("load")
+    close_dashboard = page.get_by_role("button", name="بستن داشبورد")
+    close_dashboard.focus()
+    page.keyboard.press("Enter")
+    expect(page.locator("#koko-workspace-tabs .koko-tab")).to_have_count(1)
+    expect(page.locator("#koko-workspace-tabs .koko-tab a")).to_be_focused()
+    expect(page.locator("#koko-workspace-tabs .koko-tab")).to_contain_text("بیماران")
