@@ -108,7 +108,7 @@
         if (event.target.closest("a")) toggleClinicNav(false);
         return;
       }
-      toggleClinicNav(false);
+      toggleClinicNav();
     });
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && document.getElementById("main-nav")?.classList.contains("is-open")) {
