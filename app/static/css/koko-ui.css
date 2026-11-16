@@ -205,7 +205,7 @@ table td{vertical-align:middle;font-size:.9rem}
 .koko-icon-button{width:38px;min-width:38px;height:38px;padding:0;background:var(--koko-surface);border-color:var(--koko-border);color:var(--koko-text)}
 /* Data tables */
 .koko-table-wrap{width:100%;max-width:100%;max-height:min(68vh,720px);overflow:auto;border:1px solid var(--koko-border);border-radius:15px;background:var(--koko-surface);overscroll-behavior:contain}
-table.koko-table{width:100%;min-width:620px;margin:0;border:0;border-collapse:separate;border-spacing:0;background:transparent;color:var(--koko-text);font-size:.84rem}
+table.koko-table{overflow:visible;width:100%;min-width:620px;margin:0;border:0;border-collapse:separate;border-spacing:0;background:transparent;color:var(--koko-text);font-size:.84rem}
 .koko-table th,.koko-table td{padding:12px 13px;text-align:right;vertical-align:middle;border:0;border-bottom:1px solid var(--koko-border)}
 .koko-table thead th{position:sticky;top:0;z-index:2;background:var(--koko-bg);color:var(--koko-muted);font-weight:750;white-space:nowrap}
 .koko-table tbody tr{background:var(--koko-surface);transition:background .12s ease}
