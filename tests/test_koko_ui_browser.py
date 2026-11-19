@@ -371,7 +371,7 @@ def test_real_dashboard_template_renders_koko_components_at_mobile_viewport(admi
     assert 'class="grid stats koko-clinic-metrics"' in response.text
 
     page.set_viewport_size({"width": 390, "height": 844})
-    page.set_content(response.text)
+    page.set_content(response.text, wait_until="domcontentloaded")
     page.add_style_tag(path=str(ROOT / "app/static/css/app.css"))
     page.add_style_tag(path=str(ROOT / "app/static/css/themes.css"))
     page.add_style_tag(path=str(ROOT / "app/static/css/koko-ui.css"))
