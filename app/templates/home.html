@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero">
-  <h1>{{ app_title or "کلینیک‌کور" }}</h1>
-  <p>سامانه سبک و ماژولار مدیریت کلینیک برای مطب‌ها و مراکز درمانی کوچک.</p>
-  <a class="button" href="/dashboard">ورود به داشبورد</a>
+<section class="hero koko-welcome" aria-labelledby="home-heading">
+  <div>
+    <span class="koko-eyebrow">CLINICCORE · CLINIC MANAGEMENT</span>
+    <h1 id="home-heading">{{ app_title or "کلینیک‌کور" }}</h1>
+    <p>سامانه سبک و ماژولار مدیریت کلینیک برای مطب‌ها و مراکز درمانی کوچک.</p>
+    <a class="button koko-button" href="/dashboard">ورود به داشبورد</a>
+  </div>
+  <div class="koko-welcome-mark" aria-hidden="true">✚</div>
 </section>
 {% endblock %}
