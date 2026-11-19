@@ -362,3 +362,24 @@ def test_public_home_uses_koko_welcome_component_and_keeps_dashboard_route():
     assert 'class="koko-welcome-mark"' in home
     assert 'href="/dashboard"' in home
     assert '{{ app_title or "کلینیک‌کور" }}' in home
+
+
+def test_real_dashboard_template_renders_koko_components_at_mobile_viewport(admin_client, page):
+    response = admin_client.get("/dashboard")
+    assert response.status_code == 200
+    assert 'class="koko-welcome"' in response.text
+    assert 'class="grid stats koko-clinic-metrics"' in response.text
+
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.set_content(response.text)
+    page.add_style_tag(path=str(ROOT / "app/static/css/app.css"))
+    page.add_style_tag(path=str(ROOT / "app/static/css/themes.css"))
+    page.add_style_tag(path=str(ROOT / "app/static/css/koko-ui.css"))
+    page.add_script_tag(path=str(ROOT / "app/static/js/koko-theme-engine.js"))
+
+    expect(page.locator(".koko-welcome")).to_be_visible()
+    expect(page.locator(".koko-clinic-metrics")).to_be_visible()
+    expect(page.locator(".koko-clinic-actions")).to_be_visible()
+    assert page.locator("body").evaluate(
+        "(el) => el.scrollWidth <= window.innerWidth"
+    )
