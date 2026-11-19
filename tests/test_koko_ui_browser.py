@@ -327,3 +327,27 @@ def test_koko_table_horizontal_overflow_and_sticky_header_in_browser(page):
     header_top = header.evaluate("(el) => el.getBoundingClientRect().top")
     wrapper_top = wrapper.evaluate("(el) => el.getBoundingClientRect().top + el.clientTop")
     assert abs(header_top - wrapper_top) <= 3
+
+
+
+def test_authentication_forms_adopt_koko_ui_without_changing_post_contracts():
+    login = (ROOT / "app/templates/auth/login.html").read_text(encoding="utf-8")
+    change_password = (ROOT / "app/templates/auth/change_password.html").read_text(encoding="utf-8")
+
+    assert 'class="card koko-form-section koko-auth-form"' in login
+    assert 'method="post" action="/login" class="form koko-form"' in login
+    assert 'name="csrf_token"' in login
+    assert 'name="username"' in login and 'name="password"' in login
+    assert 'autocomplete="username"' in login
+    assert 'autocomplete="current-password"' in login
+    assert 'class="koko-field"' in login and 'class="koko-button"' in login
+    assert 'role="alert"' in login
+
+    assert 'class="card koko-form-section koko-auth-form"' in change_password
+    assert 'method="post" action="/change-password" class="form koko-form"' in change_password
+    assert 'name="csrf_token"' in change_password
+    assert 'name="password"' in change_password and 'name="confirm"' in change_password
+    assert 'autocomplete="new-password"' in change_password
+    assert 'minlength="8"' in change_password
+    assert 'class="koko-field"' in change_password and 'class="koko-button"' in change_password
+    assert 'role="alert"' in change_password
