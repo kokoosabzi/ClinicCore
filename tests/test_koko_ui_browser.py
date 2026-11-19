@@ -351,3 +351,14 @@ def test_authentication_forms_adopt_koko_ui_without_changing_post_contracts():
     assert 'minlength="8"' in change_password
     assert 'class="koko-field"' in change_password and 'class="koko-button"' in change_password
     assert 'role="alert"' in change_password
+
+
+
+def test_public_home_uses_koko_welcome_component_and_keeps_dashboard_route():
+    home = (ROOT / "app/templates/home.html").read_text(encoding="utf-8")
+
+    assert 'class="hero koko-welcome"' in home
+    assert 'class="koko-eyebrow"' in home
+    assert 'class="koko-welcome-mark"' in home
+    assert 'href="/dashboard"' in home
+    assert '{{ app_title or "کلینیک‌کور" }}' in home
