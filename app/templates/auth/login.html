@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>ورود مدیر</h1>
-{% if error %}<p class="alert">{{ error }}</p>{% endif %}
-<form method="post" action="/login" class="form">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>نام کاربری<input name="username" autocomplete="username" required></label>
-  <label>رمز عبور<input name="password" type="password" autocomplete="current-password" required></label>
-  <button type="submit">ورود</button>
-</form>
+<section class="card koko-form-section koko-auth-form" aria-labelledby="login-heading">
+  <header><h1 id="login-heading">ورود مدیر</h1></header>
+  {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" action="/login" class="form koko-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="koko-field">نام کاربری<input name="username" autocomplete="username" required></label>
+    <label class="koko-field">رمز عبور<input name="password" type="password" autocomplete="current-password" required></label>
+    <div class="koko-form-actions"><button class="koko-button" type="submit">ورود</button></div>
+  </form>
+</section>
 <p class="hint">برای ایجاد کاربر اولیه، <code>python scripts/seed_admin.py</code> را اجرا کنید. در محیط واقعی قبل از seed، مقدار <code>ADMIN_PASSWORD</code> را تنظیم کنید.</p>
 {% endblock %}
