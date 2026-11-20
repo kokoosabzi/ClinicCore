@@ -330,3 +330,24 @@ Release زمانی قابل قبول است که:
 - Closed weekdays return no slots and the booking UI clearly reports that the clinic is closed.
 - Settings persist after reload/restart without a database schema migration.
 - Existing default behavior remains 09:00–17:00 with 30-minute slots.
+## 6. Windows MVP installation and recovery
+
+### AT-501 — Fresh Windows installation and first login
+- `setup.bat` creates `.venv`, a private `.env`, the SQLite schema and the initial administrator.
+- The initial administrator password is random and must be changed on first login.
+- `start.bat` starts the local server; `/health`, login, dashboard, patient creation and appointment creation work.
+- `stop.bat` stops only the tracked ClinicCore process.
+- After stop/start, the administrator can log in and the created patient and appointment remain available.
+- The PID file is removed and port 8000 is released after stop.
+
+### AT-502 — Offline backup and restore
+- Stop the application before backup or restore.
+- `backup.bat` creates a ZIP containing `data/` and clinic logos.
+- Change a patient and appointment after the backup, then restore the archive with `restore.bat`.
+- The original patient and appointment values return after restore and restart.
+- SQLite `PRAGMA quick_check` passes before and after replacement.
+- The current `.env` remains untouched; a safety backup of the pre-restore data is created.
+
+### AT-503 — User-machine acceptance
+- Repeat setup, login, patient/appointment workflow, printing, backup, restore and restart on the user's own Windows computer.
+- This manual acceptance remains pending until it is actually performed; CI success does not mark it complete.
