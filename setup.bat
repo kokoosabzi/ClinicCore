@@ -53,12 +53,12 @@ if errorlevel 1 goto :failed
 echo.
 echo Setup completed.
 echo Run start.bat to launch ClinicCore.
-echo Keep the generated administrator password shown above in a safe place.
+if not defined CI echo Keep the generated administrator password shown above in a safe place.
 if not defined CI pause
 exit /b 0
 
 :failed
 echo.
 echo Setup did not complete. Review the error above; do not delete your data folder.
-pause
+if not defined CI pause
 exit /b 1
