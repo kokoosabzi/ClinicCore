@@ -25,7 +25,7 @@ if (-not (Test-Path -LiteralPath $databasePath)) { throw "Configured SQLite data
 
 $backupDir = Join-Path $root "backups"
 New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
-$stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$stamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
 $archive = Join-Path $backupDir "ClinicCore_backup_$stamp.zip"
 $stage = Join-Path $env:TEMP ("ClinicCoreBackup_" + [guid]::NewGuid().ToString("N"))
 try {
