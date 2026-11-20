@@ -59,8 +59,14 @@ try {
     & $python -c $checkCode $databasePath
     if ($LASTEXITCODE -ne 0) { throw "Restored database failed SQLite integrity validation." }
 
-    if ($dataMoved) { Remove-Item -LiteralPath $oldData -Recurse -Force; $dataMoved = $false }
-    if ($logosMoved) { Remove-Item -LiteralPath $oldLogos -Recurse -Force; $logosMoved = $false }
+    if ($dataMoved) {
+        $dataMoved = $false
+        Remove-Item -LiteralPath $oldData -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    if ($logosMoved) {
+        $logosMoved = $false
+        Remove-Item -LiteralPath $oldLogos -Recurse -Force -ErrorAction SilentlyContinue
+    }
     Write-Host "ClinicCore data and clinic logos restored from: $ArchivePath"
     Write-Host "The current .env file was preserved. Start the application with start.bat."
 } catch {
