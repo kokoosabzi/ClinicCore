@@ -194,8 +194,8 @@ def verify_records() -> None:
 
     appointments = client.json_request("/appointments/")
     appointment = next((row for row in appointments if int(row["id"]) == int(state["appointment_id"])), None)
-    if appointment is None or int(appointment["patient_id"]) != int(state["patient_id"]):
-        raise RuntimeError("Appointment record did not survive server restart.")
+    if appointment is None or int(appointment["patient_id"]) != int(state["patient_id"]) or appointment.get("reason") != "Windows runtime smoke test":
+        raise RuntimeError("Appointment record did not survive backup restore and server restart.")
 
     status, _, dashboard = client.request("/dashboard")
     if status != 200:
