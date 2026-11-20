@@ -30,7 +30,7 @@ The current application configuration supports **SQLite only**. The default data
 
 The setup and launch scripts do not delete or replace an existing database. They do not stop Docker containers, remove volumes, or modify PostgreSQL data. If an existing `.env` points to a non-SQLite database, setup will fail safely; review that configuration deliberately rather than overwriting it.
 
-Back up the `data` directory while the application is stopped. Do not commit `.env`, database files, uploaded logos, or credentials.
+Run `stop.bat` before backup. `backup.bat` creates a ZIP under `backups/` containing the local `data` directory and clinic logos. `restore.bat` restores a selected archive after SQLite integrity validation and creates a safety backup of the current state. The `.env` file is intentionally excluded and preserved during restore; keep it separately in a secure location. Do not commit `.env`, database files, uploaded logos, or credentials.
 
 ## Current implemented scope
 
@@ -46,10 +46,10 @@ Back up the `data` directory while the application is stopped. Do not commit `.e
 
 ## Known limitations / next work
 
-- Manual installation and browser acceptance on a user's Windows machine are not yet recorded as complete.
+- Automated Windows CI now exercises fresh setup, first administrator login/password change, patient and appointment creation, backup/restore, restart persistence and process cleanup. Manual acceptance on the user's own Windows machine is still outstanding.
 - Record-level ownership restrictions (for example, doctor-specific patient/appointment visibility) need a separate design and implementation pass; current RBAC is primarily module/action based.
-- Appointment lifecycle management, configurable clinic/provider working hours and appointment duration need further development.
-- Reporting, production messaging providers/contacts, backup/restore workflow and final print QA remain incomplete.
+- Appointment lifecycle transitions and clinic-wide working hours/slot duration are implemented; practitioner-specific schedules, leave/holiday exceptions and room/resource allocation remain future work.
+- Reporting depth and production messaging providers/contacts remain incomplete. Offline backup/restore is available through `backup.bat` and `restore.bat`; scheduled/off-site backup retention and final print QA remain future work.
 - Theme and print behavior still require visual acceptance in a real Windows browser.
 
 ## Development
