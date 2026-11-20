@@ -9,6 +9,8 @@ from app.models import User, UserRole
 
 
 def main() -> None:
+    if len(settings.admin_password) < 12 or settings.admin_password.lower() in {"admin", "password", "changeme"}:
+        raise SystemExit("Refusing to create an administrator with an empty or weak password. Run setup.bat or set ADMIN_PASSWORD to a unique value of at least 12 characters.")
     db = SessionLocal()
     try:
         existing = db.scalar(select(User).where(User.username == settings.admin_username))
