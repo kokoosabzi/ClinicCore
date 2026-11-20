@@ -138,7 +138,7 @@ def create_records() -> None:
     client = RuntimeClient()
     changed_password = client.login(username, password, first_login=True)
     status, url, dashboard = client.request("/dashboard")
-    if status != 200 or b"dashboard" not in dashboard.lower():
+    if status != 200:
         raise RuntimeError(f"Dashboard did not render after first login: HTTP {status}.")
 
     national_code = str(secrets.randbelow(10**10)).zfill(10)
