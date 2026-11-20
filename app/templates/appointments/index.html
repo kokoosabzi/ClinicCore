@@ -6,8 +6,8 @@
 {% set action_permission = "appointments.create" %}
 {% include "partials/page_header.html" with context %}
 {% set status_labels = {"booked": "ثبت شده", "rescheduled": "تغییر زمان", "cancelled": "لغو شده", "waiting": "در انتظار", "no_show": "عدم مراجعه", "completed": "تکمیل شده"} %}
-<div class="table-wrap">
-<table>
+<div class="table-wrap koko-table-wrap">
+<table class="koko-table">
   <thead><tr><th>شناسه</th><th>بیمار</th><th>زمان</th><th>وضعیت</th><th>عملیات</th><th>چاپ</th></tr></thead>
   <tbody>
   {% for item in appointments %}
@@ -17,13 +17,13 @@
       <td>{{ item.patient.first_name }} {{ item.patient.last_name }}</td>
       <td>{{ display_times[item.id] }}</td>
       <td><span class="status-pill status-{{ state }}">{{ status_labels.get(state, state) }}</span></td>
-      <td class="appointment-actions">
+      <td class="appointment-actions koko-table-actions">
         {% if state in ["booked", "rescheduled"] and "appointments.update" in permissions %}
-        <a class="button button-small button-secondary" href="/appointments/{{ item.id }}/reschedule">تغییر زمان</a>
+        <a class="button button-small button-secondary koko-button is-secondary is-small" href="/appointments/{{ item.id }}/reschedule">تغییر زمان</a>
         <form method="post" action="/ui/appointments/{{ item.id }}/status">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
           <input type="hidden" name="status" value="waiting">
-          <button type="submit" class="button button-small">پذیرش</button>
+          <button type="submit" class="button button-small koko-button is-small">پذیرش</button>
         </form>
         <form method="post" action="/ui/appointments/{{ item.id }}/status">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -33,7 +33,7 @@
         <form method="post" action="/ui/appointments/{{ item.id }}/status">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
           <input type="hidden" name="status" value="no_show">
-          <button type="submit" class="button button-small button-ghost">عدم مراجعه</button>
+          <button type="submit" class="button button-small button-ghost koko-button is-secondary is-small">عدم مراجعه</button>
         </form>
         {% elif state == "waiting" and "appointments.update" in permissions %}
         <form method="post" action="/ui/appointments/{{ item.id }}/status">
@@ -50,7 +50,7 @@
         {% if state in ["booked", "rescheduled", "waiting"] and "appointments.cancel" in permissions %}
         <form method="post" action="/ui/appointments/{{ item.id }}/cancel" onsubmit="return confirm('از لغو این نوبت مطمئن هستید؟');">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-          <button type="submit" class="button button-small button-danger">لغو نوبت</button>
+          <button type="submit" class="button button-small button-danger koko-button is-danger is-small">لغو نوبت</button>
         </form>
         {% endif %}
         {% if state in ["cancelled", "no_show", "completed"] %}
@@ -60,7 +60,7 @@
       <td><a href="/print/appointments/{{ item.id }}">رسید</a></td>
     </tr>
   {% else %}
-    <tr><td colspan="6" class="empty-state"><strong>نوبتی ثبت نشده است.</strong>برای شروع، یک نوبت جدید ثبت کنید.</td></tr>
+    <tr><td colspan="6" class="empty-state koko-table-empty"><strong>نوبتی ثبت نشده است.</strong>برای شروع، یک نوبت جدید ثبت کنید.</td></tr>
   {% endfor %}
   </tbody>
 </table>

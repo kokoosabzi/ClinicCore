@@ -5,5 +5,16 @@
 {% set action_label = "پیام جدید" %}
 {% set action_permission = "messaging.create" %}
 {% include "partials/page_header.html" with context %}
-<table><thead><tr><th>گیرنده</th><th>ارائه‌دهنده</th><th>وضعیت</th><th>متن</th></tr></thead><tbody>{% for item in messages %}<tr><td>{{ item.recipient }}</td><td>{{ item.provider }}</td><td>{{ item.status }}</td><td>{{ item.body }}</td></tr>{% else %}<tr><td colspan="4" class="empty-state"><strong>پیامی در صف نیست.</strong>برای شروع، پیام جدید ایجاد کنید.</td></tr>{% endfor %}</tbody></table>
+<div class="koko-table-wrap">
+  <table class="koko-table">
+    <thead><tr><th scope="col">گیرنده</th><th scope="col">ارائه‌دهنده</th><th scope="col">وضعیت</th><th scope="col">متن</th></tr></thead>
+    <tbody>
+    {% for item in messages %}
+      <tr><td>{{ item.recipient }}</td><td>{{ item.provider }}</td><td><span class="koko-badge is-info">{{ item.status }}</span></td><td>{{ item.body }}</td></tr>
+    {% else %}
+      <tr><td colspan="4" class="koko-table-empty"><strong>پیامی در صف نیست.</strong> برای شروع، پیام جدید ایجاد کنید.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

@@ -2,24 +2,51 @@
 {% block content %}
 {% set page_title = "داشبورد" %}
 {% include "partials/page_header.html" with context %}
-<div class="grid stats">
-  {% if summary.patients is not none %}<div class="card"><span>بیماران</span><strong>{{ summary.patients }}</strong></div>{% endif %}
-  {% if summary.appointments is not none %}<div class="card"><span>نوبت‌ها</span><strong>{{ summary.appointments }}</strong></div>{% endif %}
-  {% if summary.income is not none %}<div class="card"><span>درآمد</span><strong>{{ summary.income }} ریال</strong></div>{% endif %}
-  {% if summary.expenses is not none %}<div class="card"><span>هزینه</span><strong>{{ summary.expenses }} ریال</strong></div>{% endif %}
-</div>
-<div class="grid">
+
+<section class="koko-welcome">
+  <div>
+    <span class="koko-eyebrow">CLINIC MANAGEMENT</span>
+    <h2>نمای کلی کلینیک</h2>
+    <p>خلاصه‌ای از وضعیت ثبت‌شده بیماران، نوبت‌ها و امور مالی</p>
+  </div>
+  <div class="koko-welcome-mark" aria-hidden="true">✚</div>
+</section>
+
+<section class="grid stats koko-clinic-metrics" aria-label="شاخص‌های کلینیک">
+  {% if summary.patients is not none %}
+  <div class="card koko-metric koko-card-lilac"><span>کل بیماران</span><strong>{{ summary.patients }}</strong><small>پرونده ثبت‌شده</small></div>
+  {% endif %}
+  {% if summary.appointments is not none %}
+  <div class="card koko-metric koko-card-blue"><span>نوبت‌ها</span><strong>{{ summary.appointments }}</strong><small>نوبت‌های ثبت‌شده</small></div>
+  {% endif %}
+  {% if summary.income is not none %}
+  <div class="card koko-metric koko-card-mint"><span>درآمد</span><strong>{{ summary.income }}</strong><small>ریال</small></div>
+  {% endif %}
+  {% if summary.expenses is not none %}
+  <div class="card koko-metric koko-card-peach"><span>هزینه‌ها</span><strong>{{ summary.expenses }}</strong><small>ریال</small></div>
+  {% endif %}
+</section>
+
+<section class="koko-section-heading">
+  <div><h2>دسترسی سریع</h2><p>عملیات پرتکرار را مستقیماً از این بخش انجام دهید.</p></div>
+</section>
+<div class="grid koko-clinic-actions">
   {% if "patients.create" in permissions %}
-  <a class="card" href="/patients/new">ثبت بیمار جدید</a>
+  <a class="card koko-action koko-card-blue" href="/patients/new"><span class="koko-action-icon" aria-hidden="true">＋</span><strong>ثبت بیمار جدید</strong><small>ایجاد پرونده بیمار</small><span class="koko-action-arrow" aria-hidden="true">←</span></a>
   {% endif %}
   {% if "appointments.create" in permissions %}
-  <a class="card" href="/appointments/new">رزرو نوبت</a>
+  <a class="card koko-action koko-card-mint" href="/appointments/new"><span class="koko-action-icon" aria-hidden="true">▦</span><strong>رزرو نوبت</strong><small>ثبت زمان مراجعه</small><span class="koko-action-arrow" aria-hidden="true">←</span></a>
   {% endif %}
   {% if "financial.create" in permissions %}
-  <a class="card" href="/financial/payments/new">ثبت پرداخت</a>
+  <a class="card koko-action koko-card-peach" href="/financial/payments/new"><span class="koko-action-icon" aria-hidden="true">↙</span><strong>ثبت پرداخت</strong><small>ثبت دریافتی بیمار</small><span class="koko-action-arrow" aria-hidden="true">←</span></a>
   {% endif %}
   {% if "messaging.create" in permissions %}
-  <a class="card" href="/messages/new">صف پیام‌ها</a>
+  <a class="card koko-action koko-card-pink" href="/messages/new"><span class="koko-action-icon" aria-hidden="true">✉</span><strong>صف پیام‌ها</strong><small>مدیریت ارتباطات</small><span class="koko-action-arrow" aria-hidden="true">←</span></a>
   {% endif %}
 </div>
+
+<section class="card koko-dashboard-note">
+  <div><strong>یادآوری</strong><p>برای مشاهده جزئیات و برنامه نوبت‌ها از بخش «نوبت‌ها» در منوی اصلی استفاده کنید.</p></div>
+  {% if "appointments.view" in permissions %}<a class="button" href="/appointments">مشاهده نوبت‌ها</a>{% endif %}
+</section>
 {% endblock %}

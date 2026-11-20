@@ -13,6 +13,8 @@ def main() -> None:
     try:
         existing = db.scalar(select(User).where(User.username == settings.admin_username))
         if existing is None:
+            if len(settings.admin_password) < 12 or settings.admin_password.lower() in {"admin", "password", "changeme"}:
+                raise SystemExit("Refusing to create an administrator with an empty or weak password. Run setup.bat or set ADMIN_PASSWORD to a unique value of at least 12 characters.")
             db.add(
                 User(
                     full_name="مدیر سیستم",

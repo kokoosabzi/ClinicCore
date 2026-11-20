@@ -16,7 +16,7 @@ if not exist ".venv\Scripts\python.exe" (
     python -m venv .venv
     if errorlevel 1 (
       echo ERROR: Python 3.12 or newer is required.
-      pause
+      if not defined CI pause
       exit /b 1
     )
   )
@@ -25,7 +25,7 @@ if not exist ".venv\Scripts\python.exe" (
 ".venv\Scripts\python.exe" -c "import sys; raise SystemExit(0 if sys.version_info >= (3,12) else 1)"
 if errorlevel 1 (
   echo ERROR: The selected Python is older than 3.12. Install Python 3.12+ and remove only the incomplete .venv folder before retrying.
-  pause
+  if not defined CI pause
   exit /b 1
 )
 
@@ -53,12 +53,12 @@ if errorlevel 1 goto :failed
 echo.
 echo Setup completed.
 echo Run start.bat to launch ClinicCore.
-echo Keep the generated administrator password shown above in a safe place.
-pause
+if not defined CI echo Keep the generated administrator password shown above in a safe place.
+if not defined CI pause
 exit /b 0
 
 :failed
 echo.
 echo Setup did not complete. Review the error above; do not delete your data folder.
-pause
+if not defined CI pause
 exit /b 1

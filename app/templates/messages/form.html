@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>ارسال پیام</h1>
-<form method="post" action="/ui/messages" class="form">
+{% set page_title = "ارسال پیام" %}
+{% include "partials/page_header.html" with context %}
+<form method="post" action="/ui/messages" class="form koko-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>گیرنده<input name="recipient" required maxlength="120"></label>
-  <label>ارائه‌دهنده<select name="provider"><option value="sms">پیامک</option><option value="email">ایمیل</option><option value="telegram">تلگرام</option><option value="whatsapp">واتساپ</option><option value="iranian_messenger">پیام‌رسان ایرانی</option></select></label>
-  <label>متن<textarea name="body" required></textarea></label>
-  <button type="submit">افزودن به صف</button>
+  <section class="koko-form-section" aria-labelledby="message-details-heading">
+    <header><h2 id="message-details-heading">مشخصات پیام</h2></header>
+    <div class="koko-form-grid">
+      <label class="koko-field">گیرنده<input name="recipient" required maxlength="120"></label>
+      <label class="koko-field">ارائه‌دهنده
+        <select name="provider"><option value="sms">پیامک</option><option value="email">ایمیل</option><option value="telegram">تلگرام</option><option value="whatsapp">واتساپ</option><option value="iranian_messenger">پیام‌رسان ایرانی</option></select>
+      </label>
+    </div>
+    <label class="koko-field">متن<textarea name="body" required></textarea></label>
+  </section>
+  <div class="koko-form-actions is-sticky">
+    <button class="koko-button" type="submit">افزودن به صف</button>
+    <a class="koko-button is-secondary" href="/messages">انصراف</a>
+  </div>
 </form>
 {% endblock %}

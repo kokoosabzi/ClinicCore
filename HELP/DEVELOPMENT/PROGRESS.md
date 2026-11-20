@@ -2,9 +2,9 @@
 
 > این فایل وضعیت واقعی مخزن و شواهد تست را ثبت می‌کند. هیچ تست اجرا‌نشده‌ای Pass محسوب نمی‌شود.
 
-Last updated: 2026-11-06
-Last updated by: ChatGPT — consolidation of Windows/SQLite, RBAC and dynamic UI themes
-Repository: `main`
+Last updated: 2026-11-20
+Last updated by: ChatGPT — Windows MVP runtime, backup/restore and security hardening
+Repository: `ui/koko-ui-foundation` — PR #18 is open and Draft; `main` is unchanged.
 
 ## 1. وضعیت شاخه‌ها و ادغام‌ها
 
@@ -21,18 +21,18 @@ Repository: `main`
 
 | بخش | وضعیت پیاده‌سازی | شواهد / محدودیت |
 |---|---|---|
-| Windows + SQLite runtime | پیاده‌سازی ادغام‌شده | CI ویندوز موفق؛ پذیرش دستی روی رایانه کاربر باقی است |
+| Windows + SQLite runtime | پایه در main؛ تکمیل MVP در PR #18 | CI ویندوز شامل نصب، ورود، گردش بیمار/نوبت، backup/restore و restart موفق؛ پذیرش دستی روی رایانه کاربر باقی است |
 | Login / User Administration / RBAC | پیاده‌سازی ادغام‌شده | CI ویندوز و تست‌های RBAC موفق؛ پذیرش دستی UI باقی است |
 | Dynamic UI Themes | پیاده‌سازی ادغام‌شده | CI ویندوز روی شاخه ادغام‌شده موفق؛ بازبینی بصری دستی باقی است |
 | Jalali calendar/date handling | تقویم اختصاصی رزرو نوبت و تبدیل تاریخ پیاده‌سازی شده | اعتبارسنجی strict ورودی تاریخ/زمان و آزمون مرز سال/کبیسه اضافه شده؛ یکپارچگی سایر فرم‌ها هنوز باقی است |
-| Manual Windows installation | تأییدنشده | هنوز روی رایانه کاربر اجرا نشده است |
+| Manual Windows installation | پذیرش دستی باقی است | CI نصب و اجرای واقعی را روی Windows runner تأیید می‌کند؛ اجرای روی رایانه کاربر هنوز انجام نشده است |
 
 ## 3. مبنای فنی فعلی
 
 - FastAPI + SQLAlchemy 2 + Alembic + Jinja2، رابط فارسی RTL.
 - اجرای محلی Windows با SQLite فایل‌محور در `data/cliniccore.db`.
 - Alembic تنها مرجع ایجاد و تغییر schema است؛ از `Base.metadata.create_all` در مسیر نصب استفاده نمی‌شود.
-- نصب و اجرا با `setup.bat`، `start.bat` و `stop.bat`.
+- نصب و اجرا با `setup.bat`، `start.bat` و `stop.bat`؛ پشتیبان‌گیری و بازیابی آفلاین با `backup.bat` و `restore.bat`.
 - ماژول‌های موجود شامل بیماران، نوبت‌ها، اطلاعات مالی ثبت‌شده، پیام‌رسانی، تنظیمات، کاربران و صفحات چاپ.
 - سامانه تراکنش مالی واقعی انجام نمی‌دهد؛ اطلاعات مالی صرفاً در حد ثبت سوابق تعریف‌شده در محصول است.
 
@@ -131,7 +131,7 @@ Repository: `main`
 - Status transitions and rescheduling record actor and before/after values in the existing audit log.
 - Added lifecycle integration tests for valid/invalid transitions, cancellation slot reuse, reschedule conflict and audit events.
 - Windows CI run #150 passed: **58 passed, 0 failed**, compileall, JavaScript syntax validation and clean SQLite migration to \`20261107_0007\` all passed.
-- Manual Windows/browser acceptance remains outstanding; practitioner-specific schedules and configurable slot duration are not implemented yet.
+- Manual Windows/browser acceptance remains outstanding; practitioner-specific schedules, holidays and room/resource allocation remain future work.
 
 
 ### 2026-11-07 — Configurable clinic-wide appointment schedule
@@ -143,3 +143,15 @@ Repository: `main`
 - No schema migration was required; settings use the existing key/value settings store.
 - Windows CI run #171 passed: **71 passed, 0 failed**, compileall, JavaScript syntax validation and clean SQLite migration passed.
 - Manual browser acceptance remains outstanding. Schedule settings are currently clinic-wide; practitioner-specific hours, leave/holiday exceptions and room/resource allocation remain future work.
+## 10. Windows MVP runtime, backup and restore — 2026-11-20
+
+- Added `scripts/windows_runtime_smoke.py`: the test talks to the running application over HTTP with a cookie jar; it does not replace runtime checks with TestClient.
+- Windows CI now runs `setup.bat`, starts the actual Uvicorn process, verifies generated administrator credentials and forced first-login password change, creates a patient and appointment, stops and restarts the process, and verifies persistence.
+- Added `scripts/mutate_smoke_records.py` so CI changes both records after the backup snapshot and can prove that restore returns the original values.
+- Added `backup.bat` / `scripts/backup_data.ps1`: offline ZIP backup of the configured SQLite database/data directory and clinic logos. It refuses to run while the PID file or port 8000 indicates an active server.
+- Added `restore.bat` / `scripts/restore_data.ps1`: verifies the archive database with SQLite `PRAGMA quick_check`, creates a safety backup of the current data, restores the data and logos, preserves the current `.env`, and attempts rollback if replacement fails. Only file-backed SQLite databases located under `data/` are supported.
+- Hardened initial administrator creation: the default `ADMIN_PASSWORD` is empty; `seed_admin.py` refuses an empty or weak password when creating a new admin, but remains idempotent when that admin already exists. The local installer still generates a random password; CI suppresses that secret from logs.
+- Updated `README.md`, `HELP/INSTALL.txt`, `HELP/RUN.txt`, `HELP/AUTHENTICATION.txt`, added `HELP/BACKUP_RESTORE.txt`, and extended `HELP/DEVELOPMENT/ACCEPTANCE_TESTS.md`.
+- Windows CI run [#44761098481](https://github.com/kokoosabzi/ClinicCore/actions/runs/44761098481): **85 passed, 0 failed**; fresh setup, migration, first login/password change, patient and appointment creation, offline backup, deliberate post-backup mutation, restore, restart persistence and process cleanup all passed.
+- This CI result is automated acceptance on a Windows runner, not manual acceptance on the user's own Windows PC. Printing and real-world browser/print acceptance remain open.
+- CI warning triage from run #44761098481: 142 SQLAlchemy warnings came from `datetime.utcnow()` in system settings (replaced with timezone-aware UTC timestamps in commit `635b8b6`; awaiting CI confirmation); one Starlette/httpx deprecation and one pytest-playwright fixture deprecation remain to investigate.

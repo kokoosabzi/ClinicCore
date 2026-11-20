@@ -7,6 +7,7 @@ on:
       - stabilization/windows-sqlite-runtime
       - feature/user-management-rbac
       - feature/dynamic-ui-themes
+      - ui/**
   pull_request:
     branches:
       - main
@@ -23,9 +24,6 @@ jobs:
     timeout-minutes: 20
     env:
       DATABASE_URL: sqlite:///./data/cliniccore-ci.db
-      SECRET_KEY: cliniccore-ci-only-secret-key-not-for-production
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: ci-only-not-for-production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -35,6 +33,11 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+
+      - name: Set up Node.js for UI script validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev]"
@@ -48,6 +51,11 @@ jobs:
           node --check app/static/js/appearance.js
           node --check app/static/js/appointment-booking.js
           node --check app/static/js/jalali-date-picker.js
+          node --check app/static/js/koko-theme-engine.js
+          node --check app/static/js/koko-workspace-tabs.js
+
+      - name: Install Chromium for browser UI tests
+        run: python -m playwright install chromium
 
       - name: Run test suite
         run: python -m pytest -q
@@ -63,3 +71,69 @@ jobs:
           if (-not (Test-Path data/cliniccore-ci.db)) {
             throw "Alembic did not create the expected SQLite database."
           }
+
+      - name: Exercise fresh Windows setup
+        shell: pwsh
+        run: |
+          cmd /c setup.bat
+          if ($LASTEXITCODE -ne 0) { throw "setup.bat failed." }
+
+      - name: Start ClinicCore for first-run smoke
+        shell: pwsh
+        run: |
+          cmd /c start.bat
+          if ($LASTEXITCODE -ne 0) { throw "start.bat failed." }
+
+      - name: Verify first login, patient and appointment workflows
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py create
+          if ($LASTEXITCODE -ne 0) { throw "First-run runtime smoke failed." }
+
+      - name: Stop ClinicCore before backup and restore
+        shell: pwsh
+        run: |
+          cmd /c stop.bat
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed before backup." }
+
+      - name: Create offline backup
+        shell: pwsh
+        run: |
+          cmd /c backup.bat
+          if ($LASTEXITCODE -ne 0) { throw "backup.bat failed." }
+          $archive = Get-ChildItem backups/ClinicCore_backup_*.zip | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $archive) { throw "No ClinicCore backup archive was created." }
+          Set-Content -Path data/ci-backup-path.txt -Value $archive.FullName
+
+      - name: Mutate records after backup
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/mutate_smoke_records.py
+          if ($LASTEXITCODE -ne 0) { throw "Post-backup mutation failed." }
+
+      - name: Restore the offline backup
+        shell: pwsh
+        run: |
+          $archivePath = (Get-Content data/ci-backup-path.txt -Raw).Trim()
+          & ./scripts/restore_data.ps1 -ArchivePath $archivePath
+
+      - name: Restart ClinicCore
+        shell: pwsh
+        run: |
+          cmd /c start.bat
+          if ($LASTEXITCODE -ne 0) { throw "ClinicCore restart failed." }
+
+      - name: Verify login and records survive restore and restart
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py verify
+          if ($LASTEXITCODE -ne 0) { throw "Backup restore persistence smoke failed." }
+
+      - name: Stop ClinicCore and verify process cleanup
+        shell: pwsh
+        run: |
+          cmd /c stop.bat
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed after restore." }
+          if (Test-Path data/cliniccore.pid) { throw "ClinicCore PID file remains after stop." }
+          $listener = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue
+          if ($listener) { throw "Port 8000 is still listening after stop." }
