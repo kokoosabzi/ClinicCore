@@ -24,9 +24,6 @@ jobs:
     timeout-minutes: 20
     env:
       DATABASE_URL: sqlite:///./data/cliniccore-ci.db
-      SECRET_KEY: cliniccore-ci-only-secret-key-not-for-production
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: ci-only-not-for-production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -74,3 +71,48 @@ jobs:
           if (-not (Test-Path data/cliniccore-ci.db)) {
             throw "Alembic did not create the expected SQLite database."
           }
+
+      - name: Exercise fresh Windows setup
+        shell: pwsh
+        run: |
+          cmd /c setup.bat
+          if ($LASTEXITCODE -ne 0) { throw "setup.bat failed." }
+
+      - name: Start ClinicCore for first-run smoke
+        shell: pwsh
+        run: |
+          cmd /c start.bat
+          if ($LASTEXITCODE -ne 0) { throw "start.bat failed." }
+
+      - name: Verify first login, patient and appointment workflows
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py create
+          if ($LASTEXITCODE -ne 0) { throw "First-run runtime smoke failed." }
+
+      - name: Stop ClinicCore before restart
+        shell: pwsh
+        run: |
+          cmd /c stop.bat
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed before restart." }
+
+      - name: Restart ClinicCore
+        shell: pwsh
+        run: |
+          cmd /c start.bat
+          if ($LASTEXITCODE -ne 0) { throw "ClinicCore restart failed." }
+
+      - name: Verify login and records survive restart
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py verify
+          if ($LASTEXITCODE -ne 0) { throw "Persistence smoke failed." }
+
+      - name: Stop ClinicCore and verify process cleanup
+        shell: pwsh
+        run: |
+          cmd /c stop.bat
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed after restart." }
+          if (Test-Path data/cliniccore.pid) { throw "ClinicCore PID file remains after stop." }
+          $listener = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue
+          if ($listener) { throw "Port 8000 is still listening after stop." }
