@@ -64,10 +64,18 @@ try {
     Write-Host "ClinicCore data and clinic logos restored from: $ArchivePath"
     Write-Host "The current .env file was preserved. Start the application with start.bat."
 } catch {
-    if (Test-Path -LiteralPath $dataDir) { Remove-Item -LiteralPath $dataDir -Recurse -Force }
-    if (Test-Path -LiteralPath $logoDir) { Remove-Item -LiteralPath $logoDir -Recurse -Force }
-    if ($dataMoved -and (Test-Path -LiteralPath $oldData)) { Move-Item -LiteralPath $oldData -Destination $dataDir }
-    if ($logosMoved -and (Test-Path -LiteralPath $oldLogos)) { Move-Item -LiteralPath $oldLogos -Destination $logoDir }
+    if ($dataMoved) {
+        if (Test-Path -LiteralPath $dataDir) { Remove-Item -LiteralPath $dataDir -Recurse -Force }
+        if (Test-Path -LiteralPath $oldData) { Move-Item -LiteralPath $oldData -Destination $dataDir }
+    } elseif (-not $hadData -and (Test-Path -LiteralPath $dataDir)) {
+        Remove-Item -LiteralPath $dataDir -Recurse -Force
+    }
+    if ($logosMoved) {
+        if (Test-Path -LiteralPath $logoDir) { Remove-Item -LiteralPath $logoDir -Recurse -Force }
+        if (Test-Path -LiteralPath $oldLogos) { Move-Item -LiteralPath $oldLogos -Destination $logoDir }
+    } elseif (-not $hadLogos -and (Test-Path -LiteralPath $logoDir)) {
+        Remove-Item -LiteralPath $logoDir -Recurse -Force
+    }
     throw
 } finally {
     if (Test-Path -LiteralPath $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
