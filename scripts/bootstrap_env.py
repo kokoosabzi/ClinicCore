@@ -4,6 +4,7 @@ Existing .env files are intentionally never overwritten.
 """
 from __future__ import annotations
 
+import os
 import secrets
 from pathlib import Path
 
@@ -36,8 +37,11 @@ def main() -> int:
 
     print("Created a private local .env file.")
     print("Initial administrator username: admin")
-    print(f"Initial administrator password (shown once): {admin_password}")
-    print("Change this password after the first login.")
+    if os.environ.get("CI", "").lower() != "true":
+        print(f"Initial administrator password (shown once): {admin_password}")
+        print("Change this password after the first login.")
+    else:
+        print("A random initial administrator password was generated for the isolated CI run.")
     return 0
 
 
