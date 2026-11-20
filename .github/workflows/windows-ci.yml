@@ -90,11 +90,32 @@ jobs:
           ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py create
           if ($LASTEXITCODE -ne 0) { throw "First-run runtime smoke failed." }
 
-      - name: Stop ClinicCore before restart
+      - name: Stop ClinicCore before backup and restore
         shell: pwsh
         run: |
           cmd /c stop.bat
-          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed before restart." }
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed before backup." }
+
+      - name: Create offline backup
+        shell: pwsh
+        run: |
+          cmd /c backup.bat
+          if ($LASTEXITCODE -ne 0) { throw "backup.bat failed." }
+          $archive = Get-ChildItem backups/ClinicCore_backup_*.zip | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $archive) { throw "No ClinicCore backup archive was created." }
+          Set-Content -Path data/ci-backup-path.txt -Value $archive.FullName
+
+      - name: Mutate records after backup
+        shell: pwsh
+        run: |
+          ./.venv/Scripts/python.exe scripts/mutate_smoke_records.py
+          if ($LASTEXITCODE -ne 0) { throw "Post-backup mutation failed." }
+
+      - name: Restore the offline backup
+        shell: pwsh
+        run: |
+          $archivePath = (Get-Content data/ci-backup-path.txt -Raw).Trim()
+          & ./scripts/restore_data.ps1 -ArchivePath $archivePath
 
       - name: Restart ClinicCore
         shell: pwsh
@@ -102,17 +123,17 @@ jobs:
           cmd /c start.bat
           if ($LASTEXITCODE -ne 0) { throw "ClinicCore restart failed." }
 
-      - name: Verify login and records survive restart
+      - name: Verify login and records survive restore and restart
         shell: pwsh
         run: |
           ./.venv/Scripts/python.exe scripts/windows_runtime_smoke.py verify
-          if ($LASTEXITCODE -ne 0) { throw "Persistence smoke failed." }
+          if ($LASTEXITCODE -ne 0) { throw "Backup restore persistence smoke failed." }
 
       - name: Stop ClinicCore and verify process cleanup
         shell: pwsh
         run: |
           cmd /c stop.bat
-          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed after restart." }
+          if ($LASTEXITCODE -ne 0) { throw "stop.bat failed after restore." }
           if (Test-Path data/cliniccore.pid) { throw "ClinicCore PID file remains after stop." }
           $listener = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue
           if ($listener) { throw "Port 8000 is still listening after stop." }
